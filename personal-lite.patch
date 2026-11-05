@@ -997,7 +997,8 @@ index 8a9b516..8ef6b6b 100644
 +++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramFirebaseConfig.kt
 @@ -44,30 +44,30 @@ object CherrygramFirebaseConfig: CoroutineScope by CoroutineScope(
      /** Card numbers finish */
-      /** SafeStars start */
+ 
+     /** SafeStars start */
 -    var allowSafeStars by sharedPreferences.boolean("CG_AllowSafeStarsUI1", true)
 +    var allowSafeStars by sharedPreferences.boolean("CG_AllowSafeStarsUI1", false)
      var safe_stars_URL by sharedPreferences.string("CP_SafeStarsURL", "https://safe-stars.com/?partner=cherrygram")
