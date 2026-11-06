@@ -619,31 +619,11 @@ public final class RoundVideoSession {
                 + ", facing=" + requestedFacing
                 + ", maxDurationMs=" + maximumDurationMs);
 
-        if (builder.useCameraX) {
-            cameraController = new RoundVideoCameraXController(
-                    this.context,
-                    previewView,
-                    outputResolution,
-                    videoBitrate,
-                    requestedCameraResolution,
-                    requestedFrameRate,
-                    compositionEnabled,
-                    diagnostics,
-                    cameraCallback
-            );
-        } else {
-            cameraController = new RoundVideoCameraController(
-                    this.context,
-                    previewView,
-                    outputResolution,
-                    videoBitrate,
-                    requestedCameraResolution,
-                    requestedFrameRate,
-                    compositionEnabled,
-                    diagnostics,
-                    cameraCallback
-            );
-        }
+        cameraController = new RoundVideoCameraController(
+                this.context, previewView, outputResolution, videoBitrate,
+                requestedCameraResolution, requestedFrameRate, compositionEnabled,
+                diagnostics, cameraCallback);
+
     }
 
     /** Opens the requested camera and starts recording after its first frame arrives. */
@@ -1603,24 +1583,18 @@ public final class RoundVideoSession {
     /** Cherrygram start */
     @MainThread
     public @Nullable CherryZoomSliderView.ZoomController getCameraXZoomController() {
-        return cameraController instanceof RoundVideoCameraXController
-                ? ((RoundVideoCameraXController) cameraController).getZoomController()
-                : null;
+        return null;
     }
 
     @MainThread
     public @Nullable CameraXController getCameraXController() {
-        return cameraController instanceof RoundVideoCameraXController
-                ? ((RoundVideoCameraXController) cameraController).getCameraXController()
-                : null;
+        return null;
     }
 
     @MainThread
     public void focusCameraX(float x, float y) {
         requireMainThread();
-        if (state == State.RECORDING && !cameraSwitching && cameraController instanceof RoundVideoCameraXController) {
-            ((RoundVideoCameraXController) cameraController).focusToPoint(x, y);
-        }
+        // Camera2 provides the round-video camera in this build.
     }
     /** Cherrygram finish */
 

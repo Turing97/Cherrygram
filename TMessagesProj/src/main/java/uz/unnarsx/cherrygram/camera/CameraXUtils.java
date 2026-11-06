@@ -52,7 +52,7 @@ public class CameraXUtils {
     private static final ExecutorService CAMERA_EXECUTOR = Executors.newSingleThreadExecutor();
 
     public static boolean isCameraXSupported() {
-        return SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE;
+        return false;
     }
 
     public static boolean isCurrentCameraCameraX() {
