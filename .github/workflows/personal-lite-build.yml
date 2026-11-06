@@ -37,6 +37,8 @@ jobs:
           sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
       - name: Generate temporary CI signing key
         run: keytool -genkeypair -keystore Your_Key.jks -alias Your_Alias -storepass Your_Password -keypass Your_Password -dname "CN=Personal Lite CI" -keyalg RSA -keysize 2048 -validity 3650
+      - name: Compile Java and Kotlin before native build
+        run: gradle :TMessagesProj:compileStandaloneJavaWithJavac --stacktrace
       - name: Build standalone APK
         run: gradle :TMessagesProj_AppStandalone:assembleAfatStandalone --stacktrace
       - uses: actions/upload-artifact@v4
