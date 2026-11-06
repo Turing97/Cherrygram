@@ -1,5 +1,5 @@
 diff --git a/TMessagesProj/src/main/AndroidManifest.xml b/TMessagesProj/src/main/AndroidManifest.xml
-index 4322bfb..28c441b 100644
+index 4322bfb83..d287f5663 100644
 --- a/TMessagesProj/src/main/AndroidManifest.xml
 +++ b/TMessagesProj/src/main/AndroidManifest.xml
 @@ -39,13 +39,6 @@
@@ -16,6 +16,91 @@ index 4322bfb..28c441b 100644
      <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
      <uses-permission android:name="android.permission.VIBRATE" />
      <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+@@ -116,9 +109,8 @@
+ 
+     <application
+         android:name="org.telegram.messenger.ApplicationLoader"
+-        android:allowBackup="true"
+-        android:restoreAnyVersion="true"
+-        android:backupAgent=".BackupAgent"
++        android:allowBackup="false"
++        android:dataExtractionRules="@xml/personal_lite_data_extraction_rules"
+         android:hardwareAccelerated="true"
+         android:largeHeap="true"
+         android:theme="@style/Theme.TMessages.Start"
+@@ -134,6 +126,9 @@
+     >
+         <!-- usesCleartextTraffic for browser supporting opening http:// links -->
+ 
++        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
++        <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="false" />
++
+         <activity-alias
+             android:enabled="true"
+             android:name="uz.unnarsx.cherrygram.CG_Icon_Cherry"
+@@ -642,7 +637,7 @@
+         <receiver
+             android:name="uz.unnarsx.cherrygram.core.helpers.SleepHelper"
+             android:enabled="true"
+-            android:exported="true" />
++            android:exported="false" />
+ 
+         <receiver
+             android:name=".AutoMessageHeardReceiver"
+@@ -670,6 +665,7 @@
+ 
+         <receiver
+             android:name=".SmsReceiver"
++            android:permission="com.google.android.gms.auth.api.phone.permission.SEND"
+             android:exported="true">
+             <intent-filter>
+                 <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED"/>
+@@ -717,13 +713,13 @@
+         <service
+             android:name=".BringAppForegroundService"
+             android:enabled="true"
+-            android:exported="true"
++            android:exported="false"
+             android:foregroundServiceType="mediaPlayback"
+         />
+         <service
+             android:name=".NotificationsService"
+             android:enabled="true"
+-            android:exported="true"
++            android:exported="false"
+             android:foregroundServiceType="dataSync"
+         />
+         <service
+@@ -734,25 +730,25 @@
+         <service
+             android:name=".VideoEncodingService"
+             android:enabled="true"
+-            android:exported="true"
++            android:exported="false"
+             android:foregroundServiceType="dataSync"
+         />
+         <service
+             android:name="org.telegram.ui.Stories.recorder.StoryUploadingService"
+             android:enabled="true"
+-            android:exported="true"
++            android:exported="false"
+             android:foregroundServiceType="dataSync"
+         />
+         <service
+             android:name=".ImportingService"
+             android:enabled="true"
+-            android:exported="true"
++            android:exported="false"
+             android:foregroundServiceType="dataSync"
+         />
+         <service
+             android:name=".LocationSharingService"
+             android:enabled="true"
+-            android:exported="true"
++            android:exported="false"
+             android:foregroundServiceType="location|dataSync"
+         />
+         <service
 diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/AutoBackupUserAgent.kt b/TMessagesProj/src/main/java/org/telegram/messenger/AutoBackupUserAgent.kt
 index 0d67b76..6312838 100644
 --- a/TMessagesProj/src/main/java/org/telegram/messenger/AutoBackupUserAgent.kt
