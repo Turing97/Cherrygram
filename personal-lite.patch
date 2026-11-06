@@ -871,18 +871,13 @@ index dc98757..7e5526e 100644
          hasValidDialogLoadIds = true;
          unacceptedTermsOfService = null;
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
-index f641f20..277a8c1 100644
+index f641f2014..9b6d9dc03 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
-@@ -25675,94 +25675,7 @@ public class ChatActivity extends BaseFragment implements
-     private Pattern sponsoredUrlPattern;
-     private MessageObject botSponsoredMessage;
-     private void addSponsoredMessages(boolean animated) {
--
--        if (sponsoredMessagesAdded || chatMode != 0 || !ChatObject.isChannelCG(currentChat) && !UserObject.isBot(currentUser) || !forwardEndReached[0] || getUserConfig().isPremium() && getMessagesController().isSponsoredDisabled() || isReport()) {
--            return;
--        }
--
+@@ -25680,28 +25680,11 @@ public class ChatActivity extends BaseFragment implements
+             return;
+         }
+ 
 -        boolean hide = false;
 -        if (CherrygramCoreConfig.isStandalonePremiumBuild()) {
 -            hide = true;
@@ -900,36 +895,19 @@ index f641f20..277a8c1 100644
 -                useAdsGramForCurrentChat
 -                        ? getMessagesController().getSponsoredMessagesForADSgram(dialog_id)
 -                        : getMessagesController().getSponsoredMessages(dialog_id);
--
--        if (res == null || res.messages == null || res.messages.isEmpty()) {
--            return;
--        }
++        MessagesController.SponsoredMessagesInfo res = getMessagesController().getSponsoredMessages(dialog_id);
+ 
+         if (res == null || res.messages == null || res.messages.isEmpty()) {
+             return;
+         }
 -        ArrayList<MessageObject> arrayList2 = new ArrayList<>();
--        for (int i = 0; i < res.messages.size(); i++) {
--            MessageObject messageObject = res.messages.get(i);
--            messageObject.resetLayout();
--            if (messageObject.sponsoredUrl != null) {
--                try {
--                    if (sponsoredUrlPattern == null) {
--                        sponsoredUrlPattern = Pattern.compile("https://t\\.me/(\\w+)(?:/(\\d+))?");
--                    }
--                    Matcher matcher = sponsoredUrlPattern.matcher(messageObject.sponsoredUrl);
--                    if (matcher.matches()) {
--                        String username = matcher.group(1);
--                        int postId = 0;
--                        try {
--                            postId = matcher.groupCount() >= 2 ? Integer.parseInt(matcher.group(2)) : 0;
--                        } catch (Exception e2) {}
--                        TLObject obj = getMessagesController().getUserOrChat(username);
--                        long did;
--                        if (obj instanceof TLRPC.User) {
--                            did = ((TLRPC.User) obj).id;
--                        } else if (obj instanceof TLRPC.Chat) {
--                            did = -((TLRPC.Chat) obj).id;
--                        } else {
--                            continue;
--                        }
--                        if (postId < 0) continue;
+         for (int i = 0; i < res.messages.size(); i++) {
+             MessageObject messageObject = res.messages.get(i);
+             messageObject.resetLayout();
+@@ -25727,15 +25710,7 @@ public class ChatActivity extends BaseFragment implements
+                             continue;
+                         }
+                         if (postId < 0) continue;
 -                        if (!hide) {
 -                            getMessagesController().ensureMessagesLoaded(did, postId, null);
 -                        } else {
@@ -939,17 +917,18 @@ index f641f20..277a8c1 100644
 -                                arrayList2 .add(messageObject);
 -                            }
 -                        }
--                    }
--                } catch (Exception e) {
--                    FileLog.e(e, false);
--                }
--            }
--        }
--        sponsoredMessagesAdded = true;
--        if (UserObject.isBot(currentUser)) {
++                        getMessagesController().ensureMessagesLoaded(did, postId, null);
+                     }
+                 } catch (Exception e) {
+                     FileLog.e(e, false);
+@@ -25744,24 +25719,15 @@ public class ChatActivity extends BaseFragment implements
+         }
+         sponsoredMessagesAdded = true;
+         if (UserObject.isBot(currentUser)) {
 -            botSponsoredMessage = hide ? null : res.messages.get(0);
--            updateTopPanel(true);
--        } else {
++            botSponsoredMessage = res.messages.get(0);
+             updateTopPanel(true);
+         } else {
 -            if (!hide) {
 -                sponsoredMessagesPostsBetween = res.posts_between != null ? res.posts_between : 0;
 -                if (notPushedSponsoredMessages != null) {
@@ -964,13 +943,16 @@ index f641f20..277a8c1 100644
 -                }*/
 -                if (arrayList2.isEmpty()) return;
 -                processNewMessages(arrayList2);
--            }
--        }
-+        // Personal build: never insert sponsored messages into chat history.
++            sponsoredMessagesPostsBetween = res.posts_between != null ? res.posts_between : 0;
++            if (notPushedSponsoredMessages != null) {
++                notPushedSponsoredMessages.clear();
+             }
++            processNewMessages(res.messages, false);
++
+         }
      }
  
-     public void removeFromSponsored(MessageObject message) {
-@@ -29946,11 +29859,7 @@ public class ChatActivity extends BaseFragment implements
+@@ -29946,11 +29912,7 @@ public class ChatActivity extends BaseFragment implements
          }
  
          boolean showRestartTopic = !isInPreviewMode() && forumTopic != null && forumTopic.closed && !forumTopic.hidden && ChatObject.canManageTopic(currentAccount, currentChat, forumTopic);
@@ -983,7 +965,7 @@ index f641f20..277a8c1 100644
          boolean showAddProfilePicture = UserObject.isBot(currentUser) && currentUser.bot_can_edit && currentUser.photo == null;
          boolean showBizBot = currentEncryptedChat == null && getUserConfig().isPremium() && preferences.getLong("dialog_botid" + did, 0) != 0 || DEBUG_TOP_PANELS;
          boolean showBotAd = currentUser != null && currentUser.bot && messages.size() >= 2 && botSponsoredMessage != null;
-@@ -32751,16 +32660,6 @@ public class ChatActivity extends BaseFragment implements
+@@ -32751,16 +32713,6 @@ public class ChatActivity extends BaseFragment implements
                      }
                  }
  
@@ -1000,7 +982,7 @@ index f641f20..277a8c1 100644
                  scrimPopupWindowItems = new ActionBarMenuSubItem[items.size()];
                  for (int a = 0, N = items.size(); a < N; a++) {
                      final Integer option = options.get(a);
-@@ -45470,7 +45369,7 @@ public class ChatActivity extends BaseFragment implements
+@@ -45470,7 +45422,7 @@ public class ChatActivity extends BaseFragment implements
      }
  
      private void updateBotHelpCellClick(BotHelpCell cell) {
@@ -1009,6 +991,14 @@ index f641f20..277a8c1 100644
          if (translateButtonEnabled && LanguageDetector.hasSupport()) {
              final CharSequence text = cell.getText();
              LanguageDetector.detectLanguage(text == null ? "" : text.toString(), lang -> {
+@@ -48757,7 +48709,6 @@ public class ChatActivity extends BaseFragment implements
+     }
+ 
+     /** Cherrygram start */
+-    private Boolean useAdsGramForCurrentChat;
+ 
+     public ImageView searchFilterButton;
+ 
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/PrivacySettingsActivity.java b/TMessagesProj/src/main/java/org/telegram/ui/PrivacySettingsActivity.java
 index dffff7e..ef62075 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/PrivacySettingsActivity.java
