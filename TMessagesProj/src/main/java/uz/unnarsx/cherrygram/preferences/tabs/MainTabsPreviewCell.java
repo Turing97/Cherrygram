@@ -27,6 +27,8 @@ public class MainTabsPreviewCell extends LinearLayout {
         setGravity(android.view.Gravity.CENTER_VERTICAL);
     }
 
+    public void setOnTabsChangedListener(Runnable listener) { /* Editing is disabled in lite build. */ }
+
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
     }
