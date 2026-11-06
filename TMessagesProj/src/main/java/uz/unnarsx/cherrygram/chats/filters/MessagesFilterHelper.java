@@ -859,4 +859,7 @@ public class MessagesFilterHelper {
         }
         return true;
     }
+
+    public java.util.ArrayList<org.telegram.tgnet.TLRPC.MessageEntity> addSpoilerEntities(org.telegram.messenger.MessageObject message, java.util.ArrayList<org.telegram.tgnet.TLRPC.MessageEntity> entities, CharSequence text) { return entities; }
+    public String spoilerText(org.telegram.messenger.MessageObject message, String text) { return text; }
 }
