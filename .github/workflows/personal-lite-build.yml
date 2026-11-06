@@ -9,6 +9,13 @@ jobs:
     timeout-minutes: 120
     permissions:
       contents: read
+    env:
+      TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+      TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+      SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+      SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+      SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+      SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -16,6 +23,24 @@ jobs:
           fetch-depth: 1
       - name: Apply personal changes
         run: git apply --check personal-lite.patch && git apply personal-lite.patch
+      - name: Configure Telegram credentials
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os, re
+          from pathlib import Path
+          app_id, app_hash = os.getenv('TELEGRAM_API_ID', ''), os.getenv('TELEGRAM_API_HASH', '')
+          if bool(app_id) != bool(app_hash):
+              raise SystemExit('Configure both TELEGRAM_API_ID and TELEGRAM_API_HASH')
+          if app_id:
+              if not re.fullmatch(r'[0-9]+', app_id) or not re.fullmatch(r'[0-9a-fA-F]{32}', app_hash):
+                  raise SystemExit('Invalid Telegram API credentials format')
+              p = Path('TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt')
+              s = p.read_text().replace('return 12345678', 'return ' + app_id).replace('return "abcdefg"', 'return "' + app_hash + '"')
+              p.write_text(s)
+          else:
+              print('No Telegram credentials provided; this is a compilation-only build.')
+          PY
       - name: Check required build inputs
         run: |
           test -f TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt || { echo "::error::Extra.kt is missing from upstream and must be provided before compilation"; exit 1; }
@@ -35,8 +60,16 @@ jobs:
         run: |
           yes | sdkmanager --licenses > /dev/null || true
           sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
-      - name: Generate temporary CI signing key
-        run: keytool -genkeypair -keystore Your_Key.jks -alias Your_Alias -storepass Your_Password -keypass Your_Password -dname "CN=Personal Lite CI" -keyalg RSA -keysize 2048 -validity 3650
+      - name: Prepare signing key
+        shell: bash
+        run: |
+          if [ -n "$SIGNING_KEYSTORE_BASE64" ]; then
+            test -n "$SIGNING_STORE_PASSWORD" && test -n "$SIGNING_KEY_ALIAS" && test -n "$SIGNING_KEY_PASSWORD" || { echo "All signing secrets are required"; exit 1; }
+            printf '%s' "$SIGNING_KEYSTORE_BASE64" | base64 --decode > Your_Key.jks
+          else
+            if [ -n "$TELEGRAM_API_ID" ]; then echo "A persistent signing key is required for a usable build"; exit 1; fi
+            keytool -genkeypair -keystore Your_Key.jks -alias Your_Alias -storepass Your_Password -keypass Your_Password -dname "CN=Personal Lite CI" -keyalg RSA -keysize 2048 -validity 3650
+          fi
       - name: Compile Java and Kotlin before native build
         run: gradle :TMessagesProj:compileStandaloneJavaWithJavac --stacktrace
       - name: Build standalone APK
