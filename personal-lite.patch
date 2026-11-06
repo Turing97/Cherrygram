@@ -1756,7 +1756,7 @@ index 441f621..2e977f9 100644
      }
      /** Blocked finish */
 diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/CGPreferencesEntry.java b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/CGPreferencesEntry.java
-index 71aeda2..d987bb7 100644
+index 71aeda2..7142fe9 100644
 --- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/CGPreferencesEntry.java
 +++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/CGPreferencesEntry.java
 @@ -117,30 +117,6 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
@@ -1790,10 +1790,11 @@ index 71aeda2..d987bb7 100644
          items.add(
                  SettingsActivity.SettingCell.Factory.of(
                          privacyRow,
-@@ -165,29 +141,7 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
+@@ -164,40 +140,6 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
+                 .slug(DeeplinkHelper.DeepLinksRepo.CG_About)
          );
          items.add(UItem.asShadow(null));
- 
+-
 -        items.add(UItem.asHeader(getString(R.string.DP_Support)));
 -        items.add(
 -                SettingsActivity.SettingCell.Factory.of(
@@ -1817,10 +1818,28 @@ index 71aeda2..d987bb7 100644
 -        }
 -        if (CherrygramFirebaseConfig.INSTANCE.getShowProxyInSettings() && CGChatMenuInjector.INSTANCE.showProxyButton()) {
 -            items.add(UItem.asShadow(null));
-+        items.add(UItem.asShadow(null));
-             items.add(
-                     SettingsActivity.SettingCell.Factory.of(
-                             proxyRow,
+-            items.add(
+-                    SettingsActivity.SettingCell.Factory.of(
+-                            proxyRow,
+-                            IconBackgroundColors.BLUE_DEEP.top, IconBackgroundColors.BLUE_DEEP.bottom,
+-                            R.drawable.settings_language,
+-                            getString(R.string.Proxy)
+-                    )
+-            );
+-        }
+-        items.add(UItem.asShadow(null));
+     }
+ 
+     @Override
+@@ -218,8 +160,6 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
+             CherrygramPreferencesNavigator.INSTANCE.createAbout(this);
+         } else if (item.id == supportRow) {
+             CherrygramPreferencesNavigator.INSTANCE.createDonate(this);
+-        } else if (item.id == proxyRow) {
+-            Browser.openUrl(getContext(), CherrygramFirebaseConfig.INSTANCE.getProxyURL());
+         } else if (item.id == alternativeSupportRow) {
+             CherrygramPreferencesNavigator.INSTANCE.createAlternativeSupport(this);
+         }
 diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/CherrygramPreferencesNavigator.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/CherrygramPreferencesNavigator.kt
 index addf503..21e50d3 100644
 --- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/CherrygramPreferencesNavigator.kt
