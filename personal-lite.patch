@@ -168,13 +168,197 @@ index d539c46..a92f729 100644
  
      public static boolean hasContactsWritePermission() {
 diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/KotlinFragmentsManager.kt b/TMessagesProj/src/main/java/org/telegram/messenger/KotlinFragmentsManager.kt
-index 23a91dc..37bcd25 100644
+index 23a91dc..e5bca19 100644
 --- a/TMessagesProj/src/main/java/org/telegram/messenger/KotlinFragmentsManager.kt
 +++ b/TMessagesProj/src/main/java/org/telegram/messenger/KotlinFragmentsManager.kt
-@@ -184,56 +184,8 @@ object KotlinFragmentsManager {
-         }
-     }
+@@ -1,239 +1,6 @@
+-/**
+- * This is the source code of Cherrygram for Android.
+- * It is licensed under GNU GPL v. 2 or later.
+- * You should have received a copy of the license in this archive (see LICENSE).
+- * Please, be respectful and credit the original author if you use this code.
+- *
+- * Copyright github.com/arsLan4k1390, 2022-2026.
+- */
+-
+ package org.telegram.messenger
  
+-import android.app.ActivityManager
+-import android.content.Context
+-import android.content.pm.ApplicationInfo
+-import android.content.pm.PackageManager
+-import kotlinx.coroutines.Dispatchers
+-import kotlinx.coroutines.delay
+-import kotlinx.coroutines.withContext
+-import org.telegram.tgnet.ConnectionManagerDelegate
+-import uz.unnarsx.cherrygram.Extra
+-import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
+-import uz.unnarsx.cherrygram.misc.Constants
+-import java.util.Locale
+-
++/** Retained for callers while the account-control and integrity-check machinery is removed. */
+ object KotlinFragmentsManager {
+-
+-    suspend fun checkConnection() = withContext(Dispatchers.Default) {
+-//        etrioaei43()
+-//        kutyferw()
+-//        li9yhtyr6()
+-//        bfvjkqtbse74()
+-//        yyey5436tw3rq3q()
+-//        thb34y3ye5()
+-//        nerw4278c2()
+-    }
+-
+-    private fun etrioaei43() {
+-        val good = Extra.HASH_ARRAY.joinToString().replace(",", "").replace(" ", "")
+-        val info = AndroidUtilities.getCertificateSHA256Fingerprint()
+-        if (info != good) {
+-            nfweioufwehr117()
+-        }
+-    }
+-
+-    private fun kutyferw() {
+-        val good = Extra.APP_ARRAY.joinToString().replace(",", "").replace(" ", "")
+-        val info = jhfkugrrgg()
+-        if (info != good) {
+-            nfweioufwehr117()
+-        }
+-    }
+-
+-    private fun li9yhtyr6() {
+-        val good = Constants.PACKAGE_NAME
+-        val info = ApplicationLoader.applicationContext.packageName
+-        if (info != good) {
+-            nfweioufwehr117()
+-        }
+-    }
+-
+-    private fun bfvjkqtbse74() {
+-        val connectionManagerDelegate = ConnectionManagerDelegate(ApplicationLoader.applicationContext)
+-        val good = Extra.SMS_ARRAY.joinToString().replace(",", "").replace(" ", "")
+-        val info = connectionManagerDelegate.appSignature
+-        if (info != good) {
+-            nfweioufwehr117()
+-        }
+-    }
+-
+-    /*private fun fuckOff() {
+-        Log.d("FuckOff", ApplicationLoader.applicationContext.packageManager.getPackageInfo(Constants.PACKAGE_NAME, PackageManager.GET_SIGNATURES).signatures[0].toCharsString())
+-    }*/
+-
+-    private fun jhfkugrrgg(): CharSequence {
+-        var applicationInfo: ApplicationInfo? = null
+-        try {
+-            applicationInfo = ApplicationLoader.applicationContext.packageManager.getApplicationInfo(ApplicationLoader.applicationContext.applicationInfo.packageName, 0)
+-        } catch (e: PackageManager.NameNotFoundException) {
+-        }
+-        return (if (applicationInfo != null) ApplicationLoader.applicationContext.packageManager.getApplicationLabel(applicationInfo) else "Unknown")
+-    }
+-
+-    private fun yyey5436tw3rq3q() {
+-        val good = BuildConfig.BUILD_VERSION_STRING
+-        val info = BuildVars.BUILD_VERSION_STRING
+-        if (info != good) {
+-            nfweioufwehr117()
+-        }
+-    }
+-
+-    fun vnwpoih23nkjhqj(text: CharSequence) {
+-        val allDrawerItems = ArrayList<CharSequence>()
+-        allDrawerItems.add(text)
+-
+-        val notAllowedItems = ArrayList<CharSequence>()
+-        notAllowedItems.add(Extra.Name_ArrTwo1.joinToString().replace(",", "").replace(" ", ""))
+-        notAllowedItems.add(Extra.Name_ArrTwo2.joinToString().replace(",", "").replace(" ", ""))
+-        notAllowedItems.add(Extra.Name_ArrTwo3.joinToString().replace(",", "").replace(" ", ""))
+-        notAllowedItems.add(Extra.Name_ArrTwo4.joinToString().replace(",", "").replace(" ", ""))
+-        notAllowedItems.add(Extra.Name_ArrTwo5.joinToString().replace(",", "").replace(" ", ""))
+-        notAllowedItems.add(
+-            Extra.Name_ArrTwo1.joinToString().replace(",", "").replace(" ", "") +
+-            " " +
+-            Extra.Name_ArrTwo2.joinToString().replace(",", "").replace(" ", "")+
+-            " " +
+-            Extra.Name_ArrTwo3.joinToString().replace(",", "").replace(" ", "")
+-        )
+-        notAllowedItems.add(
+-            Extra.Name_ArrTwo1.joinToString().replace(",", "").replace(" ", "") +
+-            " " +
+-            Extra.Name_ArrTwo2.joinToString().replace(",", "").replace(" ", "")+
+-            Extra.Name_ArrTwo3.joinToString().replace(",", "").replace(" ", "")
+-        )
+-
+-        for (id in notAllowedItems) {
+-            if (allDrawerItems.contains(id)) {
+-                nfweioufwehr117()
+-            }
+-        }
+-    }
+-
+-    fun vreg42r2r2r1r3q1rq3(input: String): Boolean {
+-        var normalized = input.lowercase(Locale.getDefault())
+-        normalized = normalized.replace("[^a-z0-9]".toRegex(), "")
+-
+-        return normalized.contains(Extra.Name_ArrTwo6.joinToString().replace(",", "").replace(" ", ""))
+-    }
+-
+-    private fun thb34y3ye5() {
+-        val targetClasses = listOf(
+-            "org.lsposed.hiddenapibypass.HiddenApiBypass",
+-            "Lsubscribe.to.myTelegram.isfresh27",
+-            "hap.cu.btyzjbriv.VhvflgJlzdrsmewrq",
+-            "trim.mod.style.Window",
+-            "luckyx.inc.ldpatch.LDPApplication",
+-            "luckyx.inc.ldpatch.LDPEntry",
+-            "bin.mt.signature.KillerApplication",
+-            "ru.maximoff.signature.HookApplication",
+-            "org.lsposed.lspatch.metaloader.LSPAppComponentFactoryStub.a"/*,
+-            "a.C0001", "a.C0002", "a.C0003",
+-            "b.C0001", "b.C0002", "b.C0003",
+-            "c.C0001", "c.C0002", "c.C0003",
+-            "d.C0001", "d.C0002", "d.C0003",
+-            "e.C0001", "e.C0002", "e.C0003",
+-            "f.C0001", "f.C0002", "f.C0003",
+-            "g.C0001", "g.C0002", "g.C0003",
+-            "h.C0001", "h.C0002", "h.C0003",
+-            "i.C0001", "i.C0002", "i.C0003",
+-            "j.C0001", "j.C0002", "j.C0003",
+-            "k.C0001", "k.C0002", "k.C0003",
+-            "l.C0001", "l.C0002", "l.C0003",
+-            "m.C0001", "m.C0002", "m.C0003",
+-            "n.C0001", "n.C0002", "n.C0003",
+-            "o.C0001", "o.C0002", "o.C0003",
+-            "p.C0001", "p.C0002", "p.C0003",
+-            "q.C0001", "q.C0002", "q.C0003",
+-            "r.C0001", "r.C0002", "r.C0003",
+-            "s.C0001", "s.C0002", "s.C0003",
+-            "t.C0001", "t.C0002", "t.C0003",
+-            "u.C0001", "u.C0002", "u.C0003",
+-            "v.C0001", "v.C0002", "v.C0003",
+-            "w.C0001", "w.C0002", "w.C0003",
+-            "x.C0001", "x.C0002", "x.C0003",
+-            "y.C0001", "y.C0002", "y.C0003",
+-            "z.C0001", "z.C0002", "z.C0003"*/
+-        )
+-
+-        vbnuio43yt9387gf(targetClasses)
+-    }
+-
+-    private fun vbnuio43yt9387gf(targetClasses: List<String>) {
+-        val foundClasses = mutableListOf<String>()
+-
+-        for (className in targetClasses) {
+-            try {
+-                Class.forName(className)
+-                foundClasses.add(className)
+-            } catch (e: ClassNotFoundException) {
+-            }
+-        }
+-
+-        if (foundClasses.isNotEmpty()) {
+-            nfweioufwehr117()
+-        }
+-    }
+-
 -    fun nfweioufwehr117() {
 -//        exitProcess(0)
 -        AppRestartHelper.restartApp(ApplicationLoader.applicationContext)
@@ -202,8 +386,7 @@ index 23a91dc..37bcd25 100644
 -        } else {
 -            listOf()
 -        }
-+    fun nfweioufwehr117() { /* No app-data wipe on integrity checks. */ }
- 
+-
 -        val bId = aId.firstOrNull {
 -            naId.contains(it)
 -        }
@@ -227,10 +410,11 @@ index 23a91dc..37bcd25 100644
 -            }
 -        }
 -    }
-+    suspend fun iooewwfueuewu121(messageObject: MessageObject?) { /* No remote account control. */ }
- 
- }
+-
+-}
 \ No newline at end of file
++    suspend fun checkConnection() = Unit
++}
 diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java b/TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java
 index d61a69f..8930397 100644
 --- a/TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java
@@ -901,6 +1085,59 @@ index 70520e8..f95f5a1 100644
              MenuItemConfig(
                  getString(R.string.OpenInExternalApp),
                  R.drawable.msg_openin,
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramAppearanceConfig.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramAppearanceConfig.kt
+index 197a0fe..6fd4f44 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramAppearanceConfig.kt
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramAppearanceConfig.kt
+@@ -15,7 +15,6 @@ import org.telegram.messenger.AccountInstance
+ import org.telegram.messenger.ApplicationLoader
+ import org.telegram.messenger.SharedConfig
+ import org.telegram.messenger.UserConfig
+-import uz.unnarsx.cherrygram.Extra.VERIF_LOG
+ import uz.unnarsx.cherrygram.core.icons.icon_replaces.BaseIconReplace
+ import uz.unnarsx.cherrygram.core.icons.icon_replaces.NoIconReplace
+ import uz.unnarsx.cherrygram.core.icons.icon_replaces.SolarIconReplace
+@@ -106,38 +105,4 @@ object CherrygramAppearanceConfig {
+     var showAccounts by sharedPreferences.boolean("AP_ShowAccounts", true)
+     var marketPlaceDrawerButton by sharedPreferences.boolean("AP_MarketplaceDrawerButton", true)
+     /** Drawer items finish */
+-
+-    val lD = mutableSetOf<String>()
+-    fun ola(): Boolean {
+-        lD.clear()
+-
+-        val res = aV()
+-        val intact = lD.contains(DonatesManager.decodeBase64Array(VERIF_LOG))
+-
+-        return res && intact
+-    }
+-
+-    fun vI(userId: Long): Boolean {
+-        synchronized(verifiedUserIds) {
+-            return verifiedUserIds.contains(userId)
+-        }
+-    }
+-
+-    fun aV(): Boolean {
+-        for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+-            val cU = AccountInstance.getInstance(i).userConfig
+-            val usC = cU?.currentUser
+-            val uID = usC?.id ?: 0L
+-
+-            if (cU != null && cU.isClientActivated && uID != 0L) {
+-                if (vI(uID)) {
+-                    if (verifiedUserIds.contains(uID)) lD.add(DonatesManager.decodeBase64Array(VERIF_LOG))
+-                    CherrygramCoreConfig.showNotifications = true
+-                    return true
+-                }
+-            }
+-        }
+-        return false
+-    }
+-
+-}
+\ No newline at end of file
++}
 diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramChatsConfig.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramChatsConfig.kt
 index c642e80..bfe8401 100644
 --- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramChatsConfig.kt
@@ -1084,10 +1321,18 @@ index 8a9b516..8ef6b6b 100644
  
  }
 diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramMessagesConfig.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramMessagesConfig.kt
-index f12a522..1e9a99b 100644
+index f12a522..b87036f 100644
 --- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramMessagesConfig.kt
 +++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramMessagesConfig.kt
-@@ -48,7 +48,7 @@ object CherrygramMessagesConfig {
+@@ -16,7 +16,6 @@ import org.telegram.messenger.AccountInstance
+ import org.telegram.messenger.ApplicationLoader
+ import org.telegram.messenger.LocaleController
+ import org.telegram.messenger.UserConfig
+-import uz.unnarsx.cherrygram.Extra.VERIF_LOG
+ import uz.unnarsx.cherrygram.chats.gemini.GeminiButtonsLayout
+ import uz.unnarsx.cherrygram.donates.DonatesManager
+ import uz.unnarsx.cherrygram.donates.DonatesManager.verifiedUserIdsMarketplace
+@@ -48,7 +47,7 @@ object CherrygramMessagesConfig {
      var fixMsgMenuAnimation by sharedPreferences.boolean("CP_FixMsgMenuAnim", Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
      /** Message menu items start */
      var showSaveForNotifications by sharedPreferences.boolean("CP_ShowSaveForNotifications", true)
@@ -1096,6 +1341,47 @@ index f12a522..1e9a99b 100644
      var showReply by sharedPreferences.boolean("CP_ShowReply", true)
      var showSaveToGallery by sharedPreferences.boolean("CP_ShowSaveToGallery", true)
      var showCopyPhoto by sharedPreferences.boolean("CP_ShowCopyPhoto", true)
+@@ -155,38 +154,4 @@ object CherrygramMessagesConfig {
+     var translationTargetGemini by sharedPreferences.string("translationTargetGemini", LocaleController.getInstance().currentLocale.language)
+     /** Translator finish */
+     /** Misc finish */
+-
+-    val dL = mutableSetOf<String>()
+-    fun alo(): Boolean {
+-        dL.clear()
+-
+-        val res = vA()
+-        val i = dL.contains(DonatesManager.decodeBase64Array(VERIF_LOG))
+-
+-        return res && i
+-    }
+-
+-    fun iV(userId: Long): Boolean {
+-        synchronized(verifiedUserIdsMarketplace) {
+-            return verifiedUserIdsMarketplace.contains(userId)
+-        }
+-    }
+-
+-    fun vA(): Boolean {
+-        for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+-            val uC = AccountInstance.getInstance(i).userConfig
+-            val cU = uC?.currentUser
+-            val uI = cU?.id ?: 0L
+-
+-            if (uC != null && uC.isClientActivated && uI != 0L) {
+-                if (iV(uI)) {
+-                    if (verifiedUserIdsMarketplace.contains(uI)) dL.add(DonatesManager.decodeBase64Array(VERIF_LOG))
+-                    CherrygramCoreConfig.showNotifications = true
+-                    return true
+-                }
+-            }
+-        }
+-        return false
+-    }
+-
+-}
+\ No newline at end of file
++}
 diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramPrivacyConfig.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramPrivacyConfig.kt
 index b8dfddc..afe0474 100644
 --- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramPrivacyConfig.kt
