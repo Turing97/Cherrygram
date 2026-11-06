@@ -1321,7 +1321,7 @@ index 8a9b516..8ef6b6b 100644
  
  }
 diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramMessagesConfig.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramMessagesConfig.kt
-index f12a522..b87036f 100644
+index f12a522..efef4e3 100644
 --- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramMessagesConfig.kt
 +++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramMessagesConfig.kt
 @@ -16,7 +16,6 @@ import org.telegram.messenger.AccountInstance
@@ -1341,7 +1341,7 @@ index f12a522..b87036f 100644
      var showReply by sharedPreferences.boolean("CP_ShowReply", true)
      var showSaveToGallery by sharedPreferences.boolean("CP_ShowSaveToGallery", true)
      var showCopyPhoto by sharedPreferences.boolean("CP_ShowCopyPhoto", true)
-@@ -155,38 +154,4 @@ object CherrygramMessagesConfig {
+@@ -155,38 +154,6 @@ object CherrygramMessagesConfig {
      var translationTargetGemini by sharedPreferences.string("translationTargetGemini", LocaleController.getInstance().currentLocale.language)
      /** Translator finish */
      /** Misc finish */
@@ -1381,6 +1381,8 @@ index f12a522..b87036f 100644
 -
 -}
 \ No newline at end of file
++    /** Keep chat menus available without donation verification. */
++    fun alo(): Boolean = true
 +}
 diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramPrivacyConfig.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramPrivacyConfig.kt
 index b8dfddc..afe0474 100644
