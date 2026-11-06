@@ -33,7 +33,7 @@ public final class MessageMenuHelper {
         private int maxHeight = Integer.MAX_VALUE;
         public MaxHeightLinearLayout(Context context) { super(context); }
         public void setMaxHeight(int height) { maxHeight = height; requestLayout(); }
-        public void setMaxWidth(int width) { super.setMaxWidth(width); }
+        public void setMaxWidth(int width) { requestLayout(); }
         @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             if (getMeasuredHeight() > maxHeight) {

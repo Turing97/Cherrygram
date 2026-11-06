@@ -63,6 +63,7 @@ public final class CameraXController implements CherryZoomSliderView.ZoomControl
     public void recordVideo(File path, boolean mirrorThumb, VideoSavedCallback callback) {}
     public void stopVideoRecording(boolean abandon) {}
     public void takePicture(File file, Runnable callback) {}
+    public boolean isFlashAvailable() { return false; }
     public void setTorchEnabled(boolean enabled) {}
     public void setUltraWideStartAllowed(boolean enabled) {}
 }
