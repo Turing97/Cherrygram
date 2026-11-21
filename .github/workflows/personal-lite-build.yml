@@ -85,6 +85,8 @@ jobs:
       - name: Encrypt APKs containing personal Telegram credentials
         if: ${{ env.TELEGRAM_API_ID != '' }}
         shell: bash
+        env:
+          ARTIFACT_PASSWORD: ${{ secrets.ARTIFACT_PASSWORD }}
         run: |
           shopt -s globstar nullglob
           apks=(TMessagesProj_AppStandalone/build/outputs/apk/**/*.apk)
@@ -93,8 +95,10 @@ jobs:
             exit 1
           fi
           zip -j -q "$RUNNER_TEMP/personal-lite.zip" "${apks[@]}"
+          if [ -z "$ARTIFACT_PASSWORD" ]; then ARTIFACT_PASSWORD="$SIGNING_STORE_PASSWORD"; fi
+          export ARTIFACT_PASSWORD
           openssl enc -aes-256-cbc -salt -pbkdf2 -iter 600000 \
-            -pass env:SIGNING_STORE_PASSWORD -in "$RUNNER_TEMP/personal-lite.zip" \
+            -pass env:ARTIFACT_PASSWORD -in "$RUNNER_TEMP/personal-lite.zip" \
             -out "$RUNNER_TEMP/personal-lite.zip.enc"
           rm "$RUNNER_TEMP/personal-lite.zip"
       - uses: actions/upload-artifact@v4
