@@ -1,5 +1,5 @@
 diff --git a/TMessagesProj/src/main/AndroidManifest.xml b/TMessagesProj/src/main/AndroidManifest.xml
-index 4322bfb83..d287f5663 100644
+index 4322bfb..dedeabe 100644
 --- a/TMessagesProj/src/main/AndroidManifest.xml
 +++ b/TMessagesProj/src/main/AndroidManifest.xml
 @@ -39,13 +39,6 @@
@@ -28,17 +28,22 @@ index 4322bfb83..d287f5663 100644
          android:hardwareAccelerated="true"
          android:largeHeap="true"
          android:theme="@style/Theme.TMessages.Start"
-@@ -134,6 +126,9 @@
+@@ -128,11 +120,12 @@
+         android:preserveLegacyExternalStorage="true"
+         android:allowAudioPlaybackCapture="true"
+         tools:replace="android:supportsRtl"
+-        android:usesCleartextTraffic="true"
++        android:usesCleartextTraffic="false"
+         android:enableOnBackInvokedCallback="true"
+         android:networkSecurityConfig="@xml/network_security_config"
      >
-         <!-- usesCleartextTraffic for browser supporting opening http:// links -->
- 
+-        <!-- usesCleartextTraffic for browser supporting opening http:// links -->
 +        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
 +        <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="false" />
-+
+ 
          <activity-alias
              android:enabled="true"
-             android:name="uz.unnarsx.cherrygram.CG_Icon_Cherry"
-@@ -642,7 +637,7 @@
+@@ -642,7 +635,7 @@
          <receiver
              android:name="uz.unnarsx.cherrygram.core.helpers.SleepHelper"
              android:enabled="true"
@@ -47,7 +52,7 @@ index 4322bfb83..d287f5663 100644
  
          <receiver
              android:name=".AutoMessageHeardReceiver"
-@@ -670,6 +665,7 @@
+@@ -670,6 +663,7 @@
  
          <receiver
              android:name=".SmsReceiver"
@@ -55,7 +60,7 @@ index 4322bfb83..d287f5663 100644
              android:exported="true">
              <intent-filter>
                  <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED"/>
-@@ -717,13 +713,13 @@
+@@ -717,13 +711,13 @@
          <service
              android:name=".BringAppForegroundService"
              android:enabled="true"
@@ -71,7 +76,7 @@ index 4322bfb83..d287f5663 100644
              android:foregroundServiceType="dataSync"
          />
          <service
-@@ -734,25 +730,25 @@
+@@ -734,25 +728,25 @@
          <service
              android:name=".VideoEncodingService"
              android:enabled="true"
@@ -1515,10 +1520,18 @@ index f9f7500..28117df 100644
  
  }
 diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramFirebaseConfig.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramFirebaseConfig.kt
-index 8a9b516..8ef6b6b 100644
+index 8a9b516..37e9890 100644
 --- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramFirebaseConfig.kt
 +++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramFirebaseConfig.kt
-@@ -44,30 +44,30 @@ object CherrygramFirebaseConfig: CoroutineScope by CoroutineScope(
+@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
+ import org.telegram.messenger.ApplicationLoader
+ import org.telegram.messenger.MessagesController
+ import org.telegram.messenger.UserConfig
+-import uz.unnarsx.cherrygram.core.firebase.remoteConfig.RemoteConfigHelper
+ import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
+ import uz.unnarsx.cherrygram.preferences.boolean
+ import uz.unnarsx.cherrygram.preferences.int
+@@ -44,30 +43,30 @@ object CherrygramFirebaseConfig: CoroutineScope by CoroutineScope(
      /** Card numbers finish */
  
      /** SafeStars start */
@@ -1555,7 +1568,7 @@ index 8a9b516..8ef6b6b 100644
      var alwaysShowAdsGramInChats by sharedPreferences.boolean("CG_AlwaysShowAdsGramInChats", false)
      /** AdsGram finish */
  
-@@ -88,42 +88,14 @@ object CherrygramFirebaseConfig: CoroutineScope by CoroutineScope(
+@@ -88,42 +87,14 @@ object CherrygramFirebaseConfig: CoroutineScope by CoroutineScope(
      /** Deleted Gifts finish */
  
      fun init() {
@@ -2315,10 +2328,147 @@ index dfb4eb3..62ff9f5 100644
          configStringKeys.add(getString(R.string.DirectShare));
          configValues.add(CherrygramMessagesConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE);
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/LaunchActivity.java b/TMessagesProj/src/main/java/org/telegram/ui/LaunchActivity.java
-index 0739a38..33976f2 100644
+index 0739a38..85f20df 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/LaunchActivity.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/LaunchActivity.java
-@@ -9598,9 +9598,6 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
+@@ -101,7 +101,6 @@ import org.telegram.messenger.AnimationNotificationsLocker;
+ import org.telegram.messenger.ApplicationLoader;
+ import org.telegram.messenger.AutoDeleteMediaTask;
+ import org.telegram.messenger.BackupAgent;
+-import org.telegram.messenger.BetaUpdate;
+ import org.telegram.messenger.BirthdayController;
+ import org.telegram.messenger.BotGuardHelper;
+ import org.telegram.messenger.BotWebViewVibrationEffect;
+@@ -268,9 +267,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+ import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
+ import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
+ import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
+-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
+ import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
+-import uz.unnarsx.cherrygram.core.updater.UpdateHelper;
+ import uz.unnarsx.cherrygram.misc.CherrygramExtras;
+ import uz.unnarsx.cherrygram.misc.LogoOverlayView;
+ import uz.unnarsx.cherrygram.helpers.ui.MonetHelper;
+@@ -6218,107 +6215,14 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
+         return foundContacts;
+     }
+ 
+-    private boolean firstAppUpdateCheck = true;
+     public void checkAppUpdate(boolean force, Browser.Progress progress) {
+         checkAppUpdate(force, progress, false);
+     }
+ 
+     public void checkAppUpdate(boolean force, Browser.Progress progress, boolean updateAlways) {
+-        /*if (!ApplicationLoader.isStandaloneBuild() && !ApplicationLoader.isBetaBuild()) {
+-            return;
+-        }
+-        if (!force && !BuildVars.CHECK_UPDATES) {
+-            return;
+-        }*/
+-        if (ApplicationLoader.applicationLoaderInstance.isCustomUpdate()) {
+-            final BetaUpdate prevUpdate = ApplicationLoader.applicationLoaderInstance.getUpdate();
+-            final boolean first = firstAppUpdateCheck;
+-            firstAppUpdateCheck = false;
+-            ApplicationLoader.applicationLoaderInstance.checkUpdate(force, () -> {
+-                final BetaUpdate pendingUpdate = ApplicationLoader.applicationLoaderInstance.getUpdate();
+-                if (progress != null) {
+-                    progress.end();
+-                    if (pendingUpdate == null) {
+-                        BaseFragment fragment = getLastFragment();
+-                        if (fragment != null) {
+-                            BulletinFactory.of(fragment).createSimpleBulletin(R.raw.chats_infotip, LocaleController.getString(R.string.YourVersionIsLatest)).show();
+-                        }
+-                    }
+-                }
+-                if (pendingUpdate != null && !ApplicationLoader.applicationLoaderInstance.isDownloadingUpdate() && (first || prevUpdate == null || pendingUpdate.higherThan(prevUpdate))) {
+-                    ApplicationLoader.applicationLoaderInstance.showCustomUpdateAppPopup(LaunchActivity.this, pendingUpdate, currentAccount);
+-                }
+-            });
+-            return;
+-        }
+-        /*if (!force && Math.abs(System.currentTimeMillis() - SharedConfig.lastUpdateCheckTime) < MessagesController.getInstance(0).updateCheckDelay * 1000) {
+-            return;
+-        }*/
+-
+-        if (
+-                UpdateHelper.isNew(CGResourcesHelper.getCherryVersion(), CherrygramCoreConfig.INSTANCE.getMinCherryVersion())
+-                || UpdateHelper.isNew(CGResourcesHelper.getCherryVersion(), CherrygramCoreConfig.INSTANCE.getMinCherryVersionGP())
+-        ) {
+-            CherrygramCoreConfig.INSTANCE.setForceFound(true);
+-            CherrygramCoreConfig.INSTANCE.setAutoOTA(true);
+-        }
+-
+-        if (!force && !CherrygramCoreConfig.INSTANCE.getForceFound()) {
+-            if (!CherrygramCoreConfig.INSTANCE.getAutoOTA()) {
+-                return;
+-            }
+-
+-            if (Math.abs(System.currentTimeMillis() - SharedConfig.lastUpdateCheckTime) < UpdateHelper.updateCheckInterval) {
+-                return;
+-            }
+-        }
+-        final TLRPC.TL_help_getAppUpdate req = new TLRPC.TL_help_getAppUpdate();
+-        try {
+-            req.source = ApplicationLoader.applicationContext.getPackageManager().getInstallerPackageName(ApplicationLoader.applicationContext.getPackageName());
+-        } catch (Exception ignore) {
+-
+-        }
+-        if (req.source == null) {
+-            req.source = "";
+-        }
+-        final int accountNum = currentAccount;
+-        if (progress != null) progress.init();
+-        UpdateHelper.getInstance().checkNewVersionAvailable((res, error) -> {
+-//            SharedConfig.lastUpdateCheckTime = System.currentTimeMillis();
+-            SharedConfig.saveConfig();
+-            AndroidUtilities.runOnUIThread(() -> {
+-                if (res != null) {
+-                    SharedConfig.setNewAppVersionAvailable(res);
+-                    if (res.can_not_skip) {
+-                        showUpdateActivity(accountNum, res, false);
+-                    } else {
+-//                        ApplicationLoader.applicationLoaderInstance.showUpdateAppPopup(LaunchActivity.this, res, accountNum);
+-                        showUpdaterBottomSheet(getSafeLastFragment(), true, res);
+-                    }
+-                    if (ApplicationLoader.applicationLoaderInstance != null && CherrygramCoreConfig.isPlayStoreBuild()) {
+-                        ApplicationLoader.applicationLoaderInstance.playUpdaterRegisterWatcher();
+-                    }
+-                } else {
+-                    if (force) {
+-                        BaseFragment fragment = getLastFragment();
+-                        if (fragment != null) {
+-                            if (error == null) {
+-                                BulletinFactory.of(fragment).createSimpleBulletin(R.raw.chats_infotip, LocaleController.getString(R.string.YourVersionIsLatest)).show();
+-                            } else {
+-                                AlertsCreator.createSimpleAlert(this, getString(R.string.ErrorOccurred) + "\n" + error).show();
+-                            }
+-                        }
+-                    }
+-                    SharedConfig.setNewAppVersionAvailable(null);
+-                }
+-                NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.appUpdateAvailable);
+-                if (progress != null) {
+-                    progress.end();
+-                }
+-            });
+-        }, updateAlways);
++        // Personal Lite updates are installed from its signed build artifacts.
+         if (progress != null) {
+-            progress.init();
++            progress.end();
+         }
+     }
+ 
+@@ -9582,7 +9486,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
+     }
+ 
+     public void showUpdaterBottomSheet(BaseFragment fragment, boolean available, TLRPC.TL_help_appUpdate update) {
+-        ApplicationLoader.applicationLoaderInstance.showUpdaterBottomSheet(fragment, available, update);
++        // The upstream updater is disabled for Personal Lite.
+     }
+ 
+     private void processFeats() {
+@@ -9598,9 +9502,6 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
          if (!ConnectionsManager.getInstance(currentAccount).isTestBackend()) {
              checkAppUpdate(false, null);
  
@@ -2597,3 +2747,230 @@ index 85b189e..3ed522e 100644
  include ':jlatexmath'
  project(':jlatexmath').projectDir = new File(rootDir, 'TMessagesProj/lib/jlatexmath/jlatexmath')
  
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/SharedConfig.java b/TMessagesProj/src/main/java/org/telegram/messenger/SharedConfig.java
+index 7b8c088..e864b33 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/SharedConfig.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/SharedConfig.java
+@@ -556,41 +556,8 @@ public class SharedConfig {
+                 passcodeSalt = new byte[0];
+             }
+             lastUpdateCheckTime = preferences.getLong("appUpdateCheckTime", System.currentTimeMillis());
+-            try {
+-                String update = preferences.getString("appUpdate", null);
+-                if (update != null) {
+-                    pendingAppUpdateBuildVersion = preferences.getInt("appUpdateBuild", buildVersion());
+-                    byte[] arr = Base64.decode(update, Base64.DEFAULT);
+-                    if (arr != null) {
+-                        SerializedData data = new SerializedData(arr);
+-                        pendingAppUpdate = (TLRPC.TL_help_appUpdate) TLRPC.help_AppUpdate.TLdeserialize(data, data.readInt32(false), false);
+-                        data.cleanup();
+-                    }
+-                }
+-                if (pendingAppUpdate != null) {
+-                    long updateTime = 0;
+-                    int updateVersion = 0;
+-                    String updateVersionString = null;
+-                    try {
+-                        PackageInfo packageInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
+-                        updateVersion = packageInfo.versionCode;
+-                        updateVersionString = packageInfo.versionName;
+-                    } catch (Exception e) {
+-                        FileLog.e(e);
+-                    }
+-                    if (updateVersion == 0) {
+-                        updateVersion = buildVersion();
+-                    }
+-                    if (updateVersionString == null) {
+-                        updateVersionString = BuildVars.BUILD_VERSION_STRING;
+-                    }
+-                    if (pendingAppUpdateBuildVersion != updateVersion || pendingAppUpdate.version == null || updateVersionString.compareTo(pendingAppUpdate.version) >= 0 || BuildVars.DEBUG_PRIVATE_VERSION) {
+-                        pendingAppUpdate = null;
+-                        AndroidUtilities.runOnUIThread(SharedConfig::saveConfig);
+-                    }
+-                }
+-            } catch (Exception e) {
+-                FileLog.e(e);
++            if (preferences.contains("appUpdate")) {
++                preferences.edit().remove("appUpdate").remove("appUpdateBuild").apply();
+             }
+ 
+             preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/browser/Browser.java b/TMessagesProj/src/main/java/org/telegram/messenger/browser/Browser.java
+index dc72bd5..557eb24 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/browser/Browser.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/browser/Browser.java
+@@ -305,6 +305,10 @@ public class Browser {
+         boolean[] forceBrowser = new boolean[]{false};
+         boolean internalUri = isInternalUri(uri, forceBrowser);
+         String browserPackage = getBrowserPackageName(browser);
++        if (!internalUri && "http".equalsIgnoreCase(uri.getScheme())) {
++            openInExternalBrowser(context, uri.normalizeScheme().toString(), allowIntent, browserPackage);
++            return;
++        }
+         if (browserPackage != null) {
+             tryTelegraph = false;
+             _allowCustom = false;
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/updater/UpdateHelper.java b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/updater/UpdateHelper.java
+index 11b1d34..450b45e 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/updater/UpdateHelper.java
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/updater/UpdateHelper.java
+@@ -312,8 +312,7 @@ public class UpdateHelper extends BaseRemoteHelper {
+     }
+ 
+     public void checkNewVersionAvailable(Delegate delegate, boolean updateAlways) {
+-        this.updateAlways = updateAlways;
+-        load(delegate);
++        delegate.onTLResponse(null, null);
+     }
+ 
+     private static final class InstanceHolder {
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/AboutPreferencesEntry.java b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/AboutPreferencesEntry.java
+index ccdaca3..048c9f9 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/AboutPreferencesEntry.java
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/AboutPreferencesEntry.java
+@@ -29,7 +29,6 @@ import org.telegram.ui.ChatActivity;
+ import org.telegram.ui.Components.IconBackgroundColors;
+ import org.telegram.ui.Components.UItem;
+ import org.telegram.ui.Components.UniversalAdapter;
+-import org.telegram.ui.LaunchActivity;
+ import org.telegram.ui.SettingsActivity;
+ import org.telegram.ui.community.CommunitySheet;
+ import org.telegram.ui.community.cells.CommunityLinkView;
+@@ -46,7 +45,6 @@ import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
+ public class AboutPreferencesEntry extends BaseCGPreferencesEntry {
+ 
+     private final int readmeRow = 1;
+-    private final int updatesRow = 2;
+     private final int debugPrefsRow = 3;
+ 
+     private final int channelRow = 4;
+@@ -83,16 +81,6 @@ public class AboutPreferencesEntry extends BaseCGPreferencesEntry {
+                         getString(R.string.CGP_About_Desc)
+                 )
+         );
+-        items.add(
+-                SettingsActivity.SettingCell.Factory.of(
+-                        updatesRow,
+-                        IconBackgroundColors.GREEN.top, IconBackgroundColors.GREEN.bottom,
+-                        R.drawable.settings_refresh_filled_solar,
+-                        getString(R.string.UP_Category_Updates),
+-                        getLastCheckUpdateTime()
+-                )
+-                .slug(DeeplinkHelper.DeepLinksRepo.CG_Updater_Bottom_Sheet)
+-        );
+         items.add(
+                 SettingsActivity.SettingCell.Factory.of(
+                         debugPrefsRow,
+@@ -174,9 +162,6 @@ public class AboutPreferencesEntry extends BaseCGPreferencesEntry {
+     protected void onClick(UItem item, View view, int position, float x, float y) {
+         if (item.id == readmeRow) {
+             Browser.openUrl(getContext(), Constants.CG_GITHUB_URL + "#readme");
+-        } else if (item.id == updatesRow) {
+-            if (LaunchActivity.instance == null) return;
+-            LaunchActivity.instance.showUpdaterBottomSheet(this, false, null);
+         } else if (item.id == debugPrefsRow) {
+             CherrygramPreferencesNavigator.INSTANCE.createDebug(this);
+         } else if (item.id == channelRow) {
+@@ -210,9 +195,6 @@ public class AboutPreferencesEntry extends BaseCGPreferencesEntry {
+         /*if (item.id == readmeRow) {
+             AndroidUtilities.addToClipboard(Constants.CG_GITHUB_URL + "#readme");
+             return true;
+-        } else if (item.id == updatesRow) {
+-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Updater_Bottom_Sheet);
+-            return true;
+         } else if (item.id == debugPrefsRow) {
+             AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Debug);
+             return true;
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/DonatesPreferencesEntry.java b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/DonatesPreferencesEntry.java
+index dc3dbf0..3f381a4 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/DonatesPreferencesEntry.java
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/DonatesPreferencesEntry.java
+@@ -13,7 +13,6 @@ import static org.telegram.messenger.AndroidUtilities.dp;
+ import static org.telegram.messenger.LocaleController.formatPluralString;
+ import static org.telegram.messenger.LocaleController.getString;
+ 
+-import android.content.Context;
+ import android.os.Build;
+ import android.text.SpannableString;
+ import android.text.SpannableStringBuilder;
+@@ -23,15 +22,12 @@ import android.view.View;
+ import android.widget.FrameLayout;
+ import android.widget.Toast;
+ 
+-import androidx.annotation.NonNull;
+ 
+ import org.telegram.messenger.AndroidUtilities;
+ import org.telegram.messenger.ApplicationLoader;
+ import org.telegram.messenger.NotificationCenter;
+ import org.telegram.messenger.R;
+ import org.telegram.messenger.browser.Browser;
+-import org.telegram.ui.ActionBar.ActionBarMenu;
+-import org.telegram.ui.ActionBar.ActionBarMenuItem;
+ import org.telegram.ui.ActionBar.Theme;
+ import org.telegram.ui.Cells.TextInfoPrivacyCell;
+ import org.telegram.ui.Components.ColoredImageSpan;
+@@ -46,13 +42,9 @@ import org.telegram.ui.Wallet.WalletRecipientView;
+ 
+ import java.util.ArrayList;
+ 
+-import kotlin.coroutines.Continuation;
+-import kotlin.coroutines.CoroutineContext;
+-import kotlin.coroutines.EmptyCoroutineContext;
+ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+ import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
+ import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
+-import uz.unnarsx.cherrygram.core.firebase.remoteConfig.RemoteConfigHelper;
+ import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
+ import uz.unnarsx.cherrygram.donates.DonatesManager;
+ import uz.unnarsx.cherrygram.misc.Constants;
+@@ -94,38 +86,6 @@ public class DonatesPreferencesEntry extends BaseCGPreferencesEntry implements N
+         getNotificationCenter().removeObserver(this, NotificationCenter.cgDonatesLoaded);
+     }
+ 
+-    @Override
+-    public View createView(Context context) {
+-        if (!isTestBackend) {
+-            ActionBarMenu menu = actionBar.createMenu();
+-            ActionBarMenuItem otherItem = menu.addItem(1, R.drawable.ic_ab_other);
+-            otherItem.setContentDescription(getString(R.string.AccDescrMoreOptions));
+-            otherItem.setOnClickListener(v -> ItemOptions.makeOptions(this, otherItem)
+-                .add(R.drawable.msg_retry, getString(R.string.Refresh), () -> {
+-                    Continuation<Object> suspendResult = new Continuation<>() {
+-                        @NonNull
+-                        @Override
+-                        public CoroutineContext getContext() {
+-                            return EmptyCoroutineContext.INSTANCE;
+-                        }
+-
+-                        @Override
+-                        public void resumeWith(@NonNull Object o) {
+-
+-                        }
+-                    };
+-                    DonatesManager.INSTANCE.startAutoRefresh(getContext(), true, false, suspendResult);
+-                    RemoteConfigHelper.INSTANCE.fetchAndActivate(true, suspendResult);
+-                })
+-                .setDrawScrim(false)
+-                .translate(0F, -dp(48F))
+-                .show()
+-            );
+-        }
+-
+-        return super.createView(context);
+-    }
+-
+     @Override
+     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
+         if (stickerFrame == null) {
+diff --git a/TMessagesProj/src/main/res-cherrygram/xml/network_security_config.xml b/TMessagesProj/src/main/res-cherrygram/xml/network_security_config.xml
+index f18e1f0..a3e396e 100644
+--- a/TMessagesProj/src/main/res-cherrygram/xml/network_security_config.xml
++++ b/TMessagesProj/src/main/res-cherrygram/xml/network_security_config.xml
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <network-security-config>
+-    <base-config cleartextTrafficPermitted="true">
++    <base-config cleartextTrafficPermitted="false">
+         <trust-anchors>
+             <certificates src="system" />
+         </trust-anchors>

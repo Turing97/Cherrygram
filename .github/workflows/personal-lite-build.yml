@@ -47,7 +47,13 @@ jobs:
               print('No Telegram credentials provided; this is a compilation-only build.')
           PY
       - name: Check required build inputs
+        env:
+          ARTIFACT_PASSWORD: ${{ secrets.ARTIFACT_PASSWORD }}
         run: |
+          if [ -n "$TELEGRAM_API_ID" ] && [ -z "$ARTIFACT_PASSWORD" ]; then
+            echo "::error::Set the ARTIFACT_PASSWORD repository secret for encrypted APK builds"
+            exit 1
+          fi
           test -f TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt || { echo "::error::Extra.kt is missing from upstream and must be provided before compilation"; exit 1; }
           test -f TMessagesProj/google-services.json || { echo "::error::google-services.json is missing"; exit 1; }
       - uses: actions/setup-java@v4
@@ -95,8 +101,6 @@ jobs:
             exit 1
           fi
           zip -j -q "$RUNNER_TEMP/personal-lite.zip" "${apks[@]}"
-          if [ -z "$ARTIFACT_PASSWORD" ]; then ARTIFACT_PASSWORD="$SIGNING_STORE_PASSWORD"; fi
-          export ARTIFACT_PASSWORD
           openssl enc -aes-256-cbc -salt -pbkdf2 -iter 600000 \
             -pass env:ARTIFACT_PASSWORD -in "$RUNNER_TEMP/personal-lite.zip" \
             -out "$RUNNER_TEMP/personal-lite.zip.enc"
