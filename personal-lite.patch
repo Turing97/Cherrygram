@@ -961,7 +961,7 @@ index dc98757..7e5526e 100644
          hasValidDialogLoadIds = true;
          unacceptedTermsOfService = null;
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
-index f641f20..2c2130f 100644
+index f641f20..1c98a6c 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
 @@ -352,6 +352,7 @@ import java.util.HashSet;
@@ -1144,7 +1144,7 @@ index f641f20..2c2130f 100644
      @Override
      public void onResume() {
          super.onResume();
-+        if (canFilterGroupAds()) {
++        if (canFilterChatAds()) {
 +            updateGroupAdRules(GroupAdFilter.getRules(getUserConfig().getClientUserId(), dialog_id));
 +        }
          checkShowBlur(false);
@@ -1167,13 +1167,12 @@ index f641f20..2c2130f 100644
                  scrimPopupWindowItems = new ActionBarMenuSubItem[items.size()];
                  for (int a = 0, N = items.size(); a < N; a++) {
                      final Integer option = options.get(a);
-@@ -34333,6 +34304,89 @@ public class ChatActivity extends BaseFragment implements
+@@ -34333,6 +34304,88 @@ public class ChatActivity extends BaseFragment implements
          MediaController.saveFile(path, getParentActivity(), messageObject.isVideo() ? 1 : 0, null, null);
      }
  
-+    private boolean canFilterGroupAds() {
-+        return chatMode == MODE_DEFAULT && currentChat != null && dialog_id < 0
-+                && !ChatObject.isChannelAndNotMegaGroup(currentChat) && !isReport();
++    private boolean canFilterChatAds() {
++        return chatMode == MODE_DEFAULT && currentChat != null && dialog_id < 0 && !isReport();
 +    }
 +
 +    private String groupAdFingerprint(MessageObject message) {
@@ -1193,7 +1192,7 @@ index f641f20..2c2130f 100644
 +    }
 +
 +    private String groupAdMenuFingerprint(MessageObject message) {
-+        if (!canFilterGroupAds()) {
++        if (!canFilterChatAds()) {
 +            return null;
 +        }
 +        String fingerprint = groupAdFingerprint(message);
@@ -1212,7 +1211,7 @@ index f641f20..2c2130f 100644
 +    }
 +
 +    private boolean isHiddenGroupAd(MessageObject message) {
-+        if (message == null || groupAdRules.isEmpty() || !canFilterGroupAds()) {
++        if (message == null || groupAdRules.isEmpty() || !canFilterChatAds()) {
 +            return false;
 +        }
 +        if (groupAdRules.contains(groupAdFingerprint(message))) {
@@ -1257,7 +1256,7 @@ index f641f20..2c2130f 100644
      public void processSelectedOption(int option) {
          if (selectedObject == null || getParentActivity() == null) {
              return;
-@@ -34346,6 +34400,10 @@ public class ChatActivity extends BaseFragment implements
+@@ -34346,6 +34399,10 @@ public class ChatActivity extends BaseFragment implements
                  currentChat
          );
          switch (option) {
@@ -1268,7 +1267,7 @@ index f641f20..2c2130f 100644
              case OPTION_RETRY: {
                  final MessageObject object = selectedObject;
                  final MessageObject.GroupedMessages group = selectedObjectGroup;
-@@ -37881,6 +37939,8 @@ public class ChatActivity extends BaseFragment implements
+@@ -37881,6 +37938,8 @@ public class ChatActivity extends BaseFragment implements
      private boolean hasSendingMessagesInBotForum;
  
      public class ChatActivityAdapter extends RecyclerAnimationScrollHelper.AnimatableAdapter {
@@ -1277,7 +1276,7 @@ index f641f20..2c2130f 100644
  
          private Context mContext;
          private boolean isBot;
-@@ -38114,6 +38174,12 @@ public class ChatActivity extends BaseFragment implements
+@@ -38114,6 +38173,12 @@ public class ChatActivity extends BaseFragment implements
  
          @Override
          public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -1290,7 +1289,7 @@ index f641f20..2c2130f 100644
              View view = null;
              if (viewType == 0) {
                  view = new ChatMessageCell(mContext, currentAccount, true, sharedResources, themeDelegate);
-@@ -39168,7 +39234,8 @@ public class ChatActivity extends BaseFragment implements
+@@ -39168,7 +39233,8 @@ public class ChatActivity extends BaseFragment implements
                  } else {
                      messages = ChatActivity.this.messages;
                  }
@@ -1300,7 +1299,7 @@ index f641f20..2c2130f 100644
              } else if (position == botInfoRow) {
                  return 3;
              } else if (position == userInfoRow) {
-@@ -45470,7 +45537,7 @@ public class ChatActivity extends BaseFragment implements
+@@ -45470,7 +45536,7 @@ public class ChatActivity extends BaseFragment implements
      }
  
      private void updateBotHelpCellClick(BotHelpCell cell) {
@@ -1309,7 +1308,7 @@ index f641f20..2c2130f 100644
          if (translateButtonEnabled && LanguageDetector.hasSupport()) {
              final CharSequence text = cell.getText();
              LanguageDetector.detectLanguage(text == null ? "" : text.toString(), lang -> {
-@@ -47779,6 +47846,11 @@ public class ChatActivity extends BaseFragment implements
+@@ -47779,6 +47845,11 @@ public class ChatActivity extends BaseFragment implements
              icons.add(R.drawable.outline_revert_24);
          }
  
@@ -1321,7 +1320,7 @@ index f641f20..2c2130f 100644
          CGMessageMenuInjector.INSTANCE.injectJSON(this, false, items, options, icons);
      }
  
-@@ -48757,7 +48829,6 @@ public class ChatActivity extends BaseFragment implements
+@@ -48757,7 +48828,6 @@ public class ChatActivity extends BaseFragment implements
      }
  
      /** Cherrygram start */

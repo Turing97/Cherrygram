@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="PersonalGroupAdMark">标记为广告</string>
-    <string name="PersonalGroupAdHidden">已在此群隐藏这条广告</string>
+    <string name="PersonalGroupAdHidden">已在此对话隐藏这条广告</string>
 </resources>
