@@ -8,6 +8,8 @@
 
     <!--Telegram screens-->
     <string name="CG_SwitchedToAccount">Switched to **%1$s**</string>
+    <string name="PersonalGroupAdMark">Mark as ad</string>
+    <string name="PersonalGroupAdHidden">Ad hidden in this chat</string>
 
     <string name="CG_JoinedDate">You joined **%1$s** **%2$s**</string>
     <string name="CG_CreatedDate">**%1$s** was created **%2$s**</string>
@@ -594,4 +596,6 @@
     <!--Alternative Support-->
     <!--Cherrygram screens-->
 
+    <string name="PersonalLocalPin">Pin on this device</string>
+    <string name="PersonalLocalUnpin">Unpin on this device</string>
 </resources>

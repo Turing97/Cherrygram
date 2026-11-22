@@ -2,4 +2,6 @@
 <resources>
     <string name="PersonalGroupAdMark">标记为广告</string>
     <string name="PersonalGroupAdHidden">已在此对话隐藏这条广告</string>
+    <string name="PersonalLocalPin">在本机置顶</string>
+    <string name="PersonalLocalUnpin">取消本机置顶</string>
 </resources>

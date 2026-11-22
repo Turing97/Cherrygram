@@ -961,7 +961,7 @@ index dc98757..7e5526e 100644
          hasValidDialogLoadIds = true;
          unacceptedTermsOfService = null;
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
-index f641f20..1c98a6c 100644
+index f641f20..9e08785 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
 @@ -352,6 +352,7 @@ import java.util.HashSet;
@@ -1003,7 +1003,18 @@ index f641f20..1c98a6c 100644
                  } else if (id == tag_message) {
                      if (tagSelector == null) {
                          showTagSelector();
-@@ -6932,7 +6943,7 @@ public class ChatActivity extends BaseFragment implements
+@@ -6713,6 +6724,10 @@ public class ChatActivity extends BaseFragment implements
+                             canvas.scale(1f - getSideMenuAlpha(), 1f - getSideMenuAlpha(), imageReceiver.getImageX2(), imageReceiver.getImageY2());
+                             canvas.translate(dp(24) * getSideMenuAlpha(), 0f);
+                         }
++                        if (chatMode == 0 && currentChat != null && !message.isOutOwner()) {
++                            final float scale = 32f / 42f;
++                            canvas.scale(scale, scale, imageReceiver.getCenterX(), imageReceiver.getImageY2());
++                        }
+                         imageReceiver.draw(canvas);
+                         canvas.restore();
+ 
+@@ -6932,7 +6947,7 @@ public class ChatActivity extends BaseFragment implements
                      int index = position - chatAdapter.messagesStartRow;
                      if (index >= 0 && index < chatAdapter.getMessages().size()) {
                          MessageObject message = chatAdapter.getMessages().get(index);
@@ -1012,7 +1023,7 @@ index f641f20..1c98a6c 100644
                          if (group != null) {
                              MessageObject.GroupedMessagePosition pos = group.getPosition(message);
                              if (pos.minX == pos.maxX || pos.minY != pos.maxY || pos.minY == 0) {
-@@ -7070,7 +7081,7 @@ public class ChatActivity extends BaseFragment implements
+@@ -7070,7 +7085,7 @@ public class ChatActivity extends BaseFragment implements
                      int idx = position - chatAdapter.messagesStartRow;
                      if (idx >= 0 && idx < chatAdapter.getMessages().size()) {
                          MessageObject message = chatAdapter.getMessages().get(idx);
@@ -1021,7 +1032,7 @@ index f641f20..1c98a6c 100644
                          if (groupedMessages != null) {
                              return groupedMessages.getPosition(message).spanSize;
                          }
-@@ -10773,6 +10784,10 @@ public class ChatActivity extends BaseFragment implements
+@@ -10773,6 +10788,10 @@ public class ChatActivity extends BaseFragment implements
              }
              actionModeViews.add(actionMode.addItemWithWidth(share, R.drawable.msg_shareout, dp(48), LocaleController.getString(R.string.ShareFile)));
              actionModeViews.add(actionMode.addItemWithWidth(delete, R.drawable.msg_delete, dp(48), LocaleController.getString(R.string.Delete)));
@@ -1032,7 +1043,7 @@ index f641f20..1c98a6c 100644
          } else {
              actionModeViews.add(actionMode.addItemWithWidth(edit, R.drawable.msg_edit, dp(48), LocaleController.getString(R.string.Edit)));
              actionModeViews.add(actionMode.addItemWithWidth(star, R.drawable.msg_fave, dp(48), LocaleController.getString(R.string.AddToFavorites)));
-@@ -17382,7 +17397,7 @@ public class ChatActivity extends BaseFragment implements
+@@ -17382,7 +17401,7 @@ public class ChatActivity extends BaseFragment implements
      }
  
      private int getHeightForMessage(MessageObject object, boolean withGroupCaption) {
@@ -1041,7 +1052,7 @@ index f641f20..1c98a6c 100644
              return 0;
          }
          if (dummyMessageCell == null) {
-@@ -19872,6 +19887,7 @@ public class ChatActivity extends BaseFragment implements
+@@ -19872,6 +19891,7 @@ public class ChatActivity extends BaseFragment implements
                  ActionBarMenuItem deleteItem = actionBar.createActionMode().getItem(delete);
                  ActionBarMenuItem tagItem = actionBar.createActionMode().getItem(tag_message);
                  ActionBarMenuItem shareItem = actionBar.createActionMode().getItem(share);
@@ -1049,7 +1060,7 @@ index f641f20..1c98a6c 100644
  
                  boolean noforwards = isPeerNoForwards() || hasSelectedNoforwardsMessage();
                  if (prevCantForwardCount == 0 && cantForwardMessagesCount != 0 || prevCantForwardCount != 0 && cantForwardMessagesCount == 0) {
-@@ -25680,28 +25696,11 @@ public class ChatActivity extends BaseFragment implements
+@@ -25680,28 +25700,11 @@ public class ChatActivity extends BaseFragment implements
              return;
          }
  
@@ -1079,7 +1090,7 @@ index f641f20..1c98a6c 100644
          for (int i = 0; i < res.messages.size(); i++) {
              MessageObject messageObject = res.messages.get(i);
              messageObject.resetLayout();
-@@ -25727,15 +25726,7 @@ public class ChatActivity extends BaseFragment implements
+@@ -25727,15 +25730,7 @@ public class ChatActivity extends BaseFragment implements
                              continue;
                          }
                          if (postId < 0) continue;
@@ -1096,7 +1107,7 @@ index f641f20..1c98a6c 100644
                      }
                  } catch (Exception e) {
                      FileLog.e(e, false);
-@@ -25744,24 +25735,15 @@ public class ChatActivity extends BaseFragment implements
+@@ -25744,24 +25739,15 @@ public class ChatActivity extends BaseFragment implements
          }
          sponsoredMessagesAdded = true;
          if (UserObject.isBot(currentUser)) {
@@ -1127,7 +1138,7 @@ index f641f20..1c98a6c 100644
          }
      }
  
-@@ -29946,11 +29928,7 @@ public class ChatActivity extends BaseFragment implements
+@@ -29946,11 +29932,7 @@ public class ChatActivity extends BaseFragment implements
          }
  
          boolean showRestartTopic = !isInPreviewMode() && forumTopic != null && forumTopic.closed && !forumTopic.hidden && ChatObject.canManageTopic(currentAccount, currentChat, forumTopic);
@@ -1140,7 +1151,7 @@ index f641f20..1c98a6c 100644
          boolean showAddProfilePicture = UserObject.isBot(currentUser) && currentUser.bot_can_edit && currentUser.photo == null;
          boolean showBizBot = currentEncryptedChat == null && getUserConfig().isPremium() && preferences.getLong("dialog_botid" + did, 0) != 0 || DEBUG_TOP_PANELS;
          boolean showBotAd = currentUser != null && currentUser.bot && messages.size() >= 2 && botSponsoredMessage != null;
-@@ -30600,6 +30578,9 @@ public class ChatActivity extends BaseFragment implements
+@@ -30600,6 +30582,9 @@ public class ChatActivity extends BaseFragment implements
      @Override
      public void onResume() {
          super.onResume();
@@ -1150,7 +1161,7 @@ index f641f20..1c98a6c 100644
          checkShowBlur(false);
          activityResumeTime = System.currentTimeMillis();
          if (openImport && getSendMessagesHelper().getImportingHistory(dialog_id) != null) {
-@@ -32751,16 +32732,6 @@ public class ChatActivity extends BaseFragment implements
+@@ -32751,16 +32736,6 @@ public class ChatActivity extends BaseFragment implements
                      }
                  }
  
@@ -1167,7 +1178,7 @@ index f641f20..1c98a6c 100644
                  scrimPopupWindowItems = new ActionBarMenuSubItem[items.size()];
                  for (int a = 0, N = items.size(); a < N; a++) {
                      final Integer option = options.get(a);
-@@ -34333,6 +34304,88 @@ public class ChatActivity extends BaseFragment implements
+@@ -34333,6 +34308,88 @@ public class ChatActivity extends BaseFragment implements
          MediaController.saveFile(path, getParentActivity(), messageObject.isVideo() ? 1 : 0, null, null);
      }
  
@@ -1256,7 +1267,7 @@ index f641f20..1c98a6c 100644
      public void processSelectedOption(int option) {
          if (selectedObject == null || getParentActivity() == null) {
              return;
-@@ -34346,6 +34399,10 @@ public class ChatActivity extends BaseFragment implements
+@@ -34346,6 +34403,10 @@ public class ChatActivity extends BaseFragment implements
                  currentChat
          );
          switch (option) {
@@ -1267,7 +1278,7 @@ index f641f20..1c98a6c 100644
              case OPTION_RETRY: {
                  final MessageObject object = selectedObject;
                  final MessageObject.GroupedMessages group = selectedObjectGroup;
-@@ -37881,6 +37938,8 @@ public class ChatActivity extends BaseFragment implements
+@@ -37881,6 +37942,8 @@ public class ChatActivity extends BaseFragment implements
      private boolean hasSendingMessagesInBotForum;
  
      public class ChatActivityAdapter extends RecyclerAnimationScrollHelper.AnimatableAdapter {
@@ -1276,7 +1287,7 @@ index f641f20..1c98a6c 100644
  
          private Context mContext;
          private boolean isBot;
-@@ -38114,6 +38173,12 @@ public class ChatActivity extends BaseFragment implements
+@@ -38114,6 +38177,12 @@ public class ChatActivity extends BaseFragment implements
  
          @Override
          public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -1289,7 +1300,15 @@ index f641f20..1c98a6c 100644
              View view = null;
              if (viewType == 0) {
                  view = new ChatMessageCell(mContext, currentAccount, true, sharedResources, themeDelegate);
-@@ -39168,7 +39233,8 @@ public class ChatActivity extends BaseFragment implements
+@@ -38586,6 +38655,7 @@ public class ChatActivity extends BaseFragment implements
+                     final ChatMessageCell messageCell = (ChatMessageCell) view;
+                     MessageObject.GroupedMessages groupedMessages = getValidGroupedMessage(message);
+                     messageCell.isChat = currentChat != null || UserObject.isUserSelf(currentUser) || UserObject.isReplyUser(currentUser) || (chatMode == MODE_SEARCH);
++                    messageCell.useIncomingReadingLayout = chatMode == 0 && currentChat != null && !isReport();
+                     messageCell.setSponsoredMessageVisible(true, false);
+                     messageCell.isBotForum = UserObject.isBotForum(currentUser);
+                     messageCell.isReportChat = isReport();
+@@ -39168,7 +39238,8 @@ public class ChatActivity extends BaseFragment implements
                  } else {
                      messages = ChatActivity.this.messages;
                  }
@@ -1299,7 +1318,7 @@ index f641f20..1c98a6c 100644
              } else if (position == botInfoRow) {
                  return 3;
              } else if (position == userInfoRow) {
-@@ -45470,7 +45536,7 @@ public class ChatActivity extends BaseFragment implements
+@@ -45470,7 +45541,7 @@ public class ChatActivity extends BaseFragment implements
      }
  
      private void updateBotHelpCellClick(BotHelpCell cell) {
@@ -1308,7 +1327,7 @@ index f641f20..1c98a6c 100644
          if (translateButtonEnabled && LanguageDetector.hasSupport()) {
              final CharSequence text = cell.getText();
              LanguageDetector.detectLanguage(text == null ? "" : text.toString(), lang -> {
-@@ -47779,6 +47845,11 @@ public class ChatActivity extends BaseFragment implements
+@@ -47779,6 +47850,11 @@ public class ChatActivity extends BaseFragment implements
              icons.add(R.drawable.outline_revert_24);
          }
  
@@ -1320,7 +1339,7 @@ index f641f20..1c98a6c 100644
          CGMessageMenuInjector.INSTANCE.injectJSON(this, false, items, options, icons);
      }
  
-@@ -48757,7 +48828,6 @@ public class ChatActivity extends BaseFragment implements
+@@ -48757,7 +48833,6 @@ public class ChatActivity extends BaseFragment implements
      }
  
      /** Cherrygram start */
@@ -3028,3 +3047,1322 @@ index 3894960..7cc8714 100644
              if (BuildVars.DEBUG_PRIVATE_VERSION) {
                  appVersion += " pbeta";
              } else if (BuildVars.DEBUG_VERSION) {
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/ChatActivityEnterView.java b/TMessagesProj/src/main/java/org/telegram/ui/Components/ChatActivityEnterView.java
+index 90c51fe..055ebda 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Components/ChatActivityEnterView.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Components/ChatActivityEnterView.java
+@@ -2610,6 +2610,10 @@ public class ChatActivityEnterView extends FrameLayout implements
+         }
+     }
+ 
++    private float getComposerButtonVisualScale() {
++        return isChat && parentFragment != null && !forcePreview && !isStories ? 0.84f : 1f;
++    }
++
+     public ChatActivityEnterView(Activity context, SizeNotifierFrameLayout parent, ChatActivity fragment, final boolean isChat) {
+         this(context, parent, fragment, isChat, null);
+     }
+@@ -3379,8 +3383,10 @@ public class ChatActivityEnterView extends FrameLayout implements
+                         }
+                     }
+ 
++                    final float scale = getComposerButtonVisualScale();
+                     final float r = dpf2(19);
+-                    paint.setColor(iOSMessageInputFieldAvailable() ? Color.TRANSPARENT : getThemedColor(Theme.key_chat_messagePanelSend));
++                    paint.setColor(iOSMessageInputFieldAvailable() ? Color.TRANSPARENT :
++                            Theme.multAlpha(getThemedColor(Theme.key_chat_messagePanelSend), scale));
+                     final float margin = dpf2(3);
+                     final float height = dpf2(38);
+                     final float width = dpf2(38);
+@@ -3392,7 +3398,7 @@ public class ChatActivityEnterView extends FrameLayout implements
+                     );
+ 
+                     canvas.save();
+-                    canvas.scale(s, s, backgroundRect.centerX(), backgroundRect.centerY());
++                    canvas.scale(s * scale, s * scale, backgroundRect.centerX(), backgroundRect.centerY());
+                     canvas.drawRoundRect(backgroundRect, r, r, paint);
+                     canvas.restore();
+                 }
+@@ -3582,6 +3588,9 @@ public class ChatActivityEnterView extends FrameLayout implements
+             private final Rect tmpRectF = new Rect();
+             @Override
+             public void draw(@NonNull Canvas canvas) {
++                final float scale = getComposerButtonVisualScale();
++                final int saved = canvas.save();
++                canvas.scale(scale, scale, getWidth() / 2f, getHeight() / 2f);
+                 if (audioVideoButtonContainerForbidden) {
+                     tmpRectF.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
+                     float size = iOSMessageInputFieldAvailable() ? 10f : 7.5f;
+@@ -3592,6 +3601,7 @@ public class ChatActivityEnterView extends FrameLayout implements
+                 } else {
+                     super.draw(canvas);
+                 }
++                canvas.restoreToCount(saved);
+             }
+         };
+         audioVideoSendButton.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+@@ -3628,6 +3638,11 @@ public class ChatActivityEnterView extends FrameLayout implements
+         });
+ 
+         sendButton = new SendButton(context, isInScheduleMode() ? R.drawable.input_schedule : R.drawable.send_plane_24, resourcesProvider, true) {
++            @Override
++            protected float getVisualScale() {
++                return isInScheduleMode() ? 1f : getComposerButtonVisualScale();
++            }
++
+             @Override
+             public boolean isInScheduleMode() {
+                 return ChatActivityEnterView.this.isInScheduleMode();
+@@ -6186,8 +6201,7 @@ public class ChatActivityEnterView extends FrameLayout implements
+         messageEditText.setTextColor(getThemedColor(Theme.key_chat_messagePanelText));
+         messageEditText.setLinkTextColor(getThemedColor(Theme.key_chat_messageLinkOut));
+         messageEditText.setHighlightColor(getThemedColor(Theme.key_chat_inTextSelectionHighlight));
+-        messageEditText.setHintColor(getThemedColor(Theme.key_chat_messagePanelHint));
+-        messageEditText.setHintTextColor(getThemedColor(Theme.key_chat_messagePanelHint));
++        updateComposerHintColor();
+         messageEditText.setCursorColor(getThemedColor(Theme.key_chat_messagePanelCursor));
+         messageEditText.setHandlesColor(getThemedColor(Theme.key_chat_TextSelectionCursor));
+         messageEditTextContainer.addView(messageEditText, 1, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM, 52, 0, isChat ? 50 : 2, 1.5f));
+@@ -10880,8 +10894,17 @@ public class ChatActivityEnterView extends FrameLayout implements
+         return trendingStickersAlert;
+     }
+ 
++    private void updateComposerHintColor() {
++        if (messageEditText != null) {
++            final int color = Theme.multAlpha(getThemedColor(Theme.key_chat_messagePanelHint), getComposerButtonVisualScale());
++            messageEditText.setHintColor(color);
++            messageEditText.setHintTextColor(color);
++        }
++    }
++
+     @Override
+     public void updateColors() {
++        updateComposerHintColor();
+         if (messageSendPreview != null) {
+             messageSendPreview.updateColors();
+         }
+@@ -15678,6 +15701,10 @@ public class ChatActivityEnterView extends FrameLayout implements
+             return Theme.getColor(Theme.key_chat_messagePanelSend, resourcesProvider);
+         }
+ 
++        protected float getVisualScale() {
++            return 1f;
++        }
++
+         public final AnimatedFloat open = new AnimatedFloat(this, 0, 420, CubicBezierInterpolator.EASE_OUT_QUINT);
+         public final ButtonBounce bounce = new ButtonBounce(this);
+ 
+@@ -15718,8 +15745,12 @@ public class ChatActivityEnterView extends FrameLayout implements
+             }
+             updateColors();
+             checkBackgroundRect();
++            final float visualScale = starsPrice > 0 ? 1f : getVisualScale();
+             if (isNewDesignSendButton) {
++                canvas.save();
++                canvas.scale(visualScale, visualScale, backgroundRect.centerX(), backgroundRect.centerY());
+                 canvas.drawRoundRect(backgroundRect, dp(RADIUS), dp(RADIUS), backgroundPaint);
++                canvas.restore();
+             }
+ 
+             final boolean inactive = isInactive();
+@@ -15754,7 +15785,7 @@ public class ChatActivityEnterView extends FrameLayout implements
+                 canvas.rotate(60 * (1f - appear), x + drawable.getIntrinsicWidth() / 2f, y + drawable.getIntrinsicHeight() / 2f);
+                 drawable.setBounds(x, y, x + drawable.getIntrinsicWidth(), y + drawable.getIntrinsicHeight());
+                 drawable.setAlpha((int) (0xFF * (1.0f - priceProgress)));
+-                drawable.draw(canvas);
++                DrawableUtils.drawWithScale(canvas, drawable, visualScale);
+                 canvas.restore();
+             }
+             final float right, cy, h;
+@@ -15855,7 +15886,7 @@ public class ChatActivityEnterView extends FrameLayout implements
+                 } else {
+                     drawableInverse.setBounds(x, y, x + drawable.getIntrinsicWidth(), y + drawable.getIntrinsicHeight());
+                 }
+-                drawableInverse.draw(canvas);
++                DrawableUtils.drawWithScale(canvas, drawableInverse, visualScale);
+                 if (loadingShown > 0) {
+                     canvas.restore();
+                 }
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
+index ba4b32c..8673018 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
+@@ -430,6 +430,10 @@ public class ReactionsLayoutInBubble {
+         drawServiceShaderBackground = 0f;
+     }
+ 
++    public boolean fitsSingleRow(int maxWidth) {
++        return !isEmpty && !isSmall && !hasPaidReaction && reactionLineWidths.size() == 1 && width <= maxWidth;
++    }
++
+     private final RectF scrimRect = new RectF();
+     private final Rect scrimRect2 = new Rect();
+ 
+@@ -742,6 +746,13 @@ public class ReactionsLayoutInBubble {
+             super(reuseFrom, currentAccount, parentView, reactionCount, isSmall, isTag, resourcesProvider);
+         }
+ 
++        @Override
++        protected float getVisualScale() {
++            return parentView instanceof ChatMessageCell
++                    && messageObject != null && messageObject.messageOwner != null
++                    && messageObject.messageOwner.post && messageObject.isPhoto() ? 0.84f : 1f;
++        }
++
+         @Override
+         protected boolean isPlaying() {
+             return ReactionsEffectOverlay.isPlaying(messageObject.getId(), messageObject.getGroupId(), visibleReaction);
+@@ -1093,7 +1104,8 @@ public class ReactionsLayoutInBubble {
+                 lastScrimProgressDirection = scrimProgressDirection;
+             }
+ 
+-            final float bounceScale = bounce.getScale(0.1f);
++            final float visualScale = isSmall || isTag || paid || drawOverlayScrim || scrimProgress > 0f ? 1f : getVisualScale();
++            final float drawScale = bounce.getScale(0.1f) * visualScale;
+             boolean restore = false;
+             int w = width;
+             if (scrimProgress > 0 && !isTag && scrimPreviewCounterDrawable != null && avatarsDrawable == null) {
+@@ -1103,10 +1115,10 @@ public class ReactionsLayoutInBubble {
+                 w = (int) (width * progress + animateFromWidth * (1f - progress));
+             }
+             AndroidUtilities.rectTmp.set(x, y, x + w, y + height);
+-            if (bounceScale != 1f) {
++            if (drawScale != 1f) {
+                 restore = true;
+                 canvas.save();
+-                canvas.scale(bounceScale, bounceScale, x + w / 2f, y + height / 2f);
++                canvas.scale(drawScale, drawScale, x + w / 2f, y + height / 2f);
+             }
+             float rad = height / 2f;
+             if (getDrawServiceShaderBackground() > 0 && !drawBgOnlyIfChosen) {
+@@ -1219,6 +1231,10 @@ public class ReactionsLayoutInBubble {
+             lastDrawnTagDotColor = ColorUtils.blendARGB(fromTagDotColor, AndroidUtilities.computePerceivedBrightness(lastDrawnBackgroundColor) > .8f ? 0 : 0x5affffff, progress);
+         }
+ 
++        protected float getVisualScale() {
++            return 1f;
++        }
++
+         protected boolean isPlaying() {
+             return false;
+         }
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
+index e5f1f70..0c8920a 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
+@@ -1548,6 +1548,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+     public byte[] doNotDrawPollId;
+     public byte[] drawOnlyPollId;
+     public boolean isChat;
++    public boolean useIncomingReadingLayout;
+     public boolean isBotForum;
+     public boolean isSavedChat;
+     public boolean isSavedPreviewChat;
+@@ -1630,6 +1631,8 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+     private int totalCommentWidth;
+     private int commentNumberWidth;
+     private boolean drawCommentButton;
++    private int inlineCommentWidth;
++    private String inlineCommentCount;
+     private Rect commentButtonRect = new Rect();
+     private boolean commentButtonPressed;
+ 
+@@ -6794,6 +6797,29 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+ 
+     public MultiLayoutTypingAnimator botDraftTypingAnimator;
+ 
++    private boolean isThreadPost(MessageObject message) {
++        return isThreadChat && message.messageOwner.fwd_from != null
++                && message.messageOwner.fwd_from.channel_post != 0 && message.messageOwner.reply_to == null;
++    }
++
++    private int getIncomingTextBubbleWidth(MessageObject message) {
++        if (!useIncomingReadingLayout || isSideMenuEnabled || message.isOutOwner()
++                || message.type != MessageObject.TYPE_TEXT || message.messageOwner.grouped_id != 0
++                || message.isSponsored() || message.isAdsGram || message.isUnsupported()
++                || message.preview || message.isRepostPreview || message.hasInlineBotButtons()
++                || TranslateController.isSummarizable(message)
++                || AndroidUtilities.isTablet() || AndroidUtilities.displaySize.x > AndroidUtilities.displaySize.y) {
++            return 0;
++        }
++        final TLRPC.MessageMedia media = getMedia(message.messageOwner);
++        if (media != null && !(media instanceof TLRPC.TL_messageMediaEmpty)) {
++            return 0;
++        }
++        final boolean hasAvatar = ((!isThreadPost(message) || isForum) && message.needDrawAvatar())
++                || message.customAvatarDrawable != null || message.forceAvatar || message.messageOwner.guestchat_via_from != null;
++        return Math.max(0, getParentWidth() - dp((hasAvatar ? 48 : 0) + 8));
++    }
++
+     private void setMessageContent(MessageObject messageObject, MessageObject.GroupedMessages groupedMessages, boolean bottomNear, boolean topNear, boolean firstInChat, boolean lastInChatList) {
+         if (messageObject == null || messageObject.messageOwner == null) return;
+         if (messageObject.checkLayout() || currentPosition != null && lastHeight != AndroidUtilities.displaySize.y) {
+@@ -6896,7 +6922,8 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+         if (!messageChanged && effectId != messageObject.getEffectId()) {
+             messageChanged = true;
+         }
+-        if (messageObject.updateSideMenuEnabled(isSideMenuEnabled)) {
++        final int incomingTextBubbleWidth = getIncomingTextBubbleWidth(messageObject);
++        if (messageObject.updateLayoutWidths(isSideMenuEnabled, incomingTextBubbleWidth)) {
+             messageChanged = true;
+         }
+         if (messageChanged || dataChanged || groupChanged || pollChanged || widthChanged && messageObject.isPoll() || isPhotoDataChanged(messageObject) || pinnedBottom != bottomNear || pinnedTop != topNear) {
+@@ -6969,7 +6996,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+             pressedSideButton = 0;
+             hasNewLineForTime = false;
+             flipImage = false;
+-            isThreadPost = isThreadChat && messageObject.messageOwner.fwd_from != null && messageObject.messageOwner.fwd_from.channel_post != 0 && messageObject.messageOwner.reply_to == null;
++            isThreadPost = isThreadPost(messageObject);
+             isAvatarVisible = needDrawAvatar() && (currentPosition == null || currentPosition.edge);
+             boolean drawAvatar = needDrawAvatar();
+             if (messageObject.customAvatarDrawable != null || messageObject.forceAvatar || messageObject.messageOwner.guestchat_via_from != null) {
+@@ -7005,7 +7032,8 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+                     }
+                 }
+             } else {
+-                drawSideButton = !isRepliesChat && checkNeedDrawShareButton(messageObject) ? 1 : 0;
++                drawSideButton = !isRepliesChat && incomingTextBubbleWidth == 0
++                        && !isChannelPhotoPost(messageObject) && checkNeedDrawShareButton(messageObject) ? 1 : 0;
+                 if (isPinnedChat || drawSideButton == 1 && (messageObject.messageOwner.fwd_from != null && !messageObject.isOutOwner() && messageObject.messageOwner.fwd_from.saved_from_peer != null && messageObject.getDialogId() == UserConfig.getInstance(currentAccount).getClientUserId() || messageObject.isSaved)) {
+                     drawSideButton = 2;
+                 }
+@@ -7169,6 +7197,8 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+             instantViewButtonText = null;
+             drawForwardedName = false;
+             drawCommentButton = false;
++            inlineCommentWidth = 0;
++            inlineCommentCount = null;
+             photoImage.setSideClip(0);
+             photoImage.setAspectFit(false);
+             photoImage.setRoundRadiusEnabled(true);
+@@ -7293,7 +7323,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+                         } else {
+                             comment = commentCount == 0 ? getString("LeaveAComment", R.string.LeaveAComment) : LocaleController.getPluralString("CommentsNoNumber", commentCount);
+                         }
+-                        ArrayList<TLRPC.Peer> recentRepliers = getRecentRepliers();
++                        ArrayList<TLRPC.Peer> recentRepliers = isChannelPhotoPost(messageObject) ? null : getRecentRepliers();
+                         if (commentCount != 0 && recentRepliers != null && !recentRepliers.isEmpty()) {
+                             createCommentUI();
+                             int size = recentRepliers.size();
+@@ -7421,7 +7451,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+                 boolean measuredReactions = false;
+ 
+                 final boolean isArticle = messageObject.type == MessageObject.TYPE_ARTICLE;
+-                if (AndroidUtilities.isTablet()) {
++                if (incomingTextBubbleWidth > 0) {
++                    maxWidth = messageObject.getMaxMessageTextWidth();
++                } else if (AndroidUtilities.isTablet()) {
+                     maxWidth = AndroidUtilities.getMinTabletSide() - dp((isArticle ? 40 : 80) + (isSideMenuEnabled ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 42 : 0));
+                 } else {
+                     maxWidth = Math.min(getParentWidth(), AndroidUtilities.displaySize.y) - dp((isArticle ? 40 : 80) + (isSideMenuEnabled ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 42 : 0));
+@@ -7746,6 +7778,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+                         backgroundWidth = Math.max(backgroundWidth, messageObject.getLastLineWidth() + timeMore) + dp(31);
+                     }
+                 }
++                if (incomingTextBubbleWidth > 0) {
++                    backgroundWidth = incomingTextBubbleWidth;
++                }
+                 availableTimeWidth = backgroundWidth - dp(31);
+                 if (messageObject.isRoundVideo()) {
+                     availableTimeWidth -= Math.ceil(Theme.chat_audioTimePaint.measureText("00:00")) + (messageObject.isOutOwner() ? 0 : dp(64));
+@@ -8888,6 +8923,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+                     maxChildWidth = Math.max(maxChildWidth, factCheckWidth);
+                     calcBackgroundWidth(maxWidth, timeMore, maxChildWidth);
+                 }
++                if (incomingTextBubbleWidth > 0) {
++                    backgroundWidth = incomingTextBubbleWidth;
++                }
+             } else if (messageObject.type == MessageObject.TYPE_PHONE_CALL) {
+                 createSelectorDrawable(0);
+                 drawName = false;
+@@ -10332,6 +10370,15 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+                             backgroundWidth += dp(9);
+                         }
+                     }
++                    if (isChannelPhotoPost(messageObject) && currentPosition == null && drawCommentButton
++                            && drawSideButton != 3 && !isRepliesChat && !hasFactCheck) {
++                        measureInlineComment();
++                        if (inlineCommentWidth > 0) {
++                            final int timeSpace = shouldDrawTimeOnMedia() ? 0 : dp(14);
++                            additionHeight -= reactionsLayoutInBubble.totalHeight - timeSpace;
++                            reactionsLayoutInBubble.totalHeight = timeSpace;
++                        }
++                    }
+                     if (messageChanged || messageIdChanged || dataChanged) {
+                         currentPhotoFilter = currentPhotoFilterThumb = String.format(Locale.US, "%d_%d", (int) (w / AndroidUtilities.density), (int) (h / AndroidUtilities.density));
+                         if (
+@@ -15453,6 +15500,11 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+             if (!currentMessageObject.isOutOwner() && currentPosition != null) {
+                 reactionsLayoutInBubble.x -= dp(64 - (needDrawAvatar() ? 48 : 0)) * sideMenuAlpha;
+             }
++            if (inlineCommentWidth > 0) {
++                layoutInlineComment();
++                reactionsLayoutInBubble.y = commentButtonRect.centerY() - reactionsLayoutInBubble.height / 2;
++                return;
++            }
+             reactionsLayoutInBubble.y = getBackgroundDrawableBottom() - dp(10) - reactionsLayoutInBubble.height;
+             reactionsLayoutInBubble.y -= (drawCommentButton ? dp(currentMessageObject.type == MessageObject.TYPE_PAID_MEDIA && hasCaptionLayout() ? 28 : 43) : 0);
+             if (hasNewLineForTime && !(drawForwardedName && hasLinkPreview && documentAttachType == DOCUMENT_ATTACH_TYPE_AUDIO)) {
+@@ -23413,7 +23465,75 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+         }
+     }
+ 
++    private static boolean isChannelPhotoPost(MessageObject message) {
++        return message != null && message.type == MessageObject.TYPE_PHOTO
++                && message.messageOwner != null && message.messageOwner.post;
++    }
++
++    private void measureInlineComment() {
++        final int count = getRepliesCount();
++        final String label = count > 0 ? LocaleController.formatShortNumber(count, null) : "";
++        final int width = Math.max(dp(48), dp(44) + (int) Math.ceil(Theme.chat_commentTextPaint.measureText(label)));
++        if (reactionsLayoutInBubble.fitsSingleRow(backgroundWidth - dp(36) - width)) {
++            inlineCommentCount = label;
++            inlineCommentWidth = width;
++        }
++    }
++
++    private void layoutInlineComment() {
++        final int right = getCurrentBackgroundRight() - dp(10);
++        final int top = layoutHeight - dp(45.1f - (pinnedBottom ? 3 : pinnedTop ? 1 : 0));
++        final int bottom = layoutHeight - dp(pinnedBottom ? 2 : pinnedTop ? 4 : 3) + 1;
++        commentButtonRect.set(right - inlineCommentWidth, top, right, bottom);
++    }
++
++    private void drawInlineComment(Canvas canvas, float alpha) {
++        if (currentBackgroundDrawable == null) {
++            return;
++        }
++        layoutInlineComment();
++        if (selectorDrawable[1] != null && selectorDrawableMaskType[1] == 2) {
++            final int saved = canvas.save();
++            selectorDrawable[1].setBounds(commentButtonRect);
++            selectorDrawable[1].draw(canvas);
++            canvas.restoreToCount(saved);
++        }
++        final TextPaint paint = Theme.chat_commentTextPaint;
++        final int previousColor = paint.getColor();
++        final int color = getThemedColor(currentMessageObject.isOutOwner()
++                ? Theme.key_chat_outPreviewInstantText : Theme.key_chat_inPreviewInstantText);
++        final float opacity = alpha * getAlpha() * (currentMessageObject.isSent() ? 1f : 0.5f);
++        paint.setColor(Theme.multAlpha(color, opacity));
++        final int centerY = commentButtonRect.centerY();
++        final int iconX = commentButtonRect.left + dp(8);
++        final int iconSize = dp(19);
++        if (delegate != null && delegate.shouldDrawThreadProgress(this, true) && commentProgress != null) {
++            commentProgress.setColor(color);
++            commentProgress.setAlpha(opacity);
++            commentProgress.draw(canvas, iconX + iconSize / 2f, (float) centerY, opacity);
++            invalidate();
++        } else {
++            final Drawable icon = Theme.chat_commentDrawable;
++            final int originalAlpha = icon.getAlpha();
++            icon.setAlpha((int) (255 * opacity));
++            icon.setBounds(iconX, centerY - iconSize / 2, iconX + iconSize, centerY + (iconSize + 1) / 2);
++            icon.draw(canvas);
++            icon.setAlpha(originalAlpha);
++        }
++        final int textX = iconX + iconSize + dp(4);
++        canvas.drawText(inlineCommentCount, textX, centerY - (paint.ascent() + paint.descent()) / 2f, paint);
++        final TLRPC.MessageReplies replies = currentMessageObject.messageOwner.replies;
++        if (replies != null && replies.read_max_id != 0 && replies.read_max_id < replies.max_id) {
++            canvas.drawCircle(textX + paint.measureText(inlineCommentCount) + dp(5), centerY, dp(2), paint);
++        }
++        paint.setColor(previousColor);
++    }
++
+     public void drawCommentLayout(Canvas canvas, float alpha) {
++        if (inlineCommentWidth > 0) {
++            drawInlineComment(canvas, alpha);
++            return;
++        }
+         int x;
+         if (mediaBackground) {
+             x = backgroundDrawableLeft + dp(12) + getExtraTextX();
+@@ -23708,6 +23828,11 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+             reactionsLayoutInBubble.drawServiceShaderBackground = 1f - getVideoTranscriptionProgress();
+         }
+         if (reactionsVisible && hasReactionsToDraw()) {
++            final int inlineSave = inlineCommentWidth > 0 && only == null ? canvas.save() : -1;
++            if (inlineSave >= 0) {
++                layoutInlineComment();
++                canvas.clipRect(0, 0, commentButtonRect.left - dp(4), getHeight());
++            }
+             if (reactionsLayoutInBubble.drawServiceShaderBackground > 0) {
+                 applyServiceShaderMatrix();
+             }
+@@ -23730,6 +23855,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+             if (restore) {
+                 canvas.restore();
+             }
++            if (inlineSave >= 0) {
++                canvas.restoreToCount(inlineSave);
++            }
+         }
+     }
+ 
+@@ -23861,7 +23989,8 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+                 }
+             }
+         } else if (transitionParams.animateBackgroundBoundsInner && currentBackgroundDrawable != null && currentMessagesGroup == null || transitionParams.animateMediaAbove && currentMessagesGroup == null) {
+-            int bottomoffset = (drawCommentButton && commentButtonRect != null ? commentButtonRect.height() : 0) + (reactionsLayoutInBubble != null && !reactionsLayoutInBubble.isSmall ? reactionsLayoutInBubble.height : 0);
++            int bottomoffset = (drawCommentButton ? commentButtonRect.height() : 0)
++                    + (inlineCommentWidth == 0 && !reactionsLayoutInBubble.isSmall ? reactionsLayoutInBubble.height : 0);
+             if (currentMessageObject.isOutOwner() && !mediaBackground && !pinnedBottom) {
+                 canvas.clipRect(
+                         getBackgroundDrawableLeft() + transitionParams.deltaLeft + dp(4), getBackgroundDrawableTop() + transitionParams.deltaTop + dp(4),
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/DialogsActivity.java b/TMessagesProj/src/main/java/org/telegram/ui/DialogsActivity.java
+index 08458b4..0384ef7 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/DialogsActivity.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/DialogsActivity.java
+@@ -275,7 +275,9 @@ import java.io.File;
+ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.Collections;
++import java.util.HashMap;
+ import java.util.HashSet;
++import java.util.LinkedHashSet;
+ import java.util.List;
+ import java.util.concurrent.ConcurrentHashMap;
+ 
+@@ -594,6 +596,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+     private ActionBarMenuItem archive2Item;
+     @Nullable
+     private ActionBarMenuSubItem pin2Item;
++    private ActionBarMenuSubItem localPinItem;
+     @Nullable
+     private ActionBarMenuSubItem addToFolderItem;
+     @Nullable
+@@ -727,6 +730,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+     private final static int add_to_folder = 109;
+     private final static int remove_from_folder = 110;
+     private final static int community_ungroup = 111;
++    private static final int LOCAL_PIN = 112;
++    private final LinkedHashSet<Long> localPinnedDialogs = new LinkedHashSet<>();
++    private String localPinnedDialogsValue;
+ 
+     private final static int ARCHIVE_ITEM_STATE_PINNED = 0;
+     private final static int ARCHIVE_ITEM_STATE_SHOWED = 1;
+@@ -4125,6 +4131,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+                         undoView.showWithAction(did, UndoView.ACTION_REMOVED_FROM_FOLDER, neverShow.size(), filter, null, null);
+                     }
+                     hideActionMode(false);
++                } else if (id == LOCAL_PIN) {
++                    if (selectedDialogs.size() == 1 && canUseLocalPin(selectedDialogs.get(0))) {
++                        final long dialogId = selectedDialogs.get(0);
++                        hideActionMode(true);
++                        toggleLocalPin(dialogId);
++                    }
+                 } else if (id == pin || id == read || id == delete || id == clear || id == mute || id == archive || id == block || id == archive2 || id == pin2) {
+                     performSelectedDialogsAction(selectedDialogs, id, true, false);
+                 }
+@@ -6909,6 +6921,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+         actionMode.addView(new View(getContext()), LayoutHelper.createLinear(5, LayoutHelper.MATCH_PARENT));
+         archiveItem = otherItem.addSubItem(archive, R.drawable.msg_archive, LocaleController.getString(R.string.Archive));
+         pin2Item = otherItem.addSubItem(pin2, R.drawable.msg_pin, LocaleController.getString(R.string.DialogPin));
++        localPinItem = otherItem.addSubItem(LOCAL_PIN, R.drawable.msg_pin, getString(R.string.PersonalLocalPin));
+         addToFolderItem = otherItem.addSubItem(add_to_folder, R.drawable.msg_addfolder, LocaleController.getString(R.string.FilterAddTo));
+         removeFromFolderItem = otherItem.addSubItem(remove_from_folder, R.drawable.msg_removefolder, LocaleController.getString(R.string.FilterRemoveFrom));
+         readItem = otherItem.addSubItem(read, R.drawable.msg_markread, LocaleController.getString(R.string.MarkAsRead));
+@@ -8981,6 +8994,19 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+             previewMenu[0].addView(unpinItem);
+         }
+ 
++        if (canUseLocalPin(dialogId)) {
++            ActionBarMenuSubItem localItem = new ActionBarMenuSubItem(getParentActivity(), false, false);
++            setLocalPinItem(localItem, dialogId);
++            localItem.setMinimumWidth(160);
++            localItem.setOnClickListener(e -> {
++                finishPreviewFragment();
++                if (canUseLocalPin(dialogId)) {
++                    toggleLocalPin(dialogId);
++                }
++            });
++            previewMenu[0].addView(localItem);
++        }
++
+         if (!DialogObject.isUserDialog(dialogId) || !UserObject.isUserSelf(getMessagesController().getUser(dialogId))) {
+             ActionBarMenuSubItem muteItem = new ActionBarMenuSubItem(getParentActivity(), false, false);
+             if (!getMessagesController().isDialogMuted(dialogId, 0)) {
+@@ -10118,6 +10144,14 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+                 canDeleteCount++;
+             }
+         }
++        if (localPinItem != null) {
++            final long dialogId = count == 1 ? selectedDialogs.get(0) : 0;
++            final boolean show = canUseLocalPin(dialogId);
++            localPinItem.setVisibility(show ? View.VISIBLE : View.GONE);
++            if (show) {
++                setLocalPinItem(localPinItem, dialogId);
++            }
++        }
+         if (deleteItem != null) {
+             if (canDeleteCount != count || communitiesCount > 0) {
+                 deleteItem.setVisibility(View.GONE);
+@@ -11266,6 +11300,109 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+ 
+     private ArrayList<TLRPC.Dialog> botShareDialogs;
+ 
++    private boolean isLocalPinPage(int dialogsType, int folderId) {
++        return initialDialogsType == DIALOGS_TYPE_DEFAULT && dialogsType == DIALOGS_TYPE_DEFAULT
++                && folderId == 0 && communityId == 0 && !onlySelect;
++    }
++
++    private String localPinKey() {
++        return "personalLiteLocalPins_" + getUserConfig().getClientUserId();
++    }
++
++    private LinkedHashSet<Long> getLocalPinnedDialogs() {
++        final String value = getMessagesController().getMainSettings().getString(localPinKey(), "");
++        if (!value.equals(localPinnedDialogsValue)) {
++            localPinnedDialogs.clear();
++            for (String part : value.split(",")) {
++                if (!part.isEmpty()) {
++                    try {
++                        localPinnedDialogs.add(Long.parseLong(part));
++                    } catch (NumberFormatException ignored) {
++                    }
++                }
++            }
++            localPinnedDialogsValue = value;
++        }
++        return localPinnedDialogs;
++    }
++
++    public boolean isLocallyPinnedDialog(int account, int dialogsType, int folderId, long dialogId) {
++        return account == currentAccount && isLocalPinPage(dialogsType, folderId)
++                && getLocalPinnedDialogs().contains(dialogId);
++    }
++
++    private boolean canUseLocalPin(long dialogId) {
++        if (dialogId == 0 || getUserConfig().getClientUserId() == 0 || searchIsShowed || viewPages == null
++                || viewPages[0] == null || !isLocalPinPage(viewPages[0].dialogsType, folderId)) {
++            return false;
++        }
++        final TLRPC.Dialog dialog = getMessagesController().dialogs_dict.get(dialogId);
++        return dialog instanceof TLRPC.TL_dialog && dialog.folder_id == 0
++                && !getMessagesController().isPromoDialog(dialogId, false)
++                && (!dialog.pinned || getLocalPinnedDialogs().contains(dialogId));
++    }
++
++    private void setLocalPinItem(ActionBarMenuSubItem item, long dialogId) {
++        final boolean pinned = getLocalPinnedDialogs().contains(dialogId);
++        item.setTextAndIcon(getString(pinned ? R.string.PersonalLocalUnpin : R.string.PersonalLocalPin),
++                pinned ? R.drawable.msg_unpin : R.drawable.msg_pin);
++    }
++
++    private void toggleLocalPin(long dialogId) {
++        final LinkedHashSet<Long> pins = getLocalPinnedDialogs();
++        final boolean added = !pins.remove(dialogId);
++        if (added) {
++            pins.add(dialogId);
++        }
++        getMessagesController().getMainSettings().edit().putString(localPinKey(), TextUtils.join(",", pins)).apply();
++        viewPages[0].updateList(true);
++        if (added) {
++            scrollToTop(true, false);
++        }
++    }
++
++    private ArrayList<TLRPC.Dialog> withLocalPins(ArrayList<TLRPC.Dialog> dialogs) {
++        final LinkedHashSet<Long> pins = getLocalPinnedDialogs();
++        if (pins.isEmpty() || dialogs.isEmpty()) {
++            return dialogs;
++        }
++        int endOfSyncedPins = 0;
++        while (endOfSyncedPins < dialogs.size()) {
++            final TLRPC.Dialog dialog = dialogs.get(endOfSyncedPins);
++            if (!dialog.pinned && !(dialog instanceof TLRPC.TL_dialogFolder)
++                    && !getMessagesController().isPromoDialog(dialog.id, false)) {
++                break;
++            }
++            endOfSyncedPins++;
++        }
++        final HashMap<Long, TLRPC.Dialog> local = new HashMap<>();
++        for (int i = endOfSyncedPins; i < dialogs.size(); i++) {
++            final TLRPC.Dialog dialog = dialogs.get(i);
++            if (!dialog.pinned && pins.contains(dialog.id)) {
++                local.put(dialog.id, dialog);
++            }
++        }
++        if (local.isEmpty()) {
++            return dialogs;
++        }
++        final ArrayList<TLRPC.Dialog> sorted = new ArrayList<>(dialogs.size());
++        sorted.addAll(dialogs.subList(0, endOfSyncedPins));
++        final ArrayList<Long> localOrder = new ArrayList<>(pins);
++        for (int i = localOrder.size() - 1; i >= 0; i--) {
++            final TLRPC.Dialog dialog = local.get(localOrder.get(i));
++            if (dialog != null) {
++                sorted.add(dialog);
++            }
++        }
++        for (int i = endOfSyncedPins; i < dialogs.size(); i++) {
++            final TLRPC.Dialog dialog = dialogs.get(i);
++            if (!local.containsKey(dialog.id)) {
++                sorted.add(dialog);
++            }
++        }
++        return sorted;
++    }
++
+     @NonNull
+     public ArrayList<TLRPC.Dialog> getDialogsArray(int currentAccount, int dialogsType, int folderId, boolean frozen) {
+         if (frozen && frozenDialogsList != null) {
+@@ -11273,7 +11410,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+         }
+         MessagesController messagesController = AccountInstance.getInstance(currentAccount).getMessagesController();
+         if (dialogsType == DIALOGS_TYPE_DEFAULT) {
+-            return messagesController.getDialogs(folderId);
++            final ArrayList<TLRPC.Dialog> dialogs = messagesController.getDialogs(folderId);
++            return currentAccount == this.currentAccount && isLocalPinPage(dialogsType, folderId)
++                    ? withLocalPins(dialogs) : dialogs;
+         } else if (dialogsType == DIALOGS_TYPE_WIDGET || dialogsType == DIALOGS_TYPE_IMPORT_HISTORY) {
+             return messagesController.dialogsServerOnly;
+         } else if (dialogsType == DIALOGS_TYPE_ADD_USERS_TO) {
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Adapters/DialogsAdapter.java b/TMessagesProj/src/main/java/org/telegram/ui/Adapters/DialogsAdapter.java
+index 0051f5c..5c3f224 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Adapters/DialogsAdapter.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Adapters/DialogsAdapter.java
+@@ -368,7 +368,7 @@ public class DialogsAdapter extends RecyclerListView.SelectionAdapter implements
+                     MessagesController.DialogFilter filter = MessagesController.getInstance(currentAccount).selectedDialogFilter[dialogsType == 8 ? 1 : 0];
+                     pinned = filter != null && filter.pinnedDialogs.indexOfKey(dialog.id) >= 0;
+                 } else {
+-                    pinned = dialog.pinned;
++                    pinned = dialog.pinned || parentFragment.isLocallyPinnedDialog(currentAccount, dialogsType, folderId, dialog.id);
+                 }
+                 isFolder = dialog.isFolder;
+                 isForumCell = MessagesController.getInstance(currentAccount).isForum(dialog.id);
+@@ -1023,6 +1023,7 @@ public class DialogsAdapter extends RecyclerListView.SelectionAdapter implements
+                         cell.setCustomMessage(null);
+                     }
+                     cell.setDialog(dialog, dialogsType, folderId);
++                    cell.setLocalPin(!dialog.pinned && parentFragment.isLocallyPinnedDialog(currentAccount, dialogsType, folderId, dialog.id));
+                     cell.checkHeight();
+                     if (cell.collapsed != collapsedView) {
+                         cell.collapsed = collapsedView;
+@@ -1214,6 +1215,17 @@ public class DialogsAdapter extends RecyclerListView.SelectionAdapter implements
+         int toIndex = fixPosition(toPosition);
+         TLRPC.Dialog fromDialog = dialogs.get(fromIndex);
+         TLRPC.Dialog toDialog = dialogs.get(toIndex);
++        ArrayList<TLRPC.Dialog> storageOrder = dialogs;
++        if (dialogsType == DialogsActivity.DIALOGS_TYPE_DEFAULT && folderId == 0) {
++            storageOrder = MessagesController.getInstance(currentAccount).getDialogs(folderId);
++            if (storageOrder != dialogs) {
++                fromIndex = storageOrder.indexOf(fromDialog);
++                toIndex = storageOrder.indexOf(toDialog);
++                if (fromIndex < 0 || toIndex < 0) {
++                    return;
++                }
++            }
++        }
+         if (dialogsType == 7 || dialogsType == 8) {
+             MessagesController.DialogFilter filter = MessagesController.getInstance(currentAccount).selectedDialogFilter[dialogsType == 8 ? 1 : 0];
+             int idx1 = filter.pinnedDialogs.get(fromDialog.id);
+@@ -1225,7 +1237,7 @@ public class DialogsAdapter extends RecyclerListView.SelectionAdapter implements
+             fromDialog.pinnedNum = toDialog.pinnedNum;
+             toDialog.pinnedNum = oldNum;
+         }
+-        Collections.swap(dialogs, fromIndex, toIndex);
++        Collections.swap(storageOrder, fromIndex, toIndex);
+         updateList(null);
+     }
+ 
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/DialogCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/DialogCell.java
+index 7773901..9e9520c 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/DialogCell.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/DialogCell.java
+@@ -86,7 +86,6 @@ import org.telegram.messenger.UserConfig;
+ import org.telegram.messenger.UserObject;
+ import org.telegram.messenger.Utilities;
+ import org.telegram.messenger.utils.DrawableUtils;
+-import org.telegram.tgnet.ConnectionsManager;
+ import org.telegram.tgnet.TLObject;
+ import org.telegram.tgnet.TLRPC;
+ import org.telegram.tgnet.tl.TL_account;
+@@ -604,6 +603,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
+     private boolean drawPinBackground;
+     private boolean drawPin;
+     private boolean drawPinForced;
++    private boolean drawLocalPin;
+     private int pinTop;
+     private int pinLeft;
+     protected int translateY;
+@@ -814,23 +814,6 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
+     }
+ 
+     private boolean isOnline() {
+-        if (isForumCell()) {
+-            return false;
+-        }
+-        if (storyParams.drawnLive) {
+-            return false;
+-        }
+-        if (user == null || user.self) {
+-            return false;
+-        }
+-        if (user.status != null && user.status.expires <= 0) {
+-            if (MessagesController.getInstance(currentAccount).onlinePrivacy.containsKey(user.id)) {
+-                return true;
+-            }
+-        }
+-        if (user.status != null && user.status.expires > ConnectionsManager.getInstance(currentAccount).getCurrentTime()) {
+-            return true;
+-        }
+         return false;
+     }
+ 
+@@ -924,7 +907,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
+         drawRevealBackground = false;
+         currentRevealProgress = 0.0f;
+         attachedToWindow = false;
+-        reorderIconProgress = getIsPinned() && drawReorder ? 1.0f : 0.0f;
++        reorderIconProgress = (drawPin || drawPinForced) && drawReorder ? 1.0f : 0.0f;
+         avatarImage.onDetachedFromWindow();
+         for (int i = 0; i < thumbImage.length; ++i) {
+             thumbImage[i].onDetachedFromWindow();
+@@ -979,7 +962,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
+         avatarDrawable.setArchivedAvatarHiddenProgress(archiveBackgroundProgress);
+         clipProgress = 0.0f;
+         isSliding = false;
+-        reorderIconProgress = getIsPinned() && drawReorder ? 1.0f : 0.0f;
++        reorderIconProgress = (drawPin || drawPinForced) && drawReorder ? 1.0f : 0.0f;
+         attachedToWindow = true;
+         cornerProgress = 0.0f;
+         setTranslationX(0);
+@@ -1103,7 +1086,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
+     }
+ 
+     public boolean getIsPinned() {
+-        return drawPin || drawPinForced;
++        return drawPin || drawPinForced || drawLocalPin;
+     }
+ 
+     public void setPinForced(boolean value) {
+@@ -1114,6 +1097,17 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
+         invalidate();
+     }
+ 
++    public void setLocalPin(boolean value) {
++        if (drawLocalPin == value) {
++            return;
++        }
++        drawLocalPin = value;
++        if (getMeasuredWidth() > 0 && getMeasuredHeight() > 0) {
++            buildLayout();
++        }
++        invalidate();
++    }
++
+     private CharSequence formatArchivedDialogNames() {
+         final MessagesController messagesController = MessagesController.getInstance(currentAccount);
+         ArrayList<TLRPC.Dialog> dialogs = messagesController.getDialogs(currentDialogFolderId);
+@@ -5544,8 +5538,9 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
+     }
+ 
+     public void onReorderStateChanged(boolean reordering, boolean animated) {
+-        if (!getIsPinned() && reordering || drawReorder == reordering) {
+-            if (!getIsPinned()) {
++        final boolean canReorder = drawPin || drawPinForced;
++        if (!canReorder && reordering || drawReorder == reordering) {
++            if (!canReorder) {
+                 drawReorder = false;
+             }
+             return;
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java b/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java
+index 0d5354b..5764704 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java
+@@ -8544,6 +8544,8 @@ public class MessageObject {
+     }
+ 
+     public boolean sideMenuEnabled;
++    private int incomingTextBubbleWidth;
++
+     public int getMaxMessageTextWidth() {
+         int maxWidth = 0;
+         if (AndroidUtilities.isTablet() && eventId != 0) {
+@@ -8554,6 +8556,9 @@ public class MessageObject {
+         }
+         generatedWithDensity = AndroidUtilities.density;
+         generatedWithFontSize = Theme.chat_msgTextPaint != null ? Theme.chat_msgTextPaint.getTextSize() : 0;
++        if (incomingTextBubbleWidth > 0) {
++            return Math.max(1, incomingTextBubbleWidth - dp(37));
++        }
+         if (hasCode && !isSaved) {
+             maxWidth = generatedWithMinSize - dp(45 + 15);
+             if (sideMenuEnabled) {
+@@ -8595,13 +8600,14 @@ public class MessageObject {
+         return Math.max(0, maxWidth);
+     }
+ 
+-    public boolean updateSideMenuEnabled(boolean enabled) {
+-        if (sideMenuEnabled == enabled) return false;
+-        final boolean wasEnabled = sideMenuEnabled;
+-//        if (!wasEnabled && enabled || !enabled) {
+-            sideMenuEnabled = enabled;
+-            generateLayout(null);
+-//        }
++    public boolean updateLayoutWidths(boolean sideMenuEnabled, int incomingTextBubbleWidth) {
++        if (this.sideMenuEnabled == sideMenuEnabled && this.incomingTextBubbleWidth == incomingTextBubbleWidth) {
++            return false;
++        }
++        this.sideMenuEnabled = sideMenuEnabled;
++        this.incomingTextBubbleWidth = incomingTextBubbleWidth;
++        cachedTextHeight = null;
++        generateLayout(null);
+         return true;
+     }
+ 
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/ui/mainTabs/MainTabsManager.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/ui/mainTabs/MainTabsManager.kt
+index bd421ef..58d0e42 100644
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/ui/mainTabs/MainTabsManager.kt
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/ui/mainTabs/MainTabsManager.kt
+@@ -58,10 +58,10 @@ object MainTabsManager {
+         return getEnabledTabs().map { it.type }
+     }
+ 
+-    private const val DEFAULT_ORDER = "SETTINGS,CHATS,PROFILE,!CONTACTS,!CALLS,SEARCH"
++    private const val DEFAULT_ORDER = "SETTINGS,CHATS,PROFILE,!CALLS,SEARCH"
+ 
+     private fun loadTabs(): MutableList<Tab> {
+-        val allPossibleTypes = TabType.entries.toMutableList()
++        val allPossibleTypes = TabType.entries.filterNot { it == TabType.CONTACTS }.toMutableList()
+         val value = CherrygramAppearanceConfig.mainTabsOrder ?: DEFAULT_ORDER
+ 
+         val result = mutableListOf<Tab>()
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/LocaleController.java b/TMessagesProj/src/main/java/org/telegram/messenger/LocaleController.java
+index b7a1f47..64eab8e 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/LocaleController.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/LocaleController.java
+@@ -2959,46 +2959,13 @@ public class LocaleController {
+     }
+ 
+     public static String formatUserStatus(int currentAccount, TLRPC.User user, boolean[] isOnline, boolean[] madeShorter) {
+-        if (user != null && user.status != null && user.status.expires == 0) {
+-            if (user.status instanceof TLRPC.TL_userStatusRecently) {
+-                user.status.expires = user.status.by_me ? -1000 : -100;
+-            } else if (user.status instanceof TLRPC.TL_userStatusLastWeek) {
+-                user.status.expires = user.status.by_me ? -1001 : -101;
+-            } else if (user.status instanceof TLRPC.TL_userStatusLastMonth) {
+-                user.status.expires = user.status.by_me ? -1002 : -102;
+-            }
+-        }
+-        if (user != null && user.status != null && user.status.expires <= 0) {
+-            if (MessagesController.getInstance(currentAccount).onlinePrivacy.containsKey(user.id)) {
+-                if (isOnline != null) {
+-                    isOnline[0] = true;
+-                }
+-                return getString("Online", R.string.Online);
+-            }
++        if (isOnline != null) {
++            isOnline[0] = false;
+         }
+-        if (user == null || user.status == null || user.status.expires == 0 || UserObject.isDeleted(user) || user instanceof TLRPC.TL_userEmpty) {
+-            return getString("ALongTimeAgo", R.string.ALongTimeAgo);
+-        } else {
+-            int currentTime = ConnectionsManager.getInstance(currentAccount).getCurrentTime();
+-            if (user.status.expires > currentTime) {
+-                if (isOnline != null) {
+-                    isOnline[0] = true;
+-                }
+-                return getString("Online", R.string.Online);
+-            } else {
+-                if (user.status.expires == -1) {
+-                    return getString("Invisible", R.string.Invisible);
+-                } else if (user.status.expires == -100 || user.status.expires == -1000) {
+-                    return getString("Lately", R.string.Lately);
+-                } else if (user.status.expires == -101 || user.status.expires == -1001) {
+-                    return getString("WithinAWeek", R.string.WithinAWeek);
+-                } else if (user.status.expires == -102 || user.status.expires == -1002) {
+-                    return getString("WithinAMonth", R.string.WithinAMonth);
+-                } else {
+-                    return formatDateOnline(user.status.expires, madeShorter);
+-                }
+-            }
++        if (madeShorter != null) {
++            madeShorter[0] = false;
+         }
++        return "";
+     }
+ 
+     private String escapeString(String str) {
+@@ -4647,46 +4614,13 @@ public class LocaleController {
+     }
+ 
+     public static String formatUserStatusIOS(int currentAccount, TLRPC.User user, boolean[] isOnline, boolean[] madeShorter) {
+-        if (user != null && user.status != null && user.status.expires == 0) {
+-            if (user.status instanceof TLRPC.TL_userStatusRecently) {
+-                user.status.expires = user.status.by_me ? -1000 : -100;
+-            } else if (user.status instanceof TLRPC.TL_userStatusLastWeek) {
+-                user.status.expires = user.status.by_me ? -1001 : -101;
+-            } else if (user.status instanceof TLRPC.TL_userStatusLastMonth) {
+-                user.status.expires = user.status.by_me ? -1002 : -102;
+-            }
+-        }
+-        if (user != null && user.status != null && user.status.expires <= 0) {
+-            if (MessagesController.getInstance(currentAccount).onlinePrivacy.containsKey(user.id)) {
+-                if (isOnline != null) {
+-                    isOnline[0] = true;
+-                }
+-                return getString(R.string.Online);
+-            }
++        if (isOnline != null) {
++            isOnline[0] = false;
+         }
+-        if (user == null || user.status == null || user.status.expires == 0 || UserObject.isDeleted(user) || user instanceof TLRPC.TL_userEmpty) {
+-            return getString(R.string.ALongTimeAgo);
+-        } else {
+-            int currentTime = ConnectionsManager.getInstance(currentAccount).getCurrentTime();
+-            if (user.status.expires > currentTime) {
+-                if (isOnline != null) {
+-                    isOnline[0] = true;
+-                }
+-                return getString(R.string.Online);
+-            } else {
+-                if (user.status.expires == -1) {
+-                    return getString(R.string.Invisible);
+-                } else if (user.status.expires == -100 || user.status.expires == -1000) {
+-                    return getString(R.string.Lately);
+-                } else if (user.status.expires == -101 || user.status.expires == -1001) {
+-                    return getString(R.string.WithinAWeek);
+-                } else if (user.status.expires == -102 || user.status.expires == -1002) {
+-                    return getString(R.string.WithinAMonth);
+-                } else {
+-                    return formatDateOnlineIOS(user.status.expires, madeShorter);
+-                }
+-            }
++        if (madeShorter != null) {
++            madeShorter[0] = false;
+         }
++        return "";
+     }
+     /** Cherrygram finish */
+ 
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/UserCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/UserCell.java
+index 5784e81..9496a20 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/UserCell.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/UserCell.java
+@@ -774,12 +774,8 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
+                     statusTextView.setText(getString(R.string.BotStatusCantRead));
+                 }
+             } else {
+-                if (currentUser.id == UserConfig.getInstance(currentAccount).getClientUserId() || currentUser.status != null && currentUser.status.expires > ConnectionsManager.getInstance(currentAccount).getCurrentTime() || MessagesController.getInstance(currentAccount).onlinePrivacy.containsKey(currentUser.id)) {
+-                    statusTextView.setTextColor(statusOnlineColor);
+-                    statusTextView.setText(getString(R.string.Online));
+-                } else {
+-                    statusTextView.setTextColor(statusColor);
+-                    statusTextView.setText(CherrygramDebugConfig.INSTANCE.getOldTimeStyle() ? LocaleController.formatUserStatus(currentAccount, currentUser) : LocaleController.formatUserStatusIOS(currentAccount, currentUser));                }
++                statusTextView.setTextColor(statusColor);
++                statusTextView.setText("");
+             }
+         }
+ 
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/UserCell2.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/UserCell2.java
+index 1bf5102..7e32e6e 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/UserCell2.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/UserCell2.java
+@@ -25,7 +25,6 @@ import org.telegram.messenger.NotificationCenter;
+ import org.telegram.messenger.R;
+ import org.telegram.messenger.UserConfig;
+ import org.telegram.messenger.UserObject;
+-import org.telegram.tgnet.ConnectionsManager;
+ import org.telegram.tgnet.TLObject;
+ import org.telegram.tgnet.TLRPC;
+ import org.telegram.ui.ActionBar.SimpleTextView;
+@@ -269,13 +268,8 @@ public class UserCell2 extends FrameLayout {
+                     statusTextView.setText(LocaleController.getString(R.string.BotStatusCantRead));
+                 }
+             } else {
+-                if (currentUser.id == UserConfig.getInstance(currentAccount).getClientUserId() || currentUser.status != null && currentUser.status.expires > ConnectionsManager.getInstance(currentAccount).getCurrentTime() || MessagesController.getInstance(currentAccount).onlinePrivacy.containsKey(currentUser.id)) {
+-                    statusTextView.setTextColor(statusOnlineColor);
+-                    statusTextView.setText(LocaleController.getString(R.string.Online));
+-                } else {
+-                    statusTextView.setTextColor(statusColor);
+-                    statusTextView.setText(LocaleController.formatUserStatus(currentAccount, currentUser));
+-                }
++                statusTextView.setTextColor(statusColor);
++                statusTextView.setText("");
+             }
+             avatarImageView.setForUserOrChat(currentUser, avatarDrawable);
+         } else if (currentChat != null) {
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/GroupCreateUserCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/GroupCreateUserCell.java
+index eee1926..429aadc 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/GroupCreateUserCell.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/GroupCreateUserCell.java
+@@ -41,7 +41,6 @@ import org.telegram.messenger.NotificationCenter;
+ import org.telegram.messenger.R;
+ import org.telegram.messenger.UserConfig;
+ import org.telegram.messenger.UserObject;
+-import org.telegram.tgnet.ConnectionsManager;
+ import org.telegram.tgnet.TLObject;
+ import org.telegram.tgnet.TLRPC;
+ import org.telegram.tgnet.tl.TL_account;
+@@ -484,15 +483,9 @@ public class GroupCreateUserCell extends FrameLayout {
+                         statusTextView.setTextColor(Theme.getColor(forceDarkTheme ? Theme.key_voipgroup_lastSeenText : Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
+                         statusTextView.setText(LocaleController.getString(R.string.Bot));
+                     } else {
+-                        if (currentUser.id == UserConfig.getInstance(currentAccount).getClientUserId() || currentUser.status != null && currentUser.status.expires > ConnectionsManager.getInstance(currentAccount).getCurrentTime() || MessagesController.getInstance(currentAccount).onlinePrivacy.containsKey(currentUser.id)) {
+-                            statusTextView.setTag(Theme.key_windowBackgroundWhiteBlueText);
+-                            statusTextView.setTextColor(Theme.getColor(forceDarkTheme ? Theme.key_voipgroup_listeningText : Theme.key_windowBackgroundWhiteBlueText, resourcesProvider));
+-                            statusTextView.setText(LocaleController.getString(R.string.Online));
+-                        } else {
+-                            statusTextView.setTag(Theme.key_windowBackgroundWhiteGrayText);
+-                            statusTextView.setTextColor(Theme.getColor(forceDarkTheme ? Theme.key_voipgroup_lastSeenText : Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
+-                            statusTextView.setText(LocaleController.formatUserStatusIOS(currentAccount, currentUser));
+-                        }
++                        statusTextView.setTag(Theme.key_windowBackgroundWhiteGrayText);
++                        statusTextView.setTextColor(Theme.getColor(forceDarkTheme ? Theme.key_voipgroup_lastSeenText : Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
++                        statusTextView.setText("");
+                     }
+                     statusTextView.setEmojiColor(statusTextView.getTextColor());
+                 }
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ManageChatUserCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ManageChatUserCell.java
+index 45849fb..dcc8731 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ManageChatUserCell.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ManageChatUserCell.java
+@@ -27,7 +27,6 @@ import org.telegram.messenger.NotificationCenter;
+ import org.telegram.messenger.R;
+ import org.telegram.messenger.UserConfig;
+ import org.telegram.messenger.UserObject;
+-import org.telegram.tgnet.ConnectionsManager;
+ import org.telegram.tgnet.TLRPC;
+ import org.telegram.tgnet.tl.TL_stories;
+ import org.telegram.ui.ActionBar.SimpleTextView;
+@@ -299,9 +298,6 @@ public class ManageChatUserCell extends FrameLayout {
+                     if (subtitleUsername && !TextUtils.isEmpty(username)) {
+                         statusTextView.setText(username);
+                         statusTextView.setTextColor(statusColor);
+-                    } else if (currentUser.id == UserConfig.getInstance(currentAccount).getClientUserId() || currentUser.status != null && currentUser.status.expires > ConnectionsManager.getInstance(currentAccount).getCurrentTime() || MessagesController.getInstance(currentAccount).onlinePrivacy.containsKey(currentUser.id)) {
+-                        statusTextView.setTextColor(statusOnlineColor);
+-                        statusTextView.setText(LocaleController.getString(R.string.Online));
+                     } else {
+                         statusTextView.setTextColor(statusColor);
+                         statusTextView.setText(LocaleController.formatUserStatusIOS(currentAccount, currentUser));
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ProfileSearchCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ProfileSearchCell.java
+index 8c2eb14..48e340c 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ProfileSearchCell.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ProfileSearchCell.java
+@@ -668,10 +668,6 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
+                     if (isOnline[0]) {
+                         currentStatusPaint = Theme.dialogs_onlinePaint;
+                     }
+-                    if (user != null && (user.id == UserConfig.getInstance(currentAccount).getClientUserId() || user.status != null && user.status.expires > ConnectionsManager.getInstance(currentAccount).getCurrentTime())) {
+-                        currentStatusPaint = Theme.dialogs_onlinePaint;
+-                        statusString = getString(R.string.Online);
+-                    }
+                 }
+             }
+             if (savedMessages || UserObject.isReplyUser(user)) {
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/HintDialogCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/HintDialogCell.java
+index 9f7275c..1f20562 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/HintDialogCell.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/HintDialogCell.java
+@@ -32,7 +32,6 @@ import org.telegram.messenger.NotificationCenter;
+ import org.telegram.messenger.R;
+ import org.telegram.messenger.UserConfig;
+ import org.telegram.messenger.UserObject;
+-import org.telegram.tgnet.ConnectionsManager;
+ import org.telegram.tgnet.TLRPC;
+ import org.telegram.tgnet.tl.TL_account;
+ import org.telegram.ui.ActionBar.Theme;
+@@ -58,7 +57,6 @@ public class HintDialogCell extends FrameLayout {
+ 
+     private long dialogId;
+     private int currentAccount = UserConfig.selectedAccount;
+-    float showOnlineProgress;
+     boolean wasDraw;
+ 
+     CounterView counterView;
+@@ -234,24 +232,6 @@ public class HintDialogCell extends FrameLayout {
+     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
+         boolean result = super.drawChild(canvas, child, drawingTime);
+         if (child == imageView) {
+-            boolean showOnline = !premiumBlocked && currentUser != null && !currentUser.bot && (currentUser.status != null && currentUser.status.expires > ConnectionsManager.getInstance(currentAccount).getCurrentTime() || MessagesController.getInstance(currentAccount).onlinePrivacy.containsKey(currentUser.id));
+-            if (!wasDraw) {
+-                showOnlineProgress = showOnline ? 1f : 0f;
+-            }
+-            if (showOnline && showOnlineProgress != 1f) {
+-                showOnlineProgress += 16f / 150;
+-                if (showOnlineProgress > 1) {
+-                    showOnlineProgress = 1f;
+-                }
+-                invalidate();
+-            } else if (!showOnline && showOnlineProgress != 0) {
+-                showOnlineProgress -= 16f / 150;
+-                if (showOnlineProgress < 0) {
+-                    showOnlineProgress = 0;
+-                }
+-                invalidate();
+-            }
+-
+             final float lockT = premiumBlockedT.set(premiumBlocked);
+             if (lockT > 0) {
+                 float top = child.getY() + child.getHeight() / 2f + dp(18);
+@@ -278,16 +258,6 @@ public class HintDialogCell extends FrameLayout {
+                 lockDrawable.setAlpha((int) (0xFF * lockT));
+                 lockDrawable.draw(canvas);
+                 canvas.restore();
+-            } else if (showOnlineProgress != 0) {
+-                int top = AndroidUtilities.dp(53);
+-                int left = AndroidUtilities.dp(59);
+-                canvas.save();
+-                canvas.scale(showOnlineProgress, showOnlineProgress, left, top);
+-                Theme.dialogs_onlineCirclePaint.setColor(Theme.getColor(backgroundColorKey));
+-                canvas.drawCircle(left, top, AndroidUtilities.dp(7), Theme.dialogs_onlineCirclePaint);
+-                Theme.dialogs_onlineCirclePaint.setColor(Theme.getColor(Theme.key_chats_onlineCircle));
+-                canvas.drawCircle(left, top, AndroidUtilities.dp(5), Theme.dialogs_onlineCirclePaint);
+-                canvas.restore();
+             }
+             wasDraw = true;
+         }
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ShareDialogCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ShareDialogCell.java
+index fcfc06f..193276c 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ShareDialogCell.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ShareDialogCell.java
+@@ -21,7 +21,6 @@ import android.graphics.PorterDuff;
+ import android.graphics.PorterDuffColorFilter;
+ import android.graphics.Shader;
+ import android.graphics.drawable.Drawable;
+-import android.os.SystemClock;
+ import android.text.Layout;
+ import android.text.TextUtils;
+ import android.util.TypedValue;
+@@ -49,7 +48,6 @@ import org.telegram.messenger.NotificationCenter;
+ import org.telegram.messenger.R;
+ import org.telegram.messenger.UserConfig;
+ import org.telegram.messenger.UserObject;
+-import org.telegram.tgnet.ConnectionsManager;
+ import org.telegram.tgnet.TLRPC;
+ import org.telegram.tgnet.tl.TL_account;
+ import org.telegram.ui.ActionBar.SimpleTextView;
+@@ -77,8 +75,6 @@ public class ShareDialogCell extends FrameLayout implements NotificationCenter.N
+     private TLRPC.User user;
+     private final int currentType;
+ 
+-    private float onlineProgress;
+-    private long lastUpdateTime;
+     private long currentDialog;
+ 
+     private boolean topicWasVisible;
+@@ -351,13 +347,6 @@ public class ShareDialogCell extends FrameLayout implements NotificationCenter.N
+         boolean result = super.drawChild(canvas, child, drawingTime);
+         if (child == imageView && currentType != TYPE_CREATE) {
+             if (user != null && !MessagesController.isSupportUser(user)) {
+-                long newTime = SystemClock.elapsedRealtime();
+-                long dt = newTime - lastUpdateTime;
+-                if (dt > 17) {
+-                    dt = 17;
+-                }
+-                lastUpdateTime = newTime;
+-
+                 final float priceT = starsBlockedT.set(starsPriceBlocked > 0);
+                 if (priceT > 0) {
+                     float cx = imageView.getLeft() + imageView.getMeasuredWidth() / 2.0f + dp(18);
+@@ -408,35 +397,6 @@ public class ShareDialogCell extends FrameLayout implements NotificationCenter.N
+                     lockDrawable.draw(canvas);
+                     canvas.restore();
+                 }
+-
+-                boolean isOnline = !premiumBlocked && !user.self && !user.bot && (user.status != null && user.status.expires > ConnectionsManager.getInstance(currentAccount).getCurrentTime() || MessagesController.getInstance(currentAccount).onlinePrivacy.containsKey(user.id));
+-                if (isOnline || onlineProgress != 0) {
+-                    int top = imageView.getBottom() - dp(6);
+-                    int left = imageView.getRight() - dp(10);
+-                    Theme.dialogs_onlineCirclePaint.setColor(getThemedColor(Theme.key_windowBackgroundWhite));
+-                    canvas.drawCircle(left, top, dp(7) * onlineProgress * (1.0f - lockT) * (1.0f - priceT), Theme.dialogs_onlineCirclePaint);
+-                    Theme.dialogs_onlineCirclePaint.setColor(getThemedColor(Theme.key_chats_onlineCircle));
+-                    canvas.drawCircle(left, top, dp(5) * onlineProgress * (1.0f - lockT) * (1.0f - priceT), Theme.dialogs_onlineCirclePaint);
+-                    if (isOnline) {
+-                        if (onlineProgress < 1.0f) {
+-                            onlineProgress += dt / 150.0f;
+-                            if (onlineProgress > 1.0f) {
+-                                onlineProgress = 1.0f;
+-                            }
+-                            imageView.invalidate();
+-                            invalidate();
+-                        }
+-                    } else {
+-                        if (onlineProgress > 0.0f) {
+-                            onlineProgress -= dt / 150.0f;
+-                            if (onlineProgress < 0.0f) {
+-                                onlineProgress = 0.0f;
+-                            }
+-                            imageView.invalidate();
+-                            invalidate();
+-                        }
+-                    }
+-                }
+             }
+         }
+         return result;
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java b/TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java
+index a36c199..4a3f26a 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java
+@@ -11662,7 +11662,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
+                         if (CherrygramCoreConfig.isDevBuild() || CherrygramCoreConfig.isStandalonePremiumBuild()) {
+                             newString2 = LocaleController.formatUserStatus(currentAccount, user, isOnline, shortStatus ? new boolean[1] : null);
+                         } else {
+-                            newString2 = LocaleController.getString(R.string.Online);
++                            newString2 = "";
+                         }
+                     }
+                 }
+@@ -11680,9 +11680,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
+                 }
+             } else {
+                 isOnline[0] = false;
+-                String tgPremium = getMessagesController().isPremiumUser(user) && CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses() ? " | TG Premium" : "";
+-                newString2 = LocaleController.formatUserStatus(currentAccount, user, isOnline, shortStatus ? new boolean[1] : null) + tgPremium;
+-                hiddenStatusButton = user != null && !isOnline[0] && !getUserConfig().isPremium() && user.status != null && (user.status instanceof TLRPC.TL_userStatusRecently || user.status instanceof TLRPC.TL_userStatusLastMonth || user.status instanceof TLRPC.TL_userStatusLastWeek) && user.status.by_me;
++                String tgPremium = getMessagesController().isPremiumUser(user) && CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses() ? "TG Premium" : "";
++                newString2 = tgPremium;
+                 if (onlineTextView[1] != null && !mediaHeaderVisible) {
+                     int key = isOnline[0] && peerColor == null ? Theme.key_profile_status : Theme.key_avatar_subtitleInProfileBlue;
+                     onlineTextView[1].setTag(key);
+@@ -11889,7 +11888,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
+                     if (CherrygramCoreConfig.isDevBuild() || CherrygramCoreConfig.isStandalonePremiumBuild()) {
+                         onlineTextView[3].setText(LocaleController.formatUserStatus(currentAccount, user, isOnline, shortStatus ? new boolean[1] : null));
+                     } else {
+-                        onlineTextView[3].setText(LocaleController.getString(R.string.Online));
++                        onlineTextView[3].setText("");
+                     }
+                 }
+             } else {
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity2.java b/TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity2.java
+index 71b5ac7..fc9b665 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity2.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity2.java
+@@ -733,7 +733,7 @@ public class ProfileActivity2 extends BaseFragment implements
+         if (user != null) {
+             title.setText(UserObject.getUserName(user));
+             if (self) {
+-                subtitle.setText(getString(R.string.Online));
++                subtitle.setText("");
+             } else if (dialogId == UserObject.VERIFY) {
+                 subtitle.setText(getString(R.string.VerifyCodesNotifications));
+             } else if (dialogId == 333000 || user.id == 777000 || user.id == 42777) {
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/NotificationsController.java b/TMessagesProj/src/main/java/org/telegram/messenger/NotificationsController.java
+index 0087d5c..3c7af40 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/NotificationsController.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/NotificationsController.java
+@@ -1145,7 +1145,8 @@ public class NotificationsController extends BaseController implements Notificat
+                 MessageObject messageObject = messageObjects.get(a);
+                 if (messageObject.messageOwner != null && (messageObject.isImportedForward() ||
+                         messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetMessagesTTL ||
+-                        messageObject.messageOwner.silent && (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionContactSignUp || messageObject.messageOwner.action instanceof TLRPC.TL_messageActionUserJoined)) ||
++                        messageObject.messageOwner.action instanceof TLRPC.TL_messageActionContactSignUp ||
++                        messageObject.messageOwner.action instanceof TLRPC.TL_messageActionUserJoined) ||
+                         MessageObject.isTopicActionMessage(messageObject)) {
+                     if (BuildVars.LOGS_ENABLED) {
+                         FileLog.d("skipped message because 1");
+@@ -1619,7 +1620,8 @@ public class NotificationsController extends BaseController implements Notificat
+                     }
+                     if (message.fwd_from != null && message.fwd_from.imported ||
+                             message.action instanceof TLRPC.TL_messageActionSetMessagesTTL ||
+-                            message.silent && (message.action instanceof TLRPC.TL_messageActionContactSignUp || message.action instanceof TLRPC.TL_messageActionUserJoined)) {
++                            message.action instanceof TLRPC.TL_messageActionContactSignUp ||
++                            message.action instanceof TLRPC.TL_messageActionUserJoined) {
+                         continue;
+                     }
+                     long did;

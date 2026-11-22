@@ -6,6 +6,8 @@
     <string name="CG_DoNotRemindAgain">不再提醒</string>
     <!--Telegram screens-->
     <string name="CG_SwitchedToAccount">切换到 **%1$s**</string>
+    <string name="PersonalGroupAdMark">标记为广告</string>
+    <string name="PersonalGroupAdHidden">已在此对话隐藏这条广告</string>
     <string name="CG_JoinedDate">您加入了 **%1$s** **%2$s**</string>
     <string name="CG_CreatedDate">**%1$s** 已创建 **%2$s**</string>
     <string name="CG_RegistrationDate">注册日期：</string>
@@ -446,4 +448,6 @@
     <string name="DP_Donate_ExclusiveDesc">支持本项目来解锁所有功能。</string>
     <!--Donations-->
     <!--Cherrygram screens-->
+    <string name="PersonalLocalPin">在本机置顶</string>
+    <string name="PersonalLocalUnpin">取消本机置顶</string>
 </resources>
