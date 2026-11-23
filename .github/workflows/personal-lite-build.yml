@@ -67,19 +67,40 @@ jobs:
       - uses: android-actions/setup-android@v3
         with:
           packages: 'platform-tools'
-      - name: Cache Android toolchain
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
           path: |
             ${{ env.ANDROID_HOME }}/platforms/android-36
             ${{ env.ANDROID_HOME }}/build-tools/36.0.0
             ${{ env.ANDROID_HOME }}/ndk/27.2.12479018
             ${{ env.ANDROID_HOME }}/cmake/3.22.1
-          key: android-toolchain-${{ runner.os }}-api36-bt36.0.0-ndk27.2.12479018-cmake3.22.1-v1
+          key: ${{ runner.os }}-android-sdk36-bt36-ndk27.2.12479018-cmake3.22.1
       - name: Install Android toolchain
         run: |
           yes | sdkmanager --licenses > /dev/null || true
           sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+      - name: Install ccache and fingerprint native inputs
+        id: native-cache
+        shell: bash
+        run: |
+          if ! command -v ccache >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends ccache
+          fi
+          ccache --version
+          fingerprint="$({
+            git ls-tree HEAD -- TMessagesProj/jni
+            git diff HEAD -- TMessagesProj/jni
+            sha256sum TMessagesProj/build.gradle
+          } | sha256sum)"
+          printf 'fingerprint=%s\n' "${fingerprint%% *}" >> "$GITHUB_OUTPUT"
+      - name: Cache native compiler outputs
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/cherrygram-ccache
+          key: ${{ runner.os }}-${{ runner.arch }}-cherrygram-ccache-arm64-ndk27.2.12479018-v1-${{ steps.native-cache.outputs.fingerprint }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-cherrygram-ccache-arm64-ndk27.2.12479018-v1-
       - name: Prepare signing key
         shell: bash
         env:
@@ -95,7 +116,20 @@ jobs:
       - name: Compile Java and Kotlin before native build
         run: gradle :TMessagesProj:compileStandaloneJavaWithJavac --stacktrace
       - name: Build standalone APK
-        run: gradle :TMessagesProj_AppStandalone:assembleAfatStandalone --stacktrace
+        env:
+          CMAKE_C_COMPILER_LAUNCHER: ccache
+          CMAKE_CXX_COMPILER_LAUNCHER: ccache
+          CCACHE_DIR: ${{ runner.temp }}/cherrygram-ccache
+          CCACHE_MAXSIZE: '2G'
+          CCACHE_COMPILERCHECK: content
+        run: |
+          ccache --zero-stats
+          gradle :TMessagesProj_AppStandalone:assembleAfatStandalone --stacktrace
+      - name: Report native compiler cache statistics
+        if: ${{ always() && steps.native-cache.outcome == 'success' }}
+        env:
+          CCACHE_DIR: ${{ runner.temp }}/cherrygram-ccache
+        run: ccache --show-stats
       - name: Encrypt APKs containing personal Telegram credentials
         if: ${{ env.TELEGRAM_API_ID != '' }}
         shell: bash

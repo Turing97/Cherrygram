@@ -1041,7 +1041,33 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
                          if (groupedMessages != null) {
                              return groupedMessages.getPosition(message).spanSize;
                          }
-@@ -10773,6 +10791,10 @@
+@@ -7090,7 +7108,8 @@
+                     if (group != null) {
+                         MessageObject.GroupedMessagePosition position = cell.getCurrentPosition();
+                         if (position != null && position.siblingHeights != null) {
+-                            float maxHeight = Math.max(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y) * 0.5f;
++                            float maxHeight = cell.getAlbumHeightScale(
++                                    Math.max(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y) * 0.5f);
+                             int h = cell.getExtraInsetHeight();
+                             for (int a = 0; a < position.siblingHeights.length; a++) {
+                                 h += (int) Math.ceil(maxHeight * position.siblingHeights[a]);
+@@ -7108,6 +7127,15 @@
+                                 }
+                             }
+                             outRect.bottom = -h;
++                        }
++                    }
++                    final MessageObject message = cell.getMessageObject();
++                    if (chatMode == MODE_DEFAULT && currentChat != null && !isReport()
++                            && message != null && message.isReadingChannelPost()) {
++                        final MessageObject.GroupedMessages album = getValidGroupedMessage(message);
++                        final MessageObject.GroupedMessagePosition position = album == null ? null : album.getPosition(message);
++                        if (position == null || (position.flags & MessageObject.POSITION_FLAG_BOTTOM) != 0) {
++                            outRect.bottom += dp(6);
+                         }
+                     }
+                 }
+@@ -10773,6 +10801,10 @@
              }
              actionModeViews.add(actionMode.addItemWithWidth(share, R.drawable.msg_shareout, dp(48), LocaleController.getString(R.string.ShareFile)));
              actionModeViews.add(actionMode.addItemWithWidth(delete, R.drawable.msg_delete, dp(48), LocaleController.getString(R.string.Delete)));
@@ -1052,7 +1078,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
          } else {
              actionModeViews.add(actionMode.addItemWithWidth(edit, R.drawable.msg_edit, dp(48), LocaleController.getString(R.string.Edit)));
              actionModeViews.add(actionMode.addItemWithWidth(star, R.drawable.msg_fave, dp(48), LocaleController.getString(R.string.AddToFavorites)));
-@@ -17382,7 +17404,7 @@
+@@ -17382,7 +17414,7 @@
      }
  
      private int getHeightForMessage(MessageObject object, boolean withGroupCaption) {
@@ -1061,7 +1087,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
              return 0;
          }
          if (dummyMessageCell == null) {
-@@ -19872,6 +19894,7 @@
+@@ -19872,6 +19904,7 @@
                  ActionBarMenuItem deleteItem = actionBar.createActionMode().getItem(delete);
                  ActionBarMenuItem tagItem = actionBar.createActionMode().getItem(tag_message);
                  ActionBarMenuItem shareItem = actionBar.createActionMode().getItem(share);
@@ -1069,7 +1095,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
  
                  boolean noforwards = isPeerNoForwards() || hasSelectedNoforwardsMessage();
                  if (prevCantForwardCount == 0 && cantForwardMessagesCount != 0 || prevCantForwardCount != 0 && cantForwardMessagesCount == 0) {
-@@ -25680,28 +25703,11 @@
+@@ -25680,28 +25713,11 @@
              return;
          }
  
@@ -1099,7 +1125,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
          for (int i = 0; i < res.messages.size(); i++) {
              MessageObject messageObject = res.messages.get(i);
              messageObject.resetLayout();
-@@ -25727,15 +25733,7 @@
+@@ -25727,15 +25743,7 @@
                              continue;
                          }
                          if (postId < 0) continue;
@@ -1116,7 +1142,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
                      }
                  } catch (Exception e) {
                      FileLog.e(e, false);
-@@ -25744,24 +25742,15 @@
+@@ -25744,24 +25752,15 @@
          }
          sponsoredMessagesAdded = true;
          if (UserObject.isBot(currentUser)) {
@@ -1148,7 +1174,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
          }
      }
  
-@@ -29946,11 +29935,7 @@
+@@ -29946,11 +29945,7 @@
          }
  
          boolean showRestartTopic = !isInPreviewMode() && forumTopic != null && forumTopic.closed && !forumTopic.hidden && ChatObject.canManageTopic(currentAccount, currentChat, forumTopic);
@@ -1161,7 +1187,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
          boolean showAddProfilePicture = UserObject.isBot(currentUser) && currentUser.bot_can_edit && currentUser.photo == null;
          boolean showBizBot = currentEncryptedChat == null && getUserConfig().isPremium() && preferences.getLong("dialog_botid" + did, 0) != 0 || DEBUG_TOP_PANELS;
          boolean showBotAd = currentUser != null && currentUser.bot && messages.size() >= 2 && botSponsoredMessage != null;
-@@ -30600,6 +30585,9 @@
+@@ -30600,6 +30595,9 @@
      @Override
      public void onResume() {
          super.onResume();
@@ -1171,7 +1197,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
          checkShowBlur(false);
          activityResumeTime = System.currentTimeMillis();
          if (openImport && getSendMessagesHelper().getImportingHistory(dialog_id) != null) {
-@@ -32751,16 +32739,6 @@
+@@ -32751,16 +32749,6 @@
                      }
                  }
  
@@ -1188,7 +1214,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
                  scrimPopupWindowItems = new ActionBarMenuSubItem[items.size()];
                  for (int a = 0, N = items.size(); a < N; a++) {
                      final Integer option = options.get(a);
-@@ -34333,6 +34311,88 @@
+@@ -34333,6 +34321,88 @@
          MediaController.saveFile(path, getParentActivity(), messageObject.isVideo() ? 1 : 0, null, null);
      }
  
@@ -1277,7 +1303,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
      public void processSelectedOption(int option) {
          if (selectedObject == null || getParentActivity() == null) {
              return;
-@@ -34346,6 +34406,10 @@
+@@ -34346,6 +34416,10 @@
                  currentChat
          );
          switch (option) {
@@ -1288,7 +1314,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
              case OPTION_RETRY: {
                  final MessageObject object = selectedObject;
                  final MessageObject.GroupedMessages group = selectedObjectGroup;
-@@ -37881,6 +37945,8 @@
+@@ -37881,6 +37955,8 @@
      private boolean hasSendingMessagesInBotForum;
  
      public class ChatActivityAdapter extends RecyclerAnimationScrollHelper.AnimatableAdapter {
@@ -1297,7 +1323,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
  
          private Context mContext;
          private boolean isBot;
-@@ -38114,6 +38180,12 @@
+@@ -38114,6 +38190,12 @@
  
          @Override
          public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -1310,7 +1336,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
              View view = null;
              if (viewType == 0) {
                  view = new ChatMessageCell(mContext, currentAccount, true, sharedResources, themeDelegate);
-@@ -38586,6 +38658,7 @@
+@@ -38586,6 +38668,7 @@
                      final ChatMessageCell messageCell = (ChatMessageCell) view;
                      MessageObject.GroupedMessages groupedMessages = getValidGroupedMessage(message);
                      messageCell.isChat = currentChat != null || UserObject.isUserSelf(currentUser) || UserObject.isReplyUser(currentUser) || (chatMode == MODE_SEARCH);
@@ -1318,7 +1344,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
                      messageCell.setSponsoredMessageVisible(true, false);
                      messageCell.isBotForum = UserObject.isBotForum(currentUser);
                      messageCell.isReportChat = isReport();
-@@ -39168,7 +39241,8 @@
+@@ -39168,7 +39251,8 @@
                  } else {
                      messages = ChatActivity.this.messages;
                  }
@@ -1328,7 +1354,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
              } else if (position == botInfoRow) {
                  return 3;
              } else if (position == userInfoRow) {
-@@ -45470,7 +45544,7 @@
+@@ -45470,7 +45554,7 @@
      }
  
      private void updateBotHelpCellClick(BotHelpCell cell) {
@@ -1337,7 +1363,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
          if (translateButtonEnabled && LanguageDetector.hasSupport()) {
              final CharSequence text = cell.getText();
              LanguageDetector.detectLanguage(text == null ? "" : text.toString(), lang -> {
-@@ -47779,6 +47853,11 @@
+@@ -47779,6 +47863,11 @@
              icons.add(R.drawable.outline_revert_24);
          }
  
@@ -1349,7 +1375,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMe
          CGMessageMenuInjector.INSTANCE.injectJSON(this, false, items, options, icons);
      }
  
-@@ -48757,7 +48836,6 @@
+@@ -48757,7 +48846,6 @@
      }
  
      /** Cherrygram start */
@@ -3283,7 +3309,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
      private int totalCommentWidth;
      private int commentNumberWidth;
      private boolean drawCommentButton;
-+    private static final int INLINE_FOOTER_HEIGHT_DP = 28;
++    private static final int INLINE_FOOTER_BOTTOM_INSET_DP = 4;
 +    private static final int INLINE_FOOTER_GAP_DP = 12;
 +    private StaticLayout channelMetadataLayout;
 +    private int channelMetadataWidth;
@@ -3436,7 +3462,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                  if (isPinnedChat || drawSideButton == 1 && (messageObject.messageOwner.fwd_from != null && !messageObject.isOutOwner() && messageObject.messageOwner.fwd_from.saved_from_peer != null && messageObject.getDialogId() == UserConfig.getInstance(currentAccount).getClientUserId() || messageObject.isSaved)) {
                      drawSideButton = 2;
                  }
-@@ -7169,8 +7247,17 @@
+@@ -7169,8 +7247,18 @@
              instantViewButtonText = null;
              drawForwardedName = false;
              drawCommentButton = false;
@@ -3450,12 +3476,13 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
 +            inlineCommentCount = null;
              photoImage.setSideClip(0);
 -            photoImage.setAspectFit(false);
-+            photoImage.setAspectFit(isPhotoOrVideoPreview(messageObject)
-+                    || isReadingChannelPost(messageObject) && getMedia(messageObject.messageOwner) instanceof TLRPC.TL_messageMediaWebPage);
++            photoImage.setAspectFit(!usesChannelAlbumGrid() && (isPhotoOrVideoPreview(messageObject)
++                    || isReadingChannelPost(messageObject)
++                        && getMedia(messageObject.messageOwner) instanceof TLRPC.TL_messageMediaWebPage));
              photoImage.setRoundRadiusEnabled(true);
              fitPhotoImage = false;
              gradientShader = null;
-@@ -7242,7 +7329,9 @@
+@@ -7242,7 +7330,9 @@
              if (messageIdChanged || messageObject.reactionsChanged || wasPlayingRound != isPlayingRound) {
                  messageObject.reactionsChanged = false;
                  boolean isTag = messageObject.messageOwner != null && messageObject.messageOwner.reactions != null && messageObject.messageOwner.reactions.reactions_as_tags;
@@ -3466,7 +3493,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                      boolean isSmall = !messageObject.shouldDrawReactionsInLayout();
                      if (currentPosition != null) {
                          MessageObject primaryMessage = groupedMessages.findPrimaryMessageObject();
-@@ -7293,7 +7382,7 @@
+@@ -7293,7 +7383,7 @@
                          } else {
                              comment = commentCount == 0 ? getString("LeaveAComment", R.string.LeaveAComment) : LocaleController.getPluralString("CommentsNoNumber", commentCount);
                          }
@@ -3475,7 +3502,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                          if (commentCount != 0 && recentRepliers != null && !recentRepliers.isEmpty()) {
                              createCommentUI();
                              int size = recentRepliers.size();
-@@ -7421,7 +7510,9 @@
+@@ -7421,7 +7511,9 @@
                  boolean measuredReactions = false;
  
                  final boolean isArticle = messageObject.type == MessageObject.TYPE_ARTICLE;
@@ -3486,7 +3513,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                      maxWidth = AndroidUtilities.getMinTabletSide() - dp((isArticle ? 40 : 80) + (isSideMenuEnabled ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 42 : 0));
                  } else {
                      maxWidth = Math.min(getParentWidth(), AndroidUtilities.displaySize.y) - dp((isArticle ? 40 : 80) + (isSideMenuEnabled ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 42 : 0));
-@@ -7746,6 +7837,9 @@
+@@ -7746,6 +7838,9 @@
                          backgroundWidth = Math.max(backgroundWidth, messageObject.getLastLineWidth() + timeMore) + dp(31);
                      }
                  }
@@ -3496,7 +3523,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                  availableTimeWidth = backgroundWidth - dp(31);
                  if (messageObject.isRoundVideo()) {
                      availableTimeWidth -= Math.ceil(Theme.chat_audioTimePaint.measureText("00:00")) + (messageObject.isOutOwner() ? 0 : dp(64));
-@@ -7977,6 +8071,9 @@
+@@ -7977,6 +8072,9 @@
                              if (media.force_small_media) {
                                  smallImage = true;
                              }
@@ -3506,7 +3533,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                          }
                          linkPreviewAbove = currentMessageObject.messageOwner != null && currentMessageObject.messageOwner.invert_media;
                          isSmallImage = smallImage && type != null && currentMessageObject.photoThumbs != null || (drawInstantViewType == 23 || drawInstantViewType == 24 || drawInstantViewType == 28) && stickers != null && !stickers.isEmpty() || emoji_id != 0;
-@@ -8888,6 +8985,9 @@
+@@ -8888,6 +8986,9 @@
                      maxChildWidth = Math.max(maxChildWidth, factCheckWidth);
                      calcBackgroundWidth(maxWidth, timeMore, maxChildWidth);
                  }
@@ -3516,7 +3543,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              } else if (messageObject.type == MessageObject.TYPE_PHONE_CALL) {
                  createSelectorDrawable(0);
                  drawName = false;
-@@ -9254,7 +9354,8 @@
+@@ -9254,7 +9355,8 @@
                          if (currentPosition == null || (currentPosition.flags & captionFlag()) != 0) {
                              additionHeight += addedCaptionHeight;
                              int widthToCheck = Math.max(captionWidth, backgroundWidth - dp(20));
@@ -3526,7 +3553,16 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                                  additionHeight += dp(14);
                                  addedCaptionHeight += dp(14);
                                  captionNewLine = 1;
-@@ -10167,7 +10268,7 @@
+@@ -10079,7 +10181,7 @@
+                     int widthCaptionMin = -1;
+                     boolean fixPhotoWidth = false;
+                     if (currentMessagesGroup != null) {
+-                        float maxHeight = Math.max(getParentWidth(), AndroidUtilities.displaySize.y) * 0.5f;
++                        float maxHeight = getAlbumHeightScale(Math.max(getParentWidth(), AndroidUtilities.displaySize.y) * 0.5f);
+                         int dWidth = getGroupPhotosWidth();
+                         w = (int) Math.ceil(currentPosition.pw / 1000.0f * dWidth);
+                         if (currentPosition.minY != 0 && (messageObject.isOutOwner() && (currentPosition.flags & MessageObject.POSITION_FLAG_LEFT) != 0 || !messageObject.isOutOwner() && (currentPosition.flags & MessageObject.POSITION_FLAG_RIGHT) != 0)) {
+@@ -10167,7 +10269,7 @@
                                      } else {
                                          w -= dp(9);
                                      }
@@ -3535,7 +3571,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                                          w -= dp(48);
                                      }
                                      w += getAdditionalWidthForPosition(rowPosition);
-@@ -10248,7 +10349,8 @@
+@@ -10248,7 +10350,8 @@
                              if (currentPosition == null || (currentPosition.flags & captionFlag()) != 0) {
                                  additionHeight += addedCaptionHeight;
                                  int widthToCheck = Math.max(captionWidth, photoWidth - dp(10));
@@ -3545,17 +3581,17 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                                      additionHeight += dp(14);
                                      addedCaptionHeight += dp(14);
                                      captionNewLine = 1;
-@@ -10613,6 +10715,9 @@
+@@ -10613,6 +10716,9 @@
                      photoImage.setImageCoords(0, dp(13), dp(44), dp(44));
                  } else {
                      photoImage.setImageCoords(0, y + namesOffset + additionalTop, photoWidth, photoHeight);
-+                    if (isAlignedReadingAlbum() && isReadingChannelPost(messageObject)) {
++                    if (usesChannelAlbumGrid()) {
 +                        channelAlbumImageWidth = photoWidth;
 +                    }
                  }
                  if (messageObject.hasMediaSpoilers() && SpoilerEffect2.supports()) {
                      if (mediaSpoilerEffect2 == null && attachedToWindow) {
-@@ -10698,7 +10803,7 @@
+@@ -10698,7 +10804,7 @@
                              }
                              if (currentMessageObject.type != MessageObject.TYPE_POLL && (reactionsLayoutInBubble.isEmpty || reactionsLayoutInBubble.isSmall) && (currentPosition == null || (currentPosition.flags & captionFlag()) != 0)) {
                                  int timeWidthTotal = timeWidth + (messageObject.isOutOwner() ? dp(20) : 0) + getExtraTimeX();
@@ -3564,7 +3600,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                                      totalHeight += dp(14);
                                      if (captionLayout != null) {
                                          captionHeight += dp(14);
-@@ -10805,6 +10910,8 @@
+@@ -10805,6 +10911,8 @@
  
              drawStartBotTopic = false;
              drawContinueBotTopic = false;
@@ -3573,7 +3609,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
  
              final BotInlineKeyboard.Source inlineButtons;
              if (lastInChatList && isAllChats && isBotForum && !isPinnedChat && lastSendState == 0) {
-@@ -11000,9 +11107,20 @@
+@@ -11000,9 +11108,20 @@
                  substractBackgroundHeight = 0;
                  keyboardHeight = 0;
              }
@@ -3595,7 +3631,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              }
              if (hasFactCheck && currentPosition != null) {
                  totalHeight += dp(2 + (reactionsLayoutInBubble.isEmpty ? 18 : 0)) + factCheckHeight;
-@@ -13038,6 +13156,11 @@
+@@ -13038,6 +13157,11 @@
              }
          } else {
              newLineForTime = !linkPreviewAbove && (hasLinkPreview && !currentMessageObject.isSponsored() || hasFactCheck || hasOldCaptionPreview || hasGamePreview || hasInvoicePreview) || maxWidth - lastLineWidth < timeMore || currentMessageObject.hasRtl;
@@ -3607,7 +3643,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
          }
  
          int newLineForTimeDp = 14;
-@@ -13853,6 +13976,9 @@
+@@ -13853,6 +13977,9 @@
          int width = getParentWidth();
          if (currentMessageObject != null && currentMessageObject.preview) {
              width = parentWidth;
@@ -3617,7 +3653,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
          }
          if (!AndroidUtilities.isInMultiwindow && AndroidUtilities.isTablet() && (!AndroidUtilities.isSmallTablet() || getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)) {
              final int leftWidth = AndroidUtilities.getTabletLeftFragmentSize(width, 0, 0);
-@@ -13924,7 +14050,7 @@
+@@ -13924,7 +14051,7 @@
                      }
                      if (isSideMenuLeftMargin()) {
                          timeX += dp(ChatActivity.SIDE_MENU_WIDTH);
@@ -3626,7 +3662,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                          timeX += dp(48);
                      }
                      if (currentPosition != null && currentPosition.leftSpanOffset != 0) {
-@@ -13947,13 +14073,16 @@
+@@ -13947,13 +14074,16 @@
                      }
                      if (isSideMenuLeftMargin()) {
                          timeX += dp(ChatActivity.SIDE_MENU_WIDTH);
@@ -3644,7 +3680,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              }
              timeX -= getExtraTimeX();
              if (effectId != 0) {
-@@ -14024,7 +14153,7 @@
+@@ -14024,7 +14154,7 @@
                  x = dp(15);
                  if (isSideMenuLeftMargin()) {
                      x += dp(ChatActivity.SIDE_MENU_WIDTH);
@@ -3653,7 +3689,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                      x += dp(48);
                  }
              }
-@@ -14047,7 +14176,7 @@
+@@ -14047,7 +14177,7 @@
                      seekBarX += dp(ChatActivity.SIDE_MENU_WIDTH);
                      buttonX += dp(ChatActivity.SIDE_MENU_WIDTH);
                      timeAudioX += dp(ChatActivity.SIDE_MENU_WIDTH);
@@ -3662,7 +3698,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                      seekBarX += dp(48);
                      buttonX += dp(48);
                      timeAudioX += dp(48);
-@@ -14092,7 +14221,7 @@
+@@ -14092,7 +14222,7 @@
                          x = dp(15);
                          if (isSideMenuLeftMargin()) {
                              x += dp(ChatActivity.SIDE_MENU_WIDTH);
@@ -3671,7 +3707,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                              x += dp(48);
                          }
                          if (currentPosition != null && !currentPosition.edge) {
-@@ -14132,7 +14261,7 @@
+@@ -14132,7 +14262,7 @@
                      seekBarX += dp(ChatActivity.SIDE_MENU_WIDTH);
                      buttonX += dp(ChatActivity.SIDE_MENU_WIDTH);
                      timeAudioX += dp(ChatActivity.SIDE_MENU_WIDTH);
@@ -3680,7 +3716,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                      seekBarX += dp(48);
                      buttonX += dp(48);
                      timeAudioX += dp(48);
-@@ -14155,7 +14284,7 @@
+@@ -14155,7 +14285,7 @@
              } else {
                  if (isSideMenuLeftMargin()) {
                      buttonX = dp(23 + ChatActivity.SIDE_MENU_WIDTH);
@@ -3689,7 +3725,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                      buttonX = dp(23 + 48);
                  } else {
                      buttonX = dp(23);
-@@ -14175,7 +14304,7 @@
+@@ -14175,7 +14305,7 @@
                  x = dp(35);
                  if (isSideMenuLeftMargin()) {
                      x += dp(ChatActivity.SIDE_MENU_WIDTH);
@@ -3698,7 +3734,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                      x += dp(48);
                  }
              }
-@@ -14207,7 +14336,7 @@
+@@ -14207,7 +14337,7 @@
                      x = dp(15);
                      if (isSideMenuLeftMargin()) {
                          x += dp(ChatActivity.SIDE_MENU_WIDTH);
@@ -3707,7 +3743,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                          x += dp(48);
                      }
                      if (currentPosition != null && !currentPosition.edge) {
-@@ -14228,10 +14357,28 @@
+@@ -14228,10 +14358,28 @@
              }
              if (drawInstantViewType == 17) {
                  x += dp(10) + (instantWidth - photoImage.getImageWidth()) / 2;
@@ -3737,7 +3773,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              }
              buttonX = (int) (x + (photoImage.getImageWidth() - dp(48)) / 2.0f);
              buttonY = (int) (photoImage.getImageY() + (photoImage.getImageHeight() - dp(48)) / 2);
-@@ -15453,6 +15600,10 @@
+@@ -15453,6 +15601,10 @@
              if (!currentMessageObject.isOutOwner() && currentPosition != null) {
                  reactionsLayoutInBubble.x -= dp(64 - (needDrawAvatar() ? 48 : 0)) * sideMenuAlpha;
              }
@@ -3748,7 +3784,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              reactionsLayoutInBubble.y = getBackgroundDrawableBottom() - dp(10) - reactionsLayoutInBubble.height;
              reactionsLayoutInBubble.y -= (drawCommentButton ? dp(currentMessageObject.type == MessageObject.TYPE_PAID_MEDIA && hasCaptionLayout() ? 28 : 43) : 0);
              if (hasNewLineForTime && !(drawForwardedName && hasLinkPreview && documentAttachType == DOCUMENT_ATTACH_TYPE_AUDIO)) {
-@@ -15474,7 +15625,7 @@
+@@ -15474,7 +15626,7 @@
                          timeYOffset -= dp(16);
                      }
                  } else {
@@ -3757,7 +3793,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                  }
              }
              reactionsLayoutInBubble.y = (int) (shouldDrawTimeOnMedia() ? getPhotoBottom() + additionalTimeOffsetY - dp(7.3f) - timeLayout.getHeight() : layoutHeight - dp(pinnedBottom || pinnedTop ? 7.5f : 6.5f) - timeLayout.getHeight() + timeYOffset);
-@@ -17323,7 +17474,7 @@
+@@ -17323,7 +17475,7 @@
              captionY = y + AndroidUtilities.lerp(h + dp(6), (captionLayout == null ? 0 : -captionLayout.textHeight()) - dp(4), mediaAbove());
          } else if (hasOldCaptionPreview) {
              captionX = backgroundDrawableLeft + dp(currentMessageObject.isOutOwner() ? 11 : 17) + captionOffsetX;
@@ -3766,7 +3802,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              captionY = AndroidUtilities.lerp(
                  captionYBelow,
                  dp(9) + namesOffset,
-@@ -17336,7 +17487,7 @@
+@@ -17336,7 +17488,7 @@
              } else {
                  captionX = backgroundDrawableLeft + dp(currentMessageObject.isOutOwner() || mediaBackground || drawPinnedBottom ? 11 : 17) + captionOffsetX;
              }
@@ -3775,7 +3811,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              captionY = AndroidUtilities.lerp(
                  captionYBelow,
                  dp(9) + namesOffset,
-@@ -18918,7 +19069,7 @@
+@@ -18918,7 +19070,7 @@
                  currentChat = chat;
              } else if (DialogObject.isChatDialog(fromId)) {
                  currentChat = fromChat;
@@ -3784,7 +3820,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                  currentChat = messagesController.getChat(currentMessageObject.messageOwner.peer_id.channel_id);
              }
          }
-@@ -20042,12 +20193,12 @@
+@@ -20042,12 +20194,12 @@
      }
  
      public int getExtraInsetHeight() {
@@ -3800,7 +3836,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
          }
          if (!reactionsLayoutInBubble.isEmpty && currentMessageObject.shouldDrawReactionsInLayout()) {
              h += reactionsLayoutInBubble.totalHeight;
-@@ -20508,7 +20659,7 @@
+@@ -20508,7 +20660,7 @@
          if ((!autoPlayingMedia || !MediaController.getInstance().isPlayingMessageAndReadyToDraw(currentMessageObject) || isRoundVideo) && !transitionParams.animateBackgroundBoundsInner && !(currentMessageObject != null && currentMessageObject.preview)) {
              drawOverlays(canvas);
          }
@@ -3809,7 +3845,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              drawTime(canvas, 1f, false);
          }
  
-@@ -20791,7 +20942,7 @@
+@@ -20791,7 +20943,7 @@
                  currentBackgroundShadowDrawable = currentBackgroundDrawable.getShadowDrawable();
              }
  
@@ -3818,7 +3854,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              backgroundDrawableRight = backgroundWidth - (mediaBackground ? 0 : dp(3));
              if (currentMessagesGroup != null && !currentMessagesGroup.isDocuments) {
                  if (!currentPosition.edge) {
-@@ -20825,6 +20976,9 @@
+@@ -20825,6 +20977,9 @@
                  if ((currentPosition.flags & MessageObject.POSITION_FLAG_BOTTOM) == 0) {
                      additionalBottom += dp(SharedConfig.bubbleRadius + 4);
                  }
@@ -3828,7 +3864,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              }
              int offsetBottom;
              if (drawPinnedBottom && drawPinnedTop) {
-@@ -22036,7 +22190,7 @@
+@@ -22036,7 +22191,7 @@
                  r = dp(isSideMenuLeftMargin() ? ChatActivity.SIDE_MENU_WIDTH : ((isChat || messageObject != null && (messageObject.isRepostPreview || messageObject.forceAvatar || messageObject.messageOwner.guestchat_via_from != null) || messageObject.getDialogId() == UserObject.VERIFY) && isAvatarVisible ? 48 : 0) + 3);
                  r += (int) (dp(6) * (1f - getVideoTranscriptionProgress()));
              } else {
@@ -3837,7 +3873,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              }
              if (currentMessagesGroup != null && !currentMessagesGroup.isDocuments) {
                  if (currentPosition.leftSpanOffset != 0) {
-@@ -22055,6 +22209,9 @@
+@@ -22055,6 +22210,9 @@
      }
  
      public int getBackgroundDrawableRight() {
@@ -3847,7 +3883,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
          int right = backgroundWidth;
          if (isRoundVideo) {
              right -= (int) (getVideoTranscriptionProgress() * dp(3));
-@@ -23413,7 +23570,221 @@
+@@ -23413,7 +23571,233 @@
          }
      }
  
@@ -3928,7 +3964,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
 +        if (!reservesReadingAlbumFooter()) {
 +            return 0;
 +        }
-+        return inlineChannelFooter ? dp(INLINE_FOOTER_HEIGHT_DP)
++        return inlineChannelFooter ? dp(26) + dp(INLINE_FOOTER_BOTTOM_INSET_DP)
 +                : dp(shouldDrawTimeOnMedia() ? 41.3f : 43);
 +    }
 +
@@ -3938,6 +3974,18 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
 +                && useIncomingReadingLayout
 +                && (isReadingChannelPost(currentMessageObject)
 +                    || !AndroidUtilities.isTablet() && AndroidUtilities.displaySize.x <= AndroidUtilities.displaySize.y);
++    }
++
++    private boolean usesChannelAlbumGrid() {
++        return isAlignedReadingAlbum() && isReadingChannelPost(currentMessageObject);
++    }
++
++    public float getAlbumHeightScale(float defaultHeight) {
++        if (usesChannelAlbumGrid()) {
++            // Convert the album's width and height units with the same pixels-per-unit ratio.
++            return getGroupPhotosWidth() * (MessageObject.GroupedMessages.PHOTO_HEIGHT_UNITS / 1000f);
++        }
++        return defaultHeight;
 +    }
 +
 +    private int getAlignedReadingAlbumRight() {
@@ -3995,7 +4043,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
 +
 +    private void layoutInlineFooter() {
 +        final int right = getInlineFooterRight();
-+        final int bottom = getBackgroundDrawableBottom() - dp(2);
++        final int bottom = getBackgroundDrawableBottom() - dp(INLINE_FOOTER_BOTTOM_INSET_DP);
 +        final int top = bottom - dp(26);
 +        commentButtonRect.set(right - inlineCommentWidth, top, right, bottom);
 +        reactionsLayoutInBubble.x = getInlineFooterLeft();
@@ -4069,7 +4117,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
          int x;
          if (mediaBackground) {
              x = backgroundDrawableLeft + dp(12) + getExtraTextX();
-@@ -23708,6 +24079,7 @@
+@@ -23708,6 +24092,7 @@
              reactionsLayoutInBubble.drawServiceShaderBackground = 1f - getVideoTranscriptionProgress();
          }
          if (reactionsVisible && hasReactionsToDraw()) {
@@ -4077,7 +4125,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              if (reactionsLayoutInBubble.drawServiceShaderBackground > 0) {
                  applyServiceShaderMatrix();
              }
-@@ -23730,6 +24102,9 @@
+@@ -23730,6 +24115,9 @@
              if (restore) {
                  canvas.restore();
              }
@@ -4087,7 +4135,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
          }
      }
  
-@@ -23756,6 +24131,7 @@
+@@ -23756,6 +24144,7 @@
              return false;
          }
          if (hasReactionsToDraw()) {
@@ -4095,7 +4143,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              if (reactionsLayoutInBubble.drawServiceShaderBackground > 0) {
                  applyServiceShaderMatrix();
              }
-@@ -23776,6 +24152,9 @@
+@@ -23776,6 +24165,9 @@
              }
              if (restore) {
                  canvas.restore();
@@ -4105,18 +4153,18 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              }
              return true;
          }
-@@ -23861,7 +24240,9 @@
+@@ -23861,7 +24253,9 @@
                  }
              }
          } else if (transitionParams.animateBackgroundBoundsInner && currentBackgroundDrawable != null && currentMessagesGroup == null || transitionParams.animateMediaAbove && currentMessagesGroup == null) {
 -            int bottomoffset = (drawCommentButton && commentButtonRect != null ? commentButtonRect.height() : 0) + (reactionsLayoutInBubble != null && !reactionsLayoutInBubble.isSmall ? reactionsLayoutInBubble.height : 0);
-+            int bottomoffset = inlineChannelFooter ? dp(INLINE_FOOTER_HEIGHT_DP)
++            int bottomoffset = inlineChannelFooter ? getCommentLayoutHeight()
 +                    : (drawCommentButton ? commentButtonRect.height() : 0)
 +                        + (!reactionsLayoutInBubble.isSmall ? reactionsLayoutInBubble.height : 0);
              if (currentMessageObject.isOutOwner() && !mediaBackground && !pinnedBottom) {
                  canvas.clipRect(
                          getBackgroundDrawableLeft() + transitionParams.deltaLeft + dp(4), getBackgroundDrawableTop() + transitionParams.deltaTop + dp(4),
-@@ -23926,10 +24307,10 @@
+@@ -23926,10 +24320,10 @@
                      captionYBottom = y + h + dp(6);
                      captionYTop = y + (captionLayout == null ? 0 : -captionLayout.textHeight(transitionParams)) - dp(4);
                  } else if (hasOldCaptionPreview) {
@@ -4129,7 +4177,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
                      captionYTop = dp(9);
                  }
                  drawMessageText(captionX, captionAbove ? captionYBottom : captionYTop, canvas, captionLayout.textLayoutBlocks, captionLayout.textXOffset, origin, alpha * (1f - transitionParams.animateChangeProgress), true, false, true);
-@@ -24068,6 +24449,12 @@
+@@ -24068,6 +24462,12 @@
      }
  
      public void drawTime(Canvas canvas, float alpha, boolean fromParent) {
@@ -4142,7 +4190,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
          if (!drawFromPinchToZoom && delegate != null && delegate.getPinchToZoomHelper() != null && delegate.getPinchToZoomHelper().isInOverlayModeFor(this) && shouldDrawTimeOnMedia()) {
              return;
          }
-@@ -24141,6 +24528,119 @@
+@@ -24141,6 +24541,119 @@
                  effectDrawable.setAlpha((int) (0xFF * timeAlpha));
              }
              effectDrawable.draw(canvas);
@@ -4262,7 +4310,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
          }
      }
  
-@@ -24213,6 +24713,7 @@
+@@ -24213,6 +24726,7 @@
              timeTitleTimeX -= transitionParams.animateEditedWidthDiff * (1f - transitionParams.animateChangeProgress);
          }
  
@@ -4270,7 +4318,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
          int timeYOffset;
          if (shouldDrawTimeOnMedia()) {
              timeYOffset = -(drawCommentButton ? dp(41.3f) : 0);
-@@ -24365,7 +24866,7 @@
+@@ -24365,7 +24879,7 @@
                      timeYOffset -= dp(4);
                  }
              } else {
@@ -4279,7 +4327,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              }
              float additionalX = -timeLayout.getLineLeft(0);
              if (currentMessageObject.shouldDrawReactions() && reactionsLayoutInBubble.isSmall) {
-@@ -24693,7 +25194,7 @@
+@@ -24693,7 +25207,7 @@
                      timeYOffset -= dp(4);
                  }
              } else {
@@ -4288,7 +4336,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              }
          }
          return getTimeY(timeYOffset);
-@@ -26704,6 +27205,12 @@
+@@ -26704,6 +27218,12 @@
  
      @Override
      public void didPressReactionFromLayout(TLRPC.ReactionCount reaction, boolean longpress, float x, float y) {
@@ -4301,7 +4349,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
          if (delegate != null) {
              delegate.didPressReaction(this, reaction, longpress, x, y);
          }
-@@ -28329,6 +28836,12 @@
+@@ -28329,6 +28849,12 @@
          if (object != null && object.preview && parentWidth > 0) {
              return parentWidth;
          }
@@ -4314,7 +4362,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
          return AndroidUtilities.displaySize.x;
      }
  
-@@ -29414,9 +29927,13 @@
+@@ -29414,9 +29940,13 @@
      }
  
      public boolean needDrawAvatar() {
@@ -4690,7 +4738,24 @@ index 7773901..9e9520c 100644
 diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java b/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java
 --- a/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java
 +++ b/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java
-@@ -1436,7 +1436,19 @@
+@@ -1262,6 +1262,7 @@
+     }
+ 
+     public static class GroupedMessages {
++        public static final float PHOTO_HEIGHT_UNITS = 814f;
+         public long groupId;
+         public boolean hasSibling;
+         public boolean hasCaption;
+@@ -1338,7 +1339,7 @@
+                 return;
+             }
+ 
+-            float maxSizeHeight = 814.0f;
++            float maxSizeHeight = PHOTO_HEIGHT_UNITS;
+             StringBuilder proportions = new StringBuilder();
+             float averageAspectRatio = 1.0f;
+             boolean isOut = false;
+@@ -1436,7 +1437,19 @@
                  return;
              }
  
@@ -4711,7 +4776,41 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.ja
                  maxSizeWidth -= 50;
                  firstSpanAdditionalSize += 50;
              }
-@@ -1701,7 +1713,6 @@
+@@ -1454,6 +1467,33 @@
+                 MessageObject.GroupedMessagePosition position1 = posArray.get(0);
+                 float height = Math.round(Math.min(maxSizeWidth / position1.aspectRatio, Math.min(maxSizeWidth / position1.aspectRatio, maxSizeHeight / 2.0f))) / maxSizeHeight;
+                 position1.set(0, 0, 0, 0, maxSizeWidth, height, POSITION_FLAG_LEFT | POSITION_FLAG_RIGHT | POSITION_FLAG_TOP | POSITION_FLAG_BOTTOM);
++            } else if (readingChannel && !forceCalc
++                    && (count == 3 && proportions.charAt(0) == 'n'
++                        || count == 4 && proportions.charAt(0) != 'w')) {
++                // Avoid spanning a tall tile across rows with independent footer heights.
++                final int columns = count == 3 ? 3 : 2;
++                for (int start = 0; start < count; start += columns) {
++                    final int row = start / columns;
++                    final float[] ratios = new float[columns];
++                    float ratioSum = 0f;
++                    for (int column = 0; column < columns; column++) {
++                        ratios[column] = Math.max(2f / 3f, Math.min(1.5f, posArray.get(start + column).aspectRatio));
++                        ratioSum += ratios[column];
++                    }
++                    final float height = Math.min(maxSizeWidth / ratioSum, maxSizeWidth * 0.55f) / maxSizeHeight;
++                    int remainingWidth = maxSizeWidth;
++                    for (int column = 0; column < columns; column++) {
++                        final boolean lastColumn = column == columns - 1;
++                        final int width = lastColumn ? remainingWidth : Math.round(maxSizeWidth * ratios[column] / ratioSum);
++                        final int flags = (column == 0 ? POSITION_FLAG_LEFT : 0)
++                                | (lastColumn ? POSITION_FLAG_RIGHT : 0)
++                                | (start == 0 ? POSITION_FLAG_TOP : 0)
++                                | (start + columns == count ? POSITION_FLAG_BOTTOM : 0);
++                        posArray.get(start + column).set(column, column, row, row, width, height, flags);
++                        remainingWidth -= width;
++                    }
++                }
++                maxX = columns - 1;
+             } else if (!forceCalc && (count == 2 || count == 3 || count == 4)) {
+                 if (count == 2) {
+                     GroupedMessagePosition position1 = posArray.get(0);
+@@ -1701,7 +1741,6 @@
                      y += lineHeight;
                  }
              }
@@ -4719,7 +4818,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.ja
              for (int a = 0; a < count; a++) {
                  GroupedMessagePosition pos = posArray.get(a);
                  if (isOut) {
-@@ -1721,7 +1732,8 @@
+@@ -1721,7 +1760,8 @@
                  }
                  MessageObject messageObject = messages.get(a);
                  messageObject.messageBlocked = blocked;
@@ -4729,7 +4828,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.ja
                      if (pos.edge) {
                          if (pos.spanSize != 1000) {
                              pos.spanSize += avatarOffset;
-@@ -8544,6 +8556,8 @@
+@@ -8544,6 +8584,8 @@
      }
  
      public boolean sideMenuEnabled;
@@ -4738,7 +4837,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.ja
      public int getMaxMessageTextWidth() {
          int maxWidth = 0;
          if (AndroidUtilities.isTablet() && eventId != 0) {
-@@ -8554,6 +8568,9 @@
+@@ -8554,6 +8596,9 @@
          }
          generatedWithDensity = AndroidUtilities.density;
          generatedWithFontSize = Theme.chat_msgTextPaint != null ? Theme.chat_msgTextPaint.getTextSize() : 0;
@@ -4748,7 +4847,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.ja
          if (hasCode && !isSaved) {
              maxWidth = generatedWithMinSize - dp(45 + 15);
              if (sideMenuEnabled) {
-@@ -8595,13 +8612,14 @@
+@@ -8595,13 +8640,14 @@
          return Math.max(0, maxWidth);
      }
  
@@ -4770,7 +4869,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.ja
          return true;
      }
  
-@@ -9693,6 +9711,34 @@
+@@ -9693,6 +9739,34 @@
              channelSignatureProfiles = getDialogId() == UserObject.VERIFY;
          }
          return !isSponsored() && (isFromUser() || isFromGroup() || channelSignatureProfiles || eventId != 0 || messageOwner.fwd_from != null && messageOwner.fwd_from.saved_from_peer != null);
