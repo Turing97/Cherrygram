@@ -1474,10 +1474,9 @@ index 70520e8..f95f5a1 100644
                  getString(R.string.OpenInExternalApp),
                  R.drawable.msg_openin,
 diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramAppearanceConfig.kt b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramAppearanceConfig.kt
-index 197a0fe..6fd4f44 100644
 --- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramAppearanceConfig.kt
 +++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/configs/CherrygramAppearanceConfig.kt
-@@ -15,7 +15,6 @@ import org.telegram.messenger.AccountInstance
+@@ -15,7 +15,6 @@
  import org.telegram.messenger.ApplicationLoader
  import org.telegram.messenger.SharedConfig
  import org.telegram.messenger.UserConfig
@@ -1485,7 +1484,16 @@ index 197a0fe..6fd4f44 100644
  import uz.unnarsx.cherrygram.core.icons.icon_replaces.BaseIconReplace
  import uz.unnarsx.cherrygram.core.icons.icon_replaces.NoIconReplace
  import uz.unnarsx.cherrygram.core.icons.icon_replaces.SolarIconReplace
-@@ -106,38 +105,4 @@ object CherrygramAppearanceConfig {
+@@ -74,7 +73,7 @@
+     /** Folders finish */
+ 
+     /** Main tabs start */
+-    var showMainTabs by sharedPreferences.boolean("AP_ShowMainTabs", true)
++    val showMainTabs = false
+     var openSettingsBySwipe by sharedPreferences.boolean("AP_OpenSettingsBySwipe", false)
+     var mainTabsOrder by sharedPreferences.string("AP_MainTabsPosition_New", "SETTINGS,CHATS,!PROFILE,!CONTACTS,!CALLS,SEARCH")
+     var showSearchInTabs by sharedPreferences.boolean("AP_ShowSearchInTabs_New", true)
+@@ -106,38 +105,4 @@
      var showAccounts by sharedPreferences.boolean("AP_ShowAccounts", true)
      var marketPlaceDrawerButton by sharedPreferences.boolean("AP_MarketplaceDrawerButton", true)
      /** Drawer items finish */
@@ -4455,10 +4463,9 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
              currentMessageObject != null && currentMessageObject.getDialogId() == UserObject.VERIFY ||
              currentMessageObject != null && currentMessageObject.forceAvatar ||
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/DialogsActivity.java b/TMessagesProj/src/main/java/org/telegram/ui/DialogsActivity.java
-index 08458b4..0384ef7 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/DialogsActivity.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/DialogsActivity.java
-@@ -275,7 +275,9 @@ import java.io.File;
+@@ -275,7 +275,9 @@
  import java.util.ArrayList;
  import java.util.Arrays;
  import java.util.Collections;
@@ -4468,7 +4475,7 @@ index 08458b4..0384ef7 100644
  import java.util.List;
  import java.util.concurrent.ConcurrentHashMap;
  
-@@ -594,6 +596,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+@@ -594,6 +596,7 @@
      private ActionBarMenuItem archive2Item;
      @Nullable
      private ActionBarMenuSubItem pin2Item;
@@ -4476,7 +4483,7 @@ index 08458b4..0384ef7 100644
      @Nullable
      private ActionBarMenuSubItem addToFolderItem;
      @Nullable
-@@ -727,6 +730,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+@@ -727,6 +730,9 @@
      private final static int add_to_folder = 109;
      private final static int remove_from_folder = 110;
      private final static int community_ungroup = 111;
@@ -4486,7 +4493,35 @@ index 08458b4..0384ef7 100644
  
      private final static int ARCHIVE_ITEM_STATE_PINNED = 0;
      private final static int ARCHIVE_ITEM_STATE_SHOWED = 1;
-@@ -4125,6 +4131,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+@@ -3048,6 +3054,7 @@
+         }
+ 
+         BirthdayController.getInstance(currentAccount).check();
++        foldersAtBottom = !isPersonalHome() && FoldersHelper.INSTANCE.moveFoldersToBottom();
+         additionNavigationBarHeight = hasMainTabs || foldersAtBottom && !CherrygramAppearanceConfig.INSTANCE.getShowMainTabs() ? dp(MAIN_TABS_HEIGHT_WITH_MARGINS) : 0;
+         additionFloatingButtonOffset = hasMainTabs || foldersAtBottom && !CherrygramAppearanceConfig.INSTANCE.getShowMainTabs() ? dp(DialogsActivity.MAIN_TABS_HEIGHT + DialogsActivity.MAIN_TABS_MARGIN) : 0;
+ 
+@@ -3531,6 +3538,10 @@
+ 
+         searchItem.setSearchFieldHint(getString(R.string.Search));
+         searchItem.setContentDescription(getString(R.string.Search));
++        if (isPersonalHome()) {
++            actionBar.setBackButtonImage(R.drawable.msg_settings_old);
++            actionBar.setBackButtonContentDescription(getString(R.string.Settings));
++        }
+         if (onlySelect) {
+             actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+             if (initialDialogsType == DIALOGS_TYPE_BOT_SELECT_VERIFY) {
+@@ -4012,6 +4023,8 @@
+                         }
+                     } else if (onlySelect || folderId != 0 || communityId != 0) {
+                         finishFragment();
++                    } else if (isPersonalHome() && !searching) {
++                        presentFragment(new SettingsActivity());
+                     }
+                 } else if (id == 1) {
+                     if (getParentActivity() == null) {
+@@ -4125,6 +4138,12 @@
                          undoView.showWithAction(did, UndoView.ACTION_REMOVED_FROM_FOLDER, neverShow.size(), filter, null, null);
                      }
                      hideActionMode(false);
@@ -4499,7 +4534,16 @@ index 08458b4..0384ef7 100644
                  } else if (id == pin || id == read || id == delete || id == clear || id == mute || id == archive || id == block || id == archive2 || id == pin2) {
                      performSelectedDialogsAction(selectedDialogs, id, true, false);
                  }
-@@ -6909,6 +6921,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+@@ -5277,7 +5296,7 @@
+         }
+ 
+         if (filterTabsView != null) {
+-            if (FoldersHelper.INSTANCE.moveFoldersToBottom()) {
++            if (foldersAtBottom) {
+                 FoldersHelper.INSTANCE.setupFilterTabs(
+                         getContext(),
+                         contentView,
+@@ -6909,6 +6928,7 @@
          actionMode.addView(new View(getContext()), LayoutHelper.createLinear(5, LayoutHelper.MATCH_PARENT));
          archiveItem = otherItem.addSubItem(archive, R.drawable.msg_archive, LocaleController.getString(R.string.Archive));
          pin2Item = otherItem.addSubItem(pin2, R.drawable.msg_pin, LocaleController.getString(R.string.DialogPin));
@@ -4507,7 +4551,7 @@ index 08458b4..0384ef7 100644
          addToFolderItem = otherItem.addSubItem(add_to_folder, R.drawable.msg_addfolder, LocaleController.getString(R.string.FilterAddTo));
          removeFromFolderItem = otherItem.addSubItem(remove_from_folder, R.drawable.msg_removefolder, LocaleController.getString(R.string.FilterRemoveFrom));
          readItem = otherItem.addSubItem(read, R.drawable.msg_markread, LocaleController.getString(R.string.MarkAsRead));
-@@ -8981,6 +8994,19 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+@@ -8981,6 +9001,19 @@
              previewMenu[0].addView(unpinItem);
          }
  
@@ -4527,7 +4571,36 @@ index 08458b4..0384ef7 100644
          if (!DialogObject.isUserDialog(dialogId) || !UserObject.isUserSelf(getMessagesController().getUser(dialogId))) {
              ActionBarMenuSubItem muteItem = new ActionBarMenuSubItem(getParentActivity(), false, false);
              if (!getMessagesController().isDialogMuted(dialogId, 0)) {
-@@ -10118,6 +10144,14 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+@@ -9035,13 +9068,13 @@
+         final boolean isVisible = !(onlySelect && initialDialogsType != 10 || folderId != 0 || communityId != 0 || inPreviewMode || (searching && !onlySelect) || floatingButtonHidden);
+ 
+         if (floatingButton3 != null) {
+-            floatingButton3.setButtonVisible(isVisible, animated);
++            floatingButton3.setButtonVisible(isVisible && !isPersonalHome(), animated);
+         }
+ 
+         FoldersHelper.INSTANCE.updateFoldersOffset(this, onlySelect);
+ 
+         if (floatingButtonStories != null) {
+-            floatingButtonStories.setButtonVisible(isVisible && storiesEnabled, animated);
++            floatingButtonStories.setButtonVisible(isVisible && storiesEnabled && !isPersonalHome(), animated);
+         }
+     }
+ 
+@@ -9059,9 +9092,10 @@
+         FoldersHelper.INSTANCE.updateFoldersOffset(this, onlySelect);
+ 
+         if (floatingButtonStories != null) {
+-            floatingButtonStories.setTranslationY(baseTranslationY - dp(52) - floatingButtonsOffset);
++            final float storyOffset = baseTranslationY - dp(52) - floatingButtonsOffset;
++            floatingButtonStories.setTranslationY(storyOffset);
+             if (storyHint != null) {
+-                storyHint.setTranslationY(baseTranslationY - dp(52) - floatingButtonsOffset);
++                storyHint.setTranslationY(storyOffset);
+             }
+         }
+     }
+@@ -10118,6 +10152,14 @@
                  canDeleteCount++;
              }
          }
@@ -4542,7 +4615,7 @@ index 08458b4..0384ef7 100644
          if (deleteItem != null) {
              if (canDeleteCount != count || communitiesCount > 0) {
                  deleteItem.setVisibility(View.GONE);
-@@ -11266,6 +11300,109 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+@@ -11266,6 +11308,109 @@
  
      private ArrayList<TLRPC.Dialog> botShareDialogs;
  
@@ -4652,7 +4725,7 @@ index 08458b4..0384ef7 100644
      @NonNull
      public ArrayList<TLRPC.Dialog> getDialogsArray(int currentAccount, int dialogsType, int folderId, boolean frozen) {
          if (frozen && frozenDialogsList != null) {
-@@ -11273,7 +11410,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
+@@ -11273,7 +11418,9 @@
          }
          MessagesController messagesController = AccountInstance.getInstance(currentAccount).getMessagesController();
          if (dialogsType == DIALOGS_TYPE_DEFAULT) {
@@ -4663,6 +4736,56 @@ index 08458b4..0384ef7 100644
          } else if (dialogsType == DIALOGS_TYPE_WIDGET || dialogsType == DIALOGS_TYPE_IMPORT_HISTORY) {
              return messagesController.dialogsServerOnly;
          } else if (dialogsType == DIALOGS_TYPE_ADD_USERS_TO) {
+@@ -11938,6 +12085,11 @@
+ 
+     public void setInitialSearchString(String initialSearchString) {
+         this.initialSearchString = initialSearchString;
++    }
++
++    private boolean isPersonalHome() {
++        return !onlySelect && initialDialogsType == DIALOGS_TYPE_DEFAULT && folderId == 0
++                && communityId == 0 && isMainDialogList();
+     }
+ 
+     public boolean isMainDialogList() {
+@@ -14103,7 +14255,8 @@
+         CGChatMenuInjector.INSTANCE.injectScanQR(io, this);
+         CGChatMenuInjector.INSTANCE.injectCreateQR(io, this);
+ 
+-        if (!MainTabsManager.INSTANCE.hasTab(MainTabsManager.TabType.SETTINGS) || !CherrygramAppearanceConfig.INSTANCE.getShowMainTabs()) {
++        if (!isPersonalHome() && (!MainTabsManager.INSTANCE.hasTab(MainTabsManager.TabType.SETTINGS)
++                || !CherrygramAppearanceConfig.INSTANCE.getShowMainTabs())) {
+             io.add(R.drawable.msg_settings_old, getString(R.string.Settings), () -> {
+                 presentFragment(new SettingsActivity());
+             });
+@@ -14818,7 +14971,7 @@
+     /** Cherrygram start */
+     private CharSequence actionBarDefaultTitle;
+ 
+-    private final boolean foldersAtBottom = FoldersHelper.INSTANCE.moveFoldersToBottom();
++    private boolean foldersAtBottom;
+ 
+     public FilterTabsView getFilterTabsView() {
+         return filterTabsView;
+@@ -14876,7 +15029,7 @@
+     }
+ 
+     private boolean shouldHideHomeSearchField() {
+-        return CherrygramAppearanceConfig.INSTANCE.getHideSearchFiled()
++        return isPersonalHome() || CherrygramAppearanceConfig.INSTANCE.getHideSearchFiled()
+                 /*&& initialDialogsType == DIALOGS_TYPE_DEFAULT
+                 && !onlySelect
+                 && folderId == 0*/
+@@ -14884,6 +15037,9 @@
+     }
+ 
+     private boolean shouldShowSearchIcon() {
++        if (isPersonalHome()) {
++            return true;
++        }
+         if (CherrygramAppearanceConfig.INSTANCE.getCenterTitle()) {
+             return !CherrygramAppearanceConfig.INSTANCE.getShowSearchInTabs() || !CherrygramAppearanceConfig.INSTANCE.getShowMainTabs() || (initialDialogsType == DIALOGS_TYPE_FORWARD || folderId == 1);
+         } else {
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Adapters/DialogsAdapter.java b/TMessagesProj/src/main/java/org/telegram/ui/Adapters/DialogsAdapter.java
 index 0051f5c..5c3f224 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Adapters/DialogsAdapter.java
@@ -5443,3 +5566,75 @@ index 0087d5c..3c7af40 100644
                          continue;
                      }
                      long did;
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/MainTabsActivity.java b/TMessagesProj/src/main/java/org/telegram/ui/MainTabsActivity.java
+--- a/TMessagesProj/src/main/java/org/telegram/ui/MainTabsActivity.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/MainTabsActivity.java
+@@ -127,7 +127,7 @@
+ 
+     private static final int ANIMATOR_ID_TABS_VISIBLE = 0;
+     private final BoolAnimator animatorTabsVisible = new BoolAnimator(ANIMATOR_ID_TABS_VISIBLE,
+-        this, CubicBezierInterpolator.EASE_OUT_QUINT, 380, true);
++        this, CubicBezierInterpolator.EASE_OUT_QUINT, 380, false);
+ 
+ 
+     private IUpdateLayout updateLayout;
+diff --git a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/tabs/MainTabsPreferencesEntry.java b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/tabs/MainTabsPreferencesEntry.java
+--- a/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/tabs/MainTabsPreferencesEntry.java
++++ b/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/tabs/MainTabsPreferencesEntry.java
+@@ -40,7 +40,6 @@
+ 
+ public class MainTabsPreferencesEntry extends BaseCGPreferencesEntry {
+ 
+-    private final int enableTabsRow = 1;
+     private final int tabsPreviewRow = 2;
+     private final int openSettingsBySwipeRow = 3;
+     private final int showTabTitleRow = 4;
+@@ -78,23 +77,10 @@
+     @Override
+     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
+         items.add(UItem.asHeader(getString(R.string.CP_MainTabs_Layout)));
+-        if (CherrygramAppearanceConfig.INSTANCE.getShowMainTabs()) {
+-            UItem enableTabs = SettingsHelper.asSwitchCG(
+-                    enableTabsRow,
+-                    getString(R.string.CP_MainTabs_ShowTabs),
+-                    getString(R.string.CP_MainTabs_DoubleTap_Desc)
+-            ).setChecked(CherrygramAppearanceConfig.INSTANCE.getShowMainTabs());
+-            enableTabs.hideDivider = true;
+-            items.add(enableTabs);
+-        } else {
+-            items.add(SettingsHelper.asSwitchCG(enableTabsRow, getString(R.string.CP_MainTabs_ShowTabs))
+-                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getShowMainTabs())
+-            );
+-            items.add(SettingsHelper.asSwitchCG(openSettingsBySwipeRow, getString(R.string.CP_MainTabs_OpenSettings), getString(R.string.CP_MainTabs_OpenSettings_Desc))
+-                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getOpenSettingsBySwipe())
+-                    .slug("openSettings")
+-            );
+-        }
++        items.add(SettingsHelper.asSwitchCG(openSettingsBySwipeRow, getString(R.string.CP_MainTabs_OpenSettings), getString(R.string.CP_MainTabs_OpenSettings_Desc))
++                .setChecked(CherrygramAppearanceConfig.INSTANCE.getOpenSettingsBySwipe())
++                .slug("openSettings")
++        );
+ 
+         PreviewCell previewContainer = new PreviewCell(getContext());
+ 
+@@ -161,19 +147,7 @@
+ 
+     @Override
+     protected void onClick(UItem item, View view, int position, float x, float y) {
+-        if (item.id == enableTabsRow) {
+-            CherrygramAppearanceConfig.INSTANCE.setShowMainTabs(!CherrygramAppearanceConfig.INSTANCE.getShowMainTabs());
+-            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getShowMainTabs());
+-
+-            if (!CherrygramAppearanceConfig.INSTANCE.getShowMainTabs()) {
+-                resetMainTabsOrder();
+-            } else {
+-                onTabsChanged();
+-            }
+-            updateRows(true);
+-
+-            if (CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom()) showRestartBulletin();
+-        } else if (item.id == tabsPreviewRow) {
++        if (item.id == tabsPreviewRow) {
+             /*if (MainTabsManager.getEnabledTabs().size() > 5) {
+                 CherrygramAppearanceConfig.INSTANCE.setShowMainTabsTitle(false);
+                 updateRows(true);
